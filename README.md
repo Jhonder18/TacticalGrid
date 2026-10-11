@@ -32,8 +32,14 @@ python -m pip install -r backend\requirements.txt
 python -m uvicorn backend.main:app --reload --port 8000
 ```
 
-La API estará disponible en `http://localhost:8000` y su comprobación de salud
-en `http://localhost:8000/api/health`.
+La API estará disponible en `http://localhost:8000`. FastAPI incluye documentación
+interactiva automáticamente:
+
+- Swagger UI: `http://localhost:8000/docs`
+- ReDoc: `http://localhost:8000/redoc`
+- Especificación OpenAPI: `http://localhost:8000/openapi.json`
+
+La comprobación de salud está disponible en `http://localhost:8000/api/health`.
 
 ## Estructura
 
