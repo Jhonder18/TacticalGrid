@@ -1,0 +1,322 @@
+## Entendimiento general
+
+**TacticalGrid** no debe tratarse como un videojuego comercial, sino como una plataforma visual para experimentar con algoritmos de búsqueda y toma de decisiones.
+
+El sistema debe permitir:
+
+1. Cargar escenarios externos mediante JSON.
+2. Representar un mapa cuadriculado con:
+   - Diferentes terrenos.
+   - Costos configurables.
+   - Obstáculos.
+   - Bases A y B.
+   - Un recurso estratégico.
+   - Unidades de ambos bandos.
+3. Ejecutar algoritmos de búsqueda:
+   - BFS.
+   - DFS.
+   - UCS.
+   - A*.
+   - Beam Search.
+4. Ejecutar decisiones adversariales:
+   - Minimax.
+   - Minimax con poda alfa-beta.
+5. Mostrar visualmente:
+   - El tablero.
+   - Terrenos y costos.
+   - Unidades.
+   - Bases.
+   - Recurso.
+   - Turno actual.
+   - Portador del recurso.
+   - Camino encontrado.
+   - Estados explorados o decisiones consideradas, si se implementa.
+6. Registrar métricas comparables para analizar el comportamiento de cada algoritmo.
+
+## Restricciones importantes
+
+### Escenarios
+
+Los algoritmos no pueden depender de un mapa específico ni tener posiciones escritas directamente en el código.
+
+El sistema debe aceptar escenarios nuevos proporcionados por el profesor sin modificar el código.
+
+El escenario debe ser validado completamente antes de reemplazar el estado actual. Si contiene errores, debe rechazarse sin dejar información parcialmente cargada.
+
+Las validaciones mínimas incluyen:
+
+- Dimensiones positivas.
+- Matriz consistente con filas y columnas.
+- Terrenos existentes en el catálogo.
+- Costos positivos para terrenos transitables.
+- Posiciones dentro del mapa.
+- Unidades fuera de obstáculos.
+- Identificadores únicos.
+- Bandos válidos.
+- Turno válido.
+- Portador del recurso válido o `null`.
+
+### Estado
+
+El estado no puede ser únicamente una coordenada.
+
+Debe considerar, entre otros elementos:
+
+- Posiciones de las unidades.
+- Bandos.
+- Turno actual.
+- Posesión del recurso.
+- Posición del recurso cuando no está transportado.
+- Acciones válidas.
+- Estado de la partida.
+- Información necesaria para generar sucesores.
+
+Dos estados con una unidad en la misma posición pueden ser diferentes si uno tiene el recurso y el otro no.
+
+### Costos
+
+Los costos deben salir del archivo JSON.
+
+No deben estar distribuidos como constantes fijas dentro de BFS, DFS, UCS, A* o Beam Search.
+
+Debe existir al menos un escenario donde:
+
+- BFS encuentre una ruta con menos movimientos.
+- UCS encuentre una ruta de menor costo.
+- Ambas rutas sean diferentes.
+
+## Algoritmos exigidos
+
+### Búsqueda no informada
+
+- BFS.
+- DFS.
+
+Se debe comparar:
+
+- Si encontraron solución.
+- Longitud de la ruta.
+- Estados generados.
+- Estados expandidos.
+- Máximo de frontera.
+- Tiempo de ejecución.
+
+### Búsqueda basada en costos
+
+- UCS.
+
+Debe minimizar el costo acumulado, no necesariamente el número de movimientos.
+
+### Búsqueda informada
+
+- A* usando:
+
+```text
+f(n) = g(n) + h(n)
+```
+
+Se necesitan al menos dos heurísticas:
+
+1. Una puede ser distancia Manhattan.
+2. La otra debe ser propuesta y justificada por el equipo.
+
+Para cada heurística habrá que explicar:
+
+- Qué estima.
+- Qué información utiliza.
+- Su costo computacional.
+- Si es admisible.
+- En qué escenarios funciona bien.
+- En qué escenarios pierde capacidad de discriminación.
+
+### Memoria limitada
+
+- Beam Search.
+- Valores mínimos de `k`:
+
+```text
+k = 1, 2, 4 y 8
+```
+
+Se debe observar cómo cambia:
+
+- La exploración.
+- La solución encontrada.
+- La posibilidad de descartar un camino que luego era conveniente.
+
+### Decisión adversarial
+
+- Minimax.
+- Minimax con poda alfa-beta.
+- Profundidad configurable.
+- Función de utilidad definida por el equipo.
+- Orden de sucesores configurable o modificable para analizar la poda.
+
+Con la misma profundidad, utilidad y orden de acciones, Minimax y alfa-beta deben elegir la misma acción. Alfa-beta debe evitar evaluar parte del árbol.
+
+## Formato JSON
+
+El contrato JSON del profesor es central. Los nombres de campos obligatorios deben respetarse, incluyendo:
+
+```text
+version
+mapa.filas
+mapa.columnas
+tipos_terreno
+terreno
+bases.A
+bases.B
+recurso
+unidades
+turno
+juego.portador_recurso
+prueba
+```
+
+Los modos principales son:
+
+```text
+busqueda
+partida
+adversarial
+```
+
+Este formato debe tratarse como un contrato de interoperabilidad entre la aplicación y los escenarios externos.
+
+## Métricas requeridas
+
+Para búsquedas:
+
+- Algoritmo.
+- Éxito.
+- Camino.
+- Costo.
+- Estados generados.
+- Estados expandidos.
+- Máximo de frontera.
+- Tiempo.
+- Longitud del camino.
+
+Para Minimax y alfa-beta:
+
+- Nodos generados.
+- Nodos evaluados.
+- Nodos podados.
+- Profundidad alcanzada.
+- Tiempo.
+- Acción seleccionada.
+- Valor obtenido.
+
+## Verificación
+
+La aplicación debe poder verificar que:
+
+- Cada movimiento del camino es válido.
+- No se atraviesan obstáculos.
+- El costo reportado coincide con el camino.
+- El estado final cumple el objetivo.
+- No se generan estados inválidos.
+- Las acciones de Minimax son legales.
+
+Esto significa que no basta con ejecutar un algoritmo: también habrá que comprobar que sus resultados son correctos.
+
+## Casos mínimos que habrá que demostrar
+
+El proyecto debe preparar escenarios reproducibles para demostrar:
+
+1. BFS frente a DFS.
+2. Ruta corta frente a ruta económica.
+3. Obstáculos y heurística.
+4. Comparación entre dos heurísticas de A*.
+5. Beam Search con distintos valores de `k`.
+6. Diferencia entre estados físicamente similares pero informacionalmente distintos.
+7. Decisión adversarial no obvia.
+8. Minimax frente a alfa-beta.
+9. Efecto del orden de acciones en la poda.
+10. Efecto de cambiar la profundidad.
+
+Además, el profesor puede cambiar durante la sustentación:
+
+- Costos.
+- Obstáculos.
+- Bases.
+- Posiciones de unidades.
+- Recurso.
+- Objetivos.
+- Profundidad de Minimax.
+- Orden de sucesores.
+- Algoritmo utilizado.
+
+## Documentación obligatoria
+
+Los métodos relevantes deben documentarse con:
+
+- `Purpose`
+- `Preconditions`
+- `Postconditions`
+- `Complexity`
+- `AI usage`
+- `AI intervention`
+- `Student validation`
+
+Esto aplica especialmente a:
+
+- Algoritmos de búsqueda.
+- Heurísticas.
+- Generación de sucesores.
+- Cálculo de costos.
+- Función de utilidad.
+- Minimax.
+- Alfa-beta.
+- Validadores.
+
+También se debe declarar el uso de IA y cómo se verificó o modificó cualquier aporte generado.
+
+## Entregables finales
+
+El repositorio deberá incluir:
+
+- Código completo.
+- README con integrantes.
+- Instrucciones de instalación y ejecución.
+- Escenarios JSON.
+- Casos mínimos de prueba.
+- Manual de usuario.
+- Documento técnico.
+- Resultados experimentales.
+- Análisis de complejidad.
+- Limitaciones.
+- Reporte del uso de IA.
+- Evidencia reproducible.
+
+## Relación con lo que ya tenemos
+
+La estructura actual de React, FastAPI, CORS, Swagger y cliente HTTP es solamente la **base técnica inicial**.
+
+Todavía faltará construir, en fases posteriores:
+
+1. Modelos Pydantic del escenario.
+2. Validador completo del JSON.
+3. Modelo interno del estado.
+4. Generación de sucesores.
+5. Cálculo de costos.
+6. BFS y DFS.
+7. UCS.
+8. A* y dos heurísticas.
+9. Beam Search.
+10. Reglas de partida.
+11. Función de utilidad.
+12. Minimax.
+13. Alfa-beta.
+14. Métricas.
+15. Verificación de soluciones.
+16. Endpoints de la API.
+17. Interfaz visual del tablero.
+18. Escenarios y pruebas reproducibles.
+19. Manual y documentación técnica.
+
+La idea central que guiará el desarrollo será:
+
+> El juego es el entorno de experimentación; el sistema inteligente es el verdadero proyecto.
+
+Entiendo entonces que la prioridad no será crear gráficos complejos, sino construir una solución modular, verificable, reproducible y fácil de explicar durante la sustentación.
