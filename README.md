@@ -41,6 +41,23 @@ interactiva automáticamente:
 
 La comprobación de salud está disponible en `http://localhost:8000/api/health`.
 
+Para validar un escenario JSON sin aplicarlo al estado actual, usa:
+
+```text
+POST http://localhost:8000/api/scenario/validate
+```
+
+El endpoint recibe el archivo en el campo multipart `file`, devuelve `200` para
+escenarios válidos y `400` con la regla incumplida cuando el escenario es
+rechazado.
+
+Los escenarios de demostración están en [examples/](<./examples/>). Para probar
+automáticamente todos los casos válidos e inválidos:
+
+```powershell
+.\backend\venv\Scripts\python.exe -m unittest discover -s backend\tests -v
+```
+
 ## Estructura
 
 ```text

@@ -82,12 +82,17 @@ class Escenario(BaseModel):
             )
 
         posiciones = {
-            "base A": self.bases.A,
-            "base B": self.bases.B,
-            "recurso": self.recurso,
+            "Base A": self.bases.A,
+            "Base B": self.bases.B,
+            "Recurso": self.recurso,
         }
         for nombre, posicion in posiciones.items():
             self._validar_posicion(posicion, filas, columnas, nombre)
+            terreno = self.tipos_terreno[self.terreno[posicion.fila][posicion.columna]]
+            if not terreno.transitable:
+                raise ValueError(
+                    f"{nombre} está sobre un terreno no transitable"
+                )
 
         ids = [unidad.id for unidad in self.unidades]
         if len(ids) != len(set(ids)):
