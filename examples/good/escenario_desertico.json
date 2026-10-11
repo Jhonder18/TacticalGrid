@@ -1,0 +1,35 @@
+{
+  "version": "1.0",
+  "mapa": { "filas": 10, "columnas": 10 },
+  "tipos_terreno": {
+    "arena": { "costo": 3, "transitable": true },
+    "duna": { "costo": 5, "transitable": true },
+    "oasis": { "costo": 1, "transitable": true },
+    "acantilado": { "transitable": false }
+  },
+  "terreno": [
+    ["oasis", "arena", "arena", "duna", "duna", "arena", "arena", "arena", "acantilado", "arena"],
+    ["arena", "arena", "acantilado", "duna", "arena", "arena", "arena", "duna", "acantilado", "arena"],
+    ["arena", "duna", "acantilado", "arena", "arena", "oasis", "arena", "duna", "arena", "arena"],
+    ["arena", "duna", "arena", "arena", "acantilado", "arena", "arena", "duna", "arena", "arena"],
+    ["acantilado", "duna", "arena", "arena", "arena", "arena", "acantilado", "duna", "arena", "oasis"],
+    ["arena", "arena", "arena", "acantilado", "arena", "duna", "duna", "duna", "arena", "arena"],
+    ["arena", "duna", "arena", "acantilado", "arena", "arena", "arena", "arena", "acantilado", "arena"],
+    ["arena", "duna", "arena", "arena", "arena", "acantilado", "arena", "arena", "arena", "arena"],
+    ["arena", "arena", "acantilado", "duna", "duna", "arena", "arena", "duna", "arena", "arena"],
+    ["arena", "arena", "arena", "arena", "oasis", "arena", "arena", "arena", "duna", "arena"]
+  ],
+  "bases": {
+    "A": { "fila": 0, "columna": 0 },
+    "B": { "fila": 9, "columna": 9 }
+  },
+  "recurso": { "fila": 2, "columna": 5 },
+  "unidades": [
+    { "id": "A1", "bando": "A", "tipo": "rastreador", "fila": 1, "columna": 0 },
+    { "id": "A2", "bando": "A", "tipo": "transportador", "fila": 2, "columna": 5 },
+    { "id": "B1", "bando": "B", "tipo": "vigilante", "fila": 8, "columna": 9 }
+  ],
+  "turno": "A",
+  "juego": { "portador_recurso": "A2", "profundidad_maxima_minimax": 5 },
+  "prueba": { "modo": "adversarial" }
+}

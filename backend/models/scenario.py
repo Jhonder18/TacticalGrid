@@ -111,6 +111,14 @@ class Escenario(BaseModel):
             raise ValueError(
                 "portador_recurso debe identificar una unidad existente"
             )
+        if portador is not None:
+            unidad_portadora = next(
+                unidad for unidad in self.unidades if unidad.id == portador
+            )
+            if unidad_portadora.fila != self.recurso.fila or unidad_portadora.columna != self.recurso.columna:
+                raise ValueError(
+                    "La unidad portadora debe ocupar la misma posición que el recurso"
+                )
 
         return self
 

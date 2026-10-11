@@ -1,0 +1,37 @@
+{
+  "version": "1.0",
+  "mapa": { "filas": 10, "columnas": 10 },
+  "tipos_terreno": {
+    "puente": { "costo": 1, "transitable": true },
+    "orilla": { "costo": 2, "transitable": true },
+    "agua": { "costo": 5, "transitable": true },
+    "roca": { "transitable": false }
+  },
+  "terreno": [
+    ["puente", "puente", "orilla", "agua", "agua", "agua", "orilla", "puente", "puente", "puente"],
+    ["orilla", "roca", "orilla", "agua", "agua", "agua", "orilla", "roca", "roca", "puente"],
+    ["orilla", "orilla", "orilla", "agua", "roca", "agua", "orilla", "orilla", "orilla", "puente"],
+    ["puente", "puente", "orilla", "agua", "roca", "agua", "agua", "agua", "orilla", "puente"],
+    ["agua", "agua", "orilla", "puente", "puente", "puente", "orilla", "agua", "agua", "agua"],
+    ["agua", "roca", "orilla", "agua", "agua", "agua", "orilla", "orilla", "roca", "agua"],
+    ["orilla", "orilla", "orilla", "agua", "roca", "agua", "puente", "puente", "puente", "orilla"],
+    ["puente", "roca", "orilla", "agua", "roca", "agua", "orilla", "agua", "orilla", "puente"],
+    ["puente", "puente", "orilla", "agua", "agua", "agua", "orilla", "roca", "orilla", "puente"],
+    ["puente", "puente", "orilla", "orilla", "orilla", "agua", "orilla", "puente", "puente", "puente"]
+  ],
+  "bases": {
+    "A": { "fila": 0, "columna": 0 },
+    "B": { "fila": 9, "columna": 9 }
+  },
+  "recurso": { "fila": 4, "columna": 5 },
+  "unidades": [
+    { "id": "A1", "bando": "A", "tipo": "marino", "fila": 0, "columna": 1 },
+    { "id": "B1", "bando": "B", "tipo": "guardia", "fila": 9, "columna": 8 }
+  ],
+  "turno": "B",
+  "juego": { "portador_recurso": null, "profundidad_maxima_minimax": 4 },
+  "prueba": {
+    "modo": "partida",
+    "objetivo": { "fila": 9, "columna": 8 }
+  }
+}

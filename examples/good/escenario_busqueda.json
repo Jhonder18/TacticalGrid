@@ -530,8 +530,8 @@
     "modo": "busqueda",
     "unidad_inicio": "A1",
     "objetivo": {
-      "fila": 10,
-      "columna": 10
+      "fila": 18,
+      "columna": 17
     }
   }
 }

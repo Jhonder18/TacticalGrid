@@ -1,0 +1,38 @@
+{
+  "version": "1.0",
+  "mapa": { "filas": 10, "columnas": 10 },
+  "tipos_terreno": {
+    "tierra": { "costo": 1, "transitable": true },
+    "ceniza": { "costo": 3, "transitable": true },
+    "lava": { "costo": 8, "transitable": true },
+    "crater": { "transitable": false }
+  },
+  "terreno": [
+    ["tierra", "tierra", "tierra", "ceniza", "ceniza", "tierra", "tierra", "tierra", "tierra", "tierra"],
+    ["tierra", "crater", "crater", "ceniza", "tierra", "tierra", "lava", "lava", "tierra", "tierra"],
+    ["tierra", "tierra", "crater", "ceniza", "tierra", "tierra", "tierra", "lava", "tierra", "tierra"],
+    ["ceniza", "ceniza", "crater", "crater", "tierra", "tierra", "tierra", "lava", "tierra", "tierra"],
+    ["tierra", "tierra", "tierra", "crater", "tierra", "lava", "tierra", "tierra", "tierra", "tierra"],
+    ["tierra", "lava", "tierra", "tierra", "tierra", "lava", "tierra", "crater", "crater", "tierra"],
+    ["tierra", "tierra", "tierra", "tierra", "tierra", "tierra", "tierra", "tierra", "crater", "tierra"],
+    ["tierra", "crater", "crater", "tierra", "ceniza", "ceniza", "tierra", "tierra", "tierra", "tierra"],
+    ["tierra", "tierra", "tierra", "tierra", "tierra", "tierra", "tierra", "crater", "tierra", "tierra"],
+    ["tierra", "tierra", "tierra", "tierra", "tierra", "tierra", "tierra", "tierra", "tierra", "tierra"]
+  ],
+  "bases": {
+    "A": { "fila": 0, "columna": 0 },
+    "B": { "fila": 9, "columna": 9 }
+  },
+  "recurso": { "fila": 5, "columna": 5 },
+  "unidades": [
+    { "id": "A1", "bando": "A", "tipo": "explorador", "fila": 1, "columna": 0 },
+    { "id": "B1", "bando": "B", "tipo": "defensor", "fila": 8, "columna": 9 }
+  ],
+  "turno": "A",
+  "juego": { "portador_recurso": null, "profundidad_maxima_minimax": 3 },
+  "prueba": {
+    "modo": "busqueda",
+    "unidad_inicio": "A1",
+    "objetivo": { "fila": 8, "columna": 8 }
+  }
+}

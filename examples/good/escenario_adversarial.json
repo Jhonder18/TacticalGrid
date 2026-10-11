@@ -474,57 +474,57 @@
     }
   },
   "recurso": {
-    "fila": 10,
-    "columna": 10
+    "fila": 9,
+    "columna": 14
   },
   "unidades": [
     {
       "id": "A1",
       "bando": "A",
       "tipo": "estandar",
-      "fila": 1,
-      "columna": 0
+      "fila": 4,
+      "columna": 3
     },
     {
       "id": "A2",
       "bando": "A",
       "tipo": "estandar",
-      "fila": 0,
-      "columna": 1
+      "fila": 3,
+      "columna": 4
     },
     {
       "id": "A3",
       "bando": "A",
       "tipo": "explorador",
-      "fila": 2,
-      "columna": 0
+      "fila": 9,
+      "columna": 14
     },
     {
       "id": "B1",
       "bando": "B",
       "tipo": "estandar",
-      "fila": 18,
-      "columna": 19
+      "fila": 14,
+      "columna": 16
     },
     {
       "id": "B2",
       "bando": "B",
       "tipo": "estandar",
-      "fila": 19,
-      "columna": 18
+      "fila": 15,
+      "columna": 15
     },
     {
       "id": "B3",
       "bando": "B",
       "tipo": "explorador",
-      "fila": 17,
-      "columna": 19
+      "fila": 10,
+      "columna": 15
     }
   ],
-  "turno": "A",
+  "turno": "B",
   "juego": {
-    "portador_recurso": null,
-    "profundidad_maxima_minimax": 4
+    "portador_recurso": "A3",
+    "profundidad_maxima_minimax": 6
   },
   "prueba": {
     "modo": "adversarial"

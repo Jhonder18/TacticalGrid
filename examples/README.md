@@ -10,6 +10,9 @@ Los archivos de `good/` deben ser aceptados con HTTP 200:
 - `escenario_busqueda.json`: prueba de navegación con A*.
 - `escenario_partida.json`: estado inicial para una partida por turnos.
 - `escenario_adversarial.json`: estado preparado para Minimax y alfa-beta.
+- `escenario_volcanico.json`: mapa de ceniza, lava y cráteres.
+- `escenario_acuatico.json`: mapa de agua, orillas, puentes y rocas.
+- `escenario_desertico.json`: mapa de arena, dunas, oasis y acantilados.
 
 ## Escenarios inválidos
 
@@ -22,5 +25,8 @@ regla que se está demostrando:
 - `unidad_sobre_obstaculo.json`
 - `base_sobre_obstaculo.json`
 - `recurso_sobre_obstaculo.json`
+- `portador_desincronizado.json`
 
-Los escenarios válidos usan un mapa de 20 x 20, como exige la especificación.
+Los ejemplos originales usan un mapa de 20 x 20. Los ejemplos temáticos
+adicionales usan mapas de 10 x 10 para mostrar que la matriz y los terrenos
+pueden variar mientras respeten el contrato y la validación.

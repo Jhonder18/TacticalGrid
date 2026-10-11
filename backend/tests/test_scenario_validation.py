@@ -45,6 +45,7 @@ class ScenarioValidationTests(unittest.TestCase):
             "unidad_sobre_obstaculo.json": "unidad A1",
             "base_sobre_obstaculo.json": "Base A",
             "recurso_sobre_obstaculo.json": "Recurso",
+            "portador_desincronizado.json": "misma posición que el recurso",
         }
         for filename, message in expected_messages.items():
             with self.subTest(filename=filename):
