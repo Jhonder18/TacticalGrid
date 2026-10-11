@@ -30,3 +30,17 @@ If you are developing a production application, we recommend enabling type-aware
 ```
 
 See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+
+## Calidad de código
+
+```powershell
+npm run lint
+npm run lint:oxlint
+npm run format:check
+```
+
+Para aplicar el formato automáticamente:
+
+```powershell
+npm run format
+```
