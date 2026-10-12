@@ -4,6 +4,7 @@ from .results import (
     ResultadoAlgoritmo,
     ResultadoBusqueda,
 )
+from .game_state import GameState, UnidadEstado
 from .scenario import (
     Bases,
     Coordenada,
@@ -20,6 +21,7 @@ __all__ = [
     "Bases",
     "Coordenada",
     "Escenario",
+    "GameState",
     "Juego",
     "Mapa",
     "Prueba",
@@ -27,5 +29,6 @@ __all__ = [
     "ResultadoAlgoritmo",
     "ResultadoBusqueda",
     "Terreno",
+    "UnidadEstado",
     "Unidad",
 ]
