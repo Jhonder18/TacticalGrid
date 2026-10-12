@@ -43,62 +43,123 @@ def get_successors(
         Se probarán límites, obstáculos, ocupación, turnos, recurso y costos dinámicos.
     """
 
-    posiciones_ocupadas = {
-        unidad.posicion for unidad in state.unidades
-    }
     sucesores: list[Transition] = []
 
     for unidad in state.unidades:
         if unidad.bando != state.turno:
             continue
-
-        for desplazamiento_fila, desplazamiento_columna in _DIRECCIONES:
-            destino = (
-                unidad.posicion[0] + desplazamiento_fila,
-                unidad.posicion[1] + desplazamiento_columna,
-            )
-            if not _es_movimiento_legal(
-                destino,
-                unidad,
-                posiciones_ocupadas,
+        sucesores.extend(
+            _get_unit_successors(
+                state,
                 scenario,
-            ):
-                continue
+                unidad,
+                cambia_turno=True,
+            )
+        )
 
-            terreno = scenario.terreno[destino[0]][destino[1]]
-            costo = scenario.tipos_terreno[terreno].costo
-            assert costo is not None
+    return tuple(sucesores)
 
-            unidad_actualizada = replace(unidad, posicion=destino)
-            unidades_actualizadas = tuple(
-                unidad_actualizada if actual.id == unidad.id else actual
-                for actual in state.unidades
-            )
-            portador = state.portador_recurso
-            posicion_recurso = state.posicion_recurso
-            if (
-                portador is None
-                and posicion_recurso is not None
-                and destino == posicion_recurso
-            ):
-                portador = unidad.id
-                posicion_recurso = None
 
-            successor = GameState(
-                unidades=unidades_actualizadas,
-                portador_recurso=portador,
-                posicion_recurso=posicion_recurso,
-                turno=_siguiente_turno(state.turno),
-            )
-            action = Accion(
-                tipo="mover",
-                unidad_id=unidad.id,
-                origen=_coordenada(unidad.posicion),
-                destino=_coordenada(destino),
-            )
-            sucesores.append(
-                Transition(state=successor, action=action, cost=costo)
-            )
+def get_navigation_successors(
+    state: GameState,
+    scenario: Escenario,
+    unit_id: str,
+) -> tuple[Transition, ...]:
+    """Genera sucesores para navegar con una sola unidad.
+
+    Purpose:
+        Expandir una prueba de navegación sin simular decisiones del adversario.
+    Preconditions:
+        `state` y `scenario` deben ser compatibles y `unit_id` debe existir.
+    Postconditions:
+        Solo cambia la unidad indicada y conserva el turno durante la búsqueda.
+    Complexity:
+        Cuesta O(u) para localizar la unidad y O(4u) para revisar sus movimientos.
+    AI usage:
+        Es la expansión común de BFS y DFS en el modo de búsqueda.
+    AI intervention:
+        Se separó la navegación del modo partida para respetar el alcance de T-06.
+    Student validation:
+        Se probará que las unidades no seleccionadas permanezcan sin cambios.
+    """
+
+    unidad = next(
+        (unidad for unidad in state.unidades if unidad.id == unit_id),
+        None,
+    )
+    if unidad is None:
+        raise ValueError(f"No existe la unidad de búsqueda: {unit_id}")
+
+    return tuple(
+        _get_unit_successors(
+            state,
+            scenario,
+            unidad,
+            cambia_turno=False,
+        )
+    )
+
+
+def _get_unit_successors(
+    state: GameState,
+    scenario: Escenario,
+    unidad: UnidadEstado,
+    cambia_turno: bool,
+) -> tuple[Transition, ...]:
+    posiciones_ocupadas = {unidad.posicion for unidad in state.unidades}
+    sucesores: list[Transition] = []
+
+    for desplazamiento_fila, desplazamiento_columna in _DIRECCIONES:
+        destino = (
+            unidad.posicion[0] + desplazamiento_fila,
+            unidad.posicion[1] + desplazamiento_columna,
+        )
+        if not _es_movimiento_legal(
+            destino,
+            unidad,
+            posiciones_ocupadas,
+            scenario,
+        ):
+            continue
+
+        terreno = scenario.terreno[destino[0]][destino[1]]
+        costo = scenario.tipos_terreno[terreno].costo
+        assert costo is not None
+
+        unidad_actualizada = replace(unidad, posicion=destino)
+        unidades_actualizadas = tuple(
+            unidad_actualizada if actual.id == unidad.id else actual
+            for actual in state.unidades
+        )
+        portador = state.portador_recurso
+        posicion_recurso = state.posicion_recurso
+        if (
+            portador is None
+            and posicion_recurso is not None
+            and destino == posicion_recurso
+        ):
+            portador = unidad.id
+            posicion_recurso = None
+
+        successor = GameState(
+            unidades=unidades_actualizadas,
+            portador_recurso=portador,
+            posicion_recurso=posicion_recurso,
+            turno=(
+                _siguiente_turno(state.turno)
+                if cambia_turno
+                else state.turno
+            ),
+        )
+        action = Accion(
+            tipo="mover",
+            unidad_id=unidad.id,
+            origen=_coordenada(unidad.posicion),
+            destino=_coordenada(destino),
+        )
+        sucesores.append(
+            Transition(state=successor, action=action, cost=costo)
+        )
 
     return tuple(sucesores)
 
