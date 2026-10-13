@@ -6,7 +6,7 @@ from fastapi import File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import ValidationError
 
-from backend.algorithms import bfs, dfs
+from backend.algorithms import bfs, dfs, ucs
 from backend.models import Escenario, ResultadoBusqueda
 
 
@@ -53,19 +53,21 @@ async def validate_scenario(file: UploadFile = File(...)) -> dict[str, bool | st
     "/api/search/run",
     tags=["Search"],
     summary="Ejecutar una búsqueda sobre un escenario",
-    description="Valida el escenario y ejecuta BFS o DFS usando su configuración de prueba.",
+    description="Valida el escenario y ejecuta BFS, DFS o UCS usando su configuración de prueba.",
     response_model=ResultadoBusqueda,
 )
 async def run_search(
     file: UploadFile = File(...),
-    algoritmo: Literal["BFS", "DFS"] = Form(...),
+    algoritmo: Literal["BFS", "DFS", "UCS"] = Form(...),
 ) -> ResultadoBusqueda:
     scenario = await _load_scenario(file)
 
     try:
         if algoritmo == "BFS":
             return bfs(scenario)
-        return dfs(scenario)
+        if algoritmo == "DFS":
+            return dfs(scenario)
+        return ucs(scenario)
     except ValueError as error:
         raise HTTPException(
             status_code=400,

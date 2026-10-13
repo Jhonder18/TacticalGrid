@@ -40,6 +40,14 @@ class SearchEndpointTests(unittest.TestCase):
         self.assertGreater(result.longitud_camino, 0)
         self.assertGreater(result.estados_generados, 0)
 
+    def test_runs_ucs_from_a_valid_scenario(self) -> None:
+        result = self.call_endpoint("escenario_busqueda.json", "UCS")
+
+        self.assertEqual(result.algoritmo, "UCS")
+        self.assertTrue(result.exito)
+        self.assertGreater(result.longitud_camino, 0)
+        self.assertGreater(result.estados_generados, 0)
+
     def test_returns_bad_request_when_search_configuration_is_missing(self) -> None:
         path = EXAMPLES_DIR / "good" / "escenario_busqueda.json"
         payload = json.loads(path.read_text(encoding="utf-8"))

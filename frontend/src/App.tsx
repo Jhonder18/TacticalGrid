@@ -81,6 +81,7 @@ const demoCells = [
 const algorithmLabels: Record<AlgoritmoBusquedaDisponible, string> = {
   BFS: 'BFS - amplitud',
   DFS: 'DFS - profundidad',
+  UCS: 'UCS - costo uniforme',
 }
 
 function coordinateKey(coordinate: Coordenada): string {
@@ -326,6 +327,7 @@ function App() {
           >
             <option value="BFS">{algorithmLabels.BFS}</option>
             <option value="DFS">{algorithmLabels.DFS}</option>
+            <option value="UCS">{algorithmLabels.UCS}</option>
           </select>
           <button
             className="secondary-button"
@@ -441,7 +443,7 @@ function App() {
             <small>Estados incorporados a la búsqueda</small>
           </article>
           <article>
-            <span>COSTO TOTAL</span>
+            <span>COSTO ACUMULADO</span>
             <strong>{searchResult ? searchResult.costo : '—'}</strong>
             <small>Según terreno recorrido</small>
           </article>

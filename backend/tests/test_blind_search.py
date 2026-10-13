@@ -1,6 +1,6 @@
 import unittest
 
-from backend.algorithms import bfs, dfs
+from backend.algorithms import bfs, dfs, ucs
 from backend.models import Coordenada, Escenario
 
 
@@ -55,6 +55,56 @@ def build_search_scenario() -> Escenario:
     )
 
 
+def build_cost_scenario() -> Escenario:
+    return Escenario.model_validate(
+        {
+            "version": "1.0",
+            "mapa": {"filas": 3, "columnas": 5},
+            "tipos_terreno": {
+                "camino": {"costo": 1, "transitable": True},
+                "barato": {"costo": 1, "transitable": True},
+                "caro": {"costo": 8, "transitable": True},
+            },
+            "terreno": [
+                ["camino", "caro", "caro", "caro", "camino"],
+                ["barato", "barato", "barato", "barato", "barato"],
+                ["barato", "barato", "barato", "barato", "barato"],
+            ],
+            "bases": {
+                "A": {"fila": 0, "columna": 0},
+                "B": {"fila": 2, "columna": 4},
+            },
+            "recurso": {"fila": 2, "columna": 0},
+            "unidades": [
+                {
+                    "id": "A1",
+                    "bando": "A",
+                    "tipo": "estandar",
+                    "fila": 0,
+                    "columna": 0,
+                },
+                {
+                    "id": "B1",
+                    "bando": "B",
+                    "tipo": "estandar",
+                    "fila": 2,
+                    "columna": 4,
+                },
+            ],
+            "turno": "A",
+            "juego": {
+                "portador_recurso": None,
+                "profundidad_maxima_minimax": 2,
+            },
+            "prueba": {
+                "modo": "busqueda",
+                "unidad_inicio": "A1",
+                "objetivo": {"fila": 0, "columna": 4},
+            },
+        }
+    )
+
+
 class BlindSearchTests(unittest.TestCase):
     def test_bfs_finds_shortest_path_and_records_metrics(self) -> None:
         result = bfs(build_search_scenario())
@@ -75,6 +125,18 @@ class BlindSearchTests(unittest.TestCase):
         self.assertGreaterEqual(result.estados_generados, result.estados_expandidos)
         self.assertGreaterEqual(result.maximo_frontera, 1)
         self.assertGreaterEqual(result.tiempo, 0)
+
+    def test_ucs_prefers_lower_cost_over_fewer_movements(self) -> None:
+        scenario = build_cost_scenario()
+
+        bfs_result = bfs(scenario)
+        ucs_result = ucs(scenario)
+
+        self.assertTrue(bfs_result.exito)
+        self.assertTrue(ucs_result.exito)
+        self.assertLess(bfs_result.longitud_camino, ucs_result.longitud_camino)
+        self.assertGreater(bfs_result.costo, ucs_result.costo)
+        self.assertEqual(ucs_result.costo, 6)
 
     def test_search_reports_failure_when_target_is_blocked(self) -> None:
         scenario = build_search_scenario()

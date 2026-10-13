@@ -1,5 +1,6 @@
 from collections import deque
 from dataclasses import dataclass
+from heapq import heappop, heappush
 from time import perf_counter
 from typing import Literal
 
@@ -59,6 +60,97 @@ def dfs(scenario: Escenario) -> ResultadoBusqueda:
     """
 
     return _search(scenario, "DFS")
+
+
+def ucs(scenario: Escenario) -> ResultadoBusqueda:
+    """Busca el camino de menor costo acumulado usando una cola de prioridad.
+
+    Purpose:
+        Encontrar una ruta económica, aunque tenga más movimientos que otra alternativa.
+    Preconditions:
+        `scenario.prueba` debe indicar una unidad de inicio y un objetivo; los costos del
+        escenario deben ser positivos.
+    Postconditions:
+        Si existe una solución, el primer objetivo extraído de la cola tiene el menor costo.
+    Complexity:
+        Tiempo O((V + E) log V) y memoria O(V), donde V son estados y E transiciones.
+    AI usage:
+        No.
+    AI intervention:
+        Se propuso la cola de prioridad, la tabla de mejores costos y la reconstrucción compartida.
+    Student validation:
+        Se probará contra un escenario donde BFS elige menos movimientos y UCS menor costo.
+    """
+
+    unit_id, target = _get_search_configuration(scenario)
+    initial_state = GameState.from_scenario(scenario)
+    initial_unit = next(
+        unidad for unidad in initial_state.unidades if unidad.id == unit_id
+    )
+    initial_node = SearchNode(
+        state=initial_state,
+        parent=None,
+        action=None,
+        cost=0.0,
+    )
+    frontier: list[tuple[float, int, SearchNode]] = [(0.0, 0, initial_node)]
+    best_costs = {initial_state: 0.0}
+    sequence = 0
+    generated = 1
+    expanded = 0
+    max_frontier = 1
+    started_at = perf_counter()
+
+    while frontier:
+        cost, _, node = heappop(frontier)
+        if cost != best_costs.get(node.state):
+            continue
+
+        current_position = _unit_position(node.state, unit_id)
+        if current_position == target:
+            return _build_result(
+                "UCS",
+                node,
+                generated,
+                expanded,
+                max_frontier,
+                perf_counter() - started_at,
+                initial_unit.posicion,
+            )
+
+        expanded += 1
+        for transition in get_navigation_successors(
+            node.state,
+            scenario,
+            unit_id,
+        ):
+            successor_cost = node.cost + transition.cost
+            previous_cost = best_costs.get(transition.state)
+            if previous_cost is not None and successor_cost >= previous_cost:
+                continue
+
+            best_costs[transition.state] = successor_cost
+            sequence += 1
+            successor = SearchNode(
+                state=transition.state,
+                parent=node,
+                action=transition.action.destino,
+                cost=successor_cost,
+            )
+            heappush(frontier, (successor_cost, sequence, successor))
+            generated += 1
+
+        max_frontier = max(max_frontier, len(frontier))
+
+    return _build_result(
+        "UCS",
+        None,
+        generated,
+        expanded,
+        max_frontier,
+        perf_counter() - started_at,
+        initial_unit.posicion,
+    )
 
 
 def _search(
@@ -164,7 +256,7 @@ def _unit_position(state: GameState, unit_id: str) -> tuple[int, int]:
 
 
 def _build_result(
-    algorithm: Literal["BFS", "DFS"],
+    algorithm: Literal["BFS", "DFS", "UCS"],
     node: SearchNode | None,
     generated: int,
     expanded: int,

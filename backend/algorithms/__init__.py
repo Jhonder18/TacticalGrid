@@ -1,3 +1,3 @@
-from .blind_search import bfs, dfs
+from .blind_search import bfs, dfs, ucs
 
-__all__ = ["bfs", "dfs"]
+__all__ = ["bfs", "dfs", "ucs"]
