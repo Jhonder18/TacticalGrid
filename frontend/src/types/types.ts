@@ -57,11 +57,7 @@ export interface Escenario {
 }
 
 export type AlgoritmoBusqueda =
-  | 'BFS'
-  | 'DFS'
-  | 'UCS'
-  | 'A_ESTRELLA'
-  | 'BEAM_SEARCH'
+  'BFS' | 'DFS' | 'UCS' | 'A_ESTRELLA' | 'BEAM_SEARCH'
 
 export interface MetricasBusqueda {
   algoritmo: AlgoritmoBusqueda
@@ -74,6 +70,10 @@ export interface MetricasBusqueda {
   maximo_frontera: number
   tiempo: number
 }
+
+export type AlgoritmoBusquedaDisponible = 'BFS' | 'DFS'
+
+export type ResultadoBusqueda = MetricasBusqueda
 
 export type AlgoritmoAdversarial = 'MINIMAX' | 'ALFA_BETA'
 
@@ -95,6 +95,4 @@ export interface MetricasAdversariales {
   valor_obtenido: number
 }
 
-export type ResultadoMetricas =
-  | MetricasBusqueda
-  | MetricasAdversariales
+export type ResultadoMetricas = MetricasBusqueda | MetricasAdversariales
