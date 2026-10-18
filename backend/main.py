@@ -59,7 +59,7 @@ async def validate_scenario(file: UploadFile = File(...)) -> dict[str, bool | st
 async def run_search(
     file: UploadFile = File(...),
     algoritmo: Literal["BFS", "DFS", "UCS", "A_ESTRELLA"] = Form(...),
-    heuristica: Literal["MANHATTAN"] = Form("MANHATTAN"),
+    heuristica: Literal["MANHATTAN", "EUCLIDEA"] = Form("MANHATTAN"),
 ) -> ResultadoBusqueda:
     scenario = await _load_scenario(file)
 

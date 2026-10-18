@@ -68,6 +68,25 @@ class SearchEndpointTests(unittest.TestCase):
         self.assertGreater(result.longitud_camino, 0)
         self.assertGreater(result.estados_generados, 0)
 
+    def test_runs_a_star_with_euclidean_from_a_valid_scenario(self) -> None:
+        result = asyncio.run(
+            run_search(
+                UploadFile(
+                    BytesIO(
+                        (EXAMPLES_DIR / "good" / "escenario_busqueda.json")
+                        .read_bytes()
+                    ),
+                    filename="escenario_busqueda.json",
+                ),
+                "A_ESTRELLA",
+                "EUCLIDEA",
+            )
+        )
+
+        self.assertEqual(result.algoritmo, "A_ESTRELLA")
+        self.assertTrue(result.exito)
+        self.assertGreater(result.longitud_camino, 0)
+
     def test_returns_bad_request_when_search_configuration_is_missing(self) -> None:
         path = EXAMPLES_DIR / "good" / "escenario_busqueda.json"
         payload = json.loads(path.read_text(encoding="utf-8"))

@@ -5,7 +5,11 @@ from time import perf_counter
 from typing import Literal
 
 from backend.core.successors import get_navigation_successors
-from backend.algorithms.heuristics import manhattan_distance
+from backend.algorithms.heuristics import (
+    euclidean_distance,
+    manhattan_distance,
+    minimum_traversable_cost,
+)
 from backend.models import Coordenada, Escenario, GameState, ResultadoBusqueda
 
 
@@ -156,7 +160,7 @@ def ucs(scenario: Escenario) -> ResultadoBusqueda:
 
 def a_star(
     scenario: Escenario,
-    heuristic: Literal["MANHATTAN"] = "MANHATTAN",
+    heuristic: Literal["MANHATTAN", "EUCLIDEA"] = "MANHATTAN",
 ) -> ResultadoBusqueda:
     """Busca con A* priorizando `f(n) = g(n) + h(n)`.
 
@@ -168,16 +172,16 @@ def a_star(
     Postconditions:
         Devuelve una ruta y métricas con el mismo contrato que BFS, DFS y UCS.
     Complexity:
-        Tiempo O((V + E) log V) y memoria O(V), con una heurística O(1) por estado.
+        Tiempo O((V + E) log V) y memoria O(V), con una heurística O(t) inicial y O(1) por estado.
     AI usage:
         No.
     AI intervention:
-        Se propuso combinar costo acumulado y distancia Manhattan en la prioridad.
+        Se propuso combinar costo acumulado con Manhattan o Euclidiana ajustada por el costo mínimo.
     Student validation:
         Se comparará con UCS para comprobar el costo y con una prueba de la heurística.
     """
 
-    if heuristic != "MANHATTAN":
+    if heuristic not in {"MANHATTAN", "EUCLIDEA"}:
         raise ValueError(f"Heurística no soportada: {heuristic}")
 
     unit_id, target = _get_search_configuration(scenario)
@@ -191,7 +195,14 @@ def a_star(
         action=None,
         cost=0.0,
     )
-    initial_heuristic = manhattan_distance(initial_unit.posicion, target)
+    minimum_cost = minimum_traversable_cost(scenario)
+
+    def estimate(position: tuple[int, int]) -> float:
+        if heuristic == "MANHATTAN":
+            return manhattan_distance(position, target) * minimum_cost
+        return euclidean_distance(position, target) * minimum_cost
+
+    initial_heuristic = estimate(initial_unit.posicion)
     frontier: list[tuple[float, int, SearchNode]] = [
         (initial_heuristic, 0, initial_node)
     ]
@@ -239,10 +250,7 @@ def a_star(
                 cost=successor_cost,
             )
             successor_position = _unit_position(successor.state, unit_id)
-            priority = successor_cost + manhattan_distance(
-                successor_position,
-                target,
-            )
+            priority = successor_cost + estimate(successor_position)
             heappush(frontier, (priority, sequence, successor))
             generated += 1
 

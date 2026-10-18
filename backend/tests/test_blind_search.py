@@ -1,6 +1,13 @@
 import unittest
 
-from backend.algorithms import a_star, bfs, dfs, manhattan_distance, ucs
+from backend.algorithms import (
+    a_star,
+    bfs,
+    dfs,
+    euclidean_distance,
+    manhattan_distance,
+    ucs,
+)
 from backend.models import Coordenada, Escenario
 
 
@@ -111,6 +118,11 @@ class BlindSearchTests(unittest.TestCase):
         self.assertEqual(manhattan_distance((0, 0), (2, 3)), 5)
         self.assertEqual(manhattan_distance((4, 2), (1, 5)), 6)
 
+    def test_euclidean_distance_uses_straight_line_geometry(self) -> None:
+        self.assertEqual(euclidean_distance((0, 0), (0, 0)), 0)
+        self.assertAlmostEqual(euclidean_distance((0, 0), (3, 4)), 5)
+        self.assertAlmostEqual(euclidean_distance((1, 1), (4, 5)), 5)
+
     def test_bfs_finds_shortest_path_and_records_metrics(self) -> None:
         result = bfs(build_search_scenario())
 
@@ -153,6 +165,16 @@ class BlindSearchTests(unittest.TestCase):
         self.assertTrue(a_star_result.exito)
         self.assertEqual(a_star_result.costo, ucs_result.costo)
         self.assertEqual(a_star_result.longitud_camino, ucs_result.longitud_camino)
+
+    def test_a_star_euclidean_keeps_the_optimal_cost(self) -> None:
+        scenario = build_cost_scenario()
+
+        a_star_result = a_star(scenario, "EUCLIDEA")
+        ucs_result = ucs(scenario)
+
+        self.assertEqual(a_star_result.algoritmo, "A_ESTRELLA")
+        self.assertTrue(a_star_result.exito)
+        self.assertEqual(a_star_result.costo, ucs_result.costo)
 
     def test_search_reports_failure_when_target_is_blocked(self) -> None:
         scenario = build_search_scenario()

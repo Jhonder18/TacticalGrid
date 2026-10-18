@@ -73,7 +73,7 @@ export interface MetricasBusqueda {
 
 export type AlgoritmoBusquedaDisponible = 'BFS' | 'DFS' | 'UCS' | 'A_ESTRELLA'
 
-export type HeuristicaDisponible = 'MANHATTAN'
+export type HeuristicaDisponible = 'MANHATTAN' | 'EUCLIDEA'
 
 export type ResultadoBusqueda = MetricasBusqueda
 

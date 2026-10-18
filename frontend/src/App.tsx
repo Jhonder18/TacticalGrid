@@ -345,6 +345,7 @@ function App() {
             }
           >
             <option value="MANHATTAN">Manhattan</option>
+            <option value="EUCLIDEA">Heurística Propia</option>
           </select>
           <button
             className="secondary-button"
