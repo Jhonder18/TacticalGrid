@@ -13,6 +13,12 @@ Los archivos de `good/` deben ser aceptados con HTTP 200:
 - `escenario_volcanico.json`: mapa de ceniza, lava y cráteres.
 - `escenario_acuatico.json`: mapa de agua, orillas, puentes y rocas.
 - `escenario_desertico.json`: mapa de arena, dunas, oasis y acantilados.
+- `escenario_beam_trampa.json`: Beam Search con una ruta aparentemente
+  prometedora que puede ser podada con `k=1`.
+- `escenario_costos_contraste.json`: compara una ruta corta y costosa con una
+  ruta más larga y económica para BFS frente a UCS.
+- `escenario_obstaculos_heuristica.json`: obstáculos y costos variados para
+  comparar DFS, UCS y las heurísticas de A*.
 
 ## Escenarios inválidos
 

@@ -2,6 +2,7 @@ import unittest
 
 from backend.algorithms import (
     a_star,
+    beam_search,
     bfs,
     dfs,
     euclidean_distance,
@@ -112,6 +113,55 @@ def build_cost_scenario() -> Escenario:
     )
 
 
+def build_beam_failure_scenario() -> Escenario:
+    return Escenario.model_validate(
+        {
+            "version": "1.0",
+            "mapa": {"filas": 3, "columnas": 5},
+            "tipos_terreno": {
+                "camino": {"costo": 1, "transitable": True},
+                "muro": {"transitable": False},
+            },
+            "terreno": [
+                ["camino", "camino", "camino", "muro", "muro"],
+                ["camino", "muro", "muro", "muro", "camino"],
+                ["camino", "camino", "camino", "camino", "camino"],
+            ],
+            "bases": {
+                "A": {"fila": 1, "columna": 0},
+                "B": {"fila": 2, "columna": 4},
+            },
+            "recurso": {"fila": 2, "columna": 0},
+            "unidades": [
+                {
+                    "id": "A1",
+                    "bando": "A",
+                    "tipo": "estandar",
+                    "fila": 1,
+                    "columna": 0,
+                },
+                {
+                    "id": "B1",
+                    "bando": "B",
+                    "tipo": "estandar",
+                    "fila": 2,
+                    "columna": 3,
+                },
+            ],
+            "turno": "A",
+            "juego": {
+                "portador_recurso": None,
+                "profundidad_maxima_minimax": 2,
+            },
+            "prueba": {
+                "modo": "busqueda",
+                "unidad_inicio": "A1",
+                "objetivo": {"fila": 1, "columna": 4},
+            },
+        }
+    )
+
+
 class BlindSearchTests(unittest.TestCase):
     def test_manhattan_distance_counts_orthogonal_movements(self) -> None:
         self.assertEqual(manhattan_distance((0, 0), (0, 0)), 0)
@@ -142,6 +192,23 @@ class BlindSearchTests(unittest.TestCase):
         self.assertGreaterEqual(result.estados_generados, result.estados_expandidos)
         self.assertGreaterEqual(result.maximo_frontera, 1)
         self.assertGreaterEqual(result.tiempo, 0)
+
+    def test_beam_search_finds_path_with_configured_width(self) -> None:
+        result = beam_search(build_search_scenario(), 2)
+
+        self.assertEqual(result.algoritmo, "BEAM_SEARCH")
+        self.assertTrue(result.exito)
+        self.assertGreater(result.longitud_camino, 0)
+        self.assertLessEqual(result.maximo_frontera, 2)
+
+    def test_beam_search_reports_controlled_failure_after_pruning(self) -> None:
+        result = beam_search(build_beam_failure_scenario(), 1)
+
+        self.assertEqual(result.algoritmo, "BEAM_SEARCH")
+        self.assertFalse(result.exito)
+        self.assertEqual(result.camino, [])
+        self.assertGreater(result.estados_generados, 0)
+        self.assertLessEqual(result.maximo_frontera, 1)
 
     def test_ucs_prefers_lower_cost_over_fewer_movements(self) -> None:
         scenario = build_cost_scenario()

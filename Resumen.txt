@@ -320,3 +320,272 @@ La idea central que guiará el desarrollo será:
 > El juego es el entorno de experimentación; el sistema inteligente es el verdadero proyecto.
 
 Entiendo entonces que la prioridad no será crear gráficos complejos, sino construir una solución modular, verificable, reproducible y fácil de explicar durante la sustentación.
+
+## Preguntas abiertas que debe resolver el equipo
+
+El documento define el contrato del escenario y los algoritmos obligatorios, pero
+no especifica todas las reglas de una partida. Estas decisiones deben acordarse
+antes de implementar las reglas de partida, la función de utilidad, Minimax y
+alfa-beta. Mientras no se respondan, no deben asumirse como reglas del sistema.
+
+### Objetivo y victoria
+
+1. ¿El objetivo principal es capturar un recurso o una bandera y llevarlo a la
+   base propia?
+   Sí
+2. ¿El recurso se considera una bandera que puede ser robada, o es únicamente
+   un recurso neutral que se recoge una sola vez?
+   Se puede robar
+3. ¿Qué ocurre cuando el portador llega a la base propia?
+    Se acaba la partida dando como ganador a ese bando
+4. ¿Puede el portador de un bando llevar el recurso hasta la base enemiga?
+    La idea es que el portador lo lleve a su base, nunca a la del enemigo, el portador puede pasar por la base enemiga pero solo se gana la partida si el portador esta parado en la base de el, no la del contrincante
+5. ¿La partida termina inmediatamente al cumplir el objetivo o se permite
+   continuar para registrar más estados?
+   La partida termina inmediatamente
+6. ¿Existe una condición alternativa de victoria, como eliminar todas las
+   unidades enemigas o controlar una zona?
+   No
+7. ¿Qué ocurre si se alcanza un límite de turnos sin ganador: empate, victoria
+   por puntuación o derrota?
+   Toca definir una cantidad de turnos Total para definir un empate, esto lo decide el tamaño del escenario, si el escenario es grande debe tener un limite mucho mas grande que si el escenario es pequeño para evitar partidas infinitas si se quedan en bucle.
+
+### Captura, robo y pérdida del recurso
+
+8. ¿Una unidad enemiga puede robar el recurso directamente al ocupar la misma
+   casilla que el portador?
+   No
+9. ¿El robo ocurre automáticamente o requiere una acción explícita, por ejemplo
+   `capturar`?
+   el robo ocurre automáticamente cuando el que va a robar es adyacente al portador, despues de robar la bandera el ladron podra moverse 2 veces para evitar un bucle de robos
+10. ¿Una unidad puede capturar a otra unidad enemiga?
+No
+11. Si el portador es capturado, ¿el recurso queda en la casilla, vuelve a su
+    posición inicial o pasa automáticamente al captor?
+    el portador no puede ser capturado, lo que puede ser es encerrado (una unidad no puede estar en la misma casilla que una unidad) Osea si no encuentra un camino para llegar a su base porque el contrincante bloqueo su unico camino disponible la bandera/recurso vuelve a su punto original
+12. ¿Una unidad que no sea portadora puede atravesar la casilla del recurso?
+    Si o si una unidad pisa el recurso automáticamente lo recoge
+13. ¿El recurso puede ser recogido por cualquier unidad o solo por determinados
+    tipos?
+    Cualquier unidad
+14. ¿Puede una unidad soltar voluntariamente el recurso?
+No
+15. Si el recurso se suelta, ¿queda en la casilla actual del portador o regresa
+    a su posición original?
+    La unica forma de soltar la bandera es como se menciona en la pregunta 11
+16. ¿Puede existir más de un recurso o bandera en escenarios futuros?
+Un unico recurso
+
+### Movimiento y acciones legales
+
+17. ¿Cada turno permite mover una sola unidad o varias unidades del mismo bando?
+Solo una unidad y un unico movimiento
+18. ¿Mover, recoger, soltar, capturar y atacar son acciones separadas?
+solo existe mover (recoger es automatica, soltar no existe igual que atacar y capturar )
+19. ¿Está permitido permanecer en la misma casilla como una acción?
+    No, si o si debe hacer un movimiento
+20. ¿El movimiento es únicamente ortogonal o también permite diagonales?
+    no permite diagonales
+21. Si se permiten diagonales, ¿cuál es su costo y se puede atravesar la esquina
+    entre dos obstáculos?
+    No aplica
+22. ¿El costo de una transición corresponde al terreno de destino, al terreno de
+    origen o a ambos?
+    Esto se define segun el algoritmo a utilizar
+23. ¿Los costos de terreno afectan también a las acciones de captura o ataque?
+no
+24. ¿Las unidades pueden ocupar la misma casilla cuando pertenecen al mismo
+    bando?
+    no
+25. ¿Qué sucede cuando una unidad intenta moverse a una casilla ocupada por un
+    enemigo?
+    No se debe de permitir la casilla debe estar en ocupada
+26. ¿Existen acciones especiales o todas las unidades solo pueden desplazarse?
+solo pueden desplazarse
+
+### Tipos de unidad
+
+27. ¿El campo `tipo` es solamente descriptivo o modifica las reglas?
+Descriptivo por le movimiento
+28. Si modifica las reglas, ¿qué tipos existen oficialmente?
+nop aplica
+29. ¿Cada tipo tiene una velocidad, alcance, costo, vida, ataque o defensa
+    diferente?
+    no
+30. ¿El tipo de unidad afecta la función de utilidad?
+no aplica
+31. ¿Una unidad exploradora puede tener ventajas de movimiento o visión?
+no aplica
+32. ¿Una unidad defensora puede proteger una base o bloquear una casilla?
+no aplica
+33. ¿Una unidad transportadora es la única que puede llevar el recurso?
+no aplica
+34. Si los tipos no tienen comportamiento especial, ¿se documentará expresamente
+    que `tipo` es un atributo informativo?
+    Si
+
+### Turnos y control de los bandos
+
+35. ¿El turno cambia después de cada acción o después de que el bando mueve
+    todas sus unidades?
+    el turno cambia despues de un solo movimiento de una unica unidad
+36. ¿El bando A siempre es MAX y el bando B siempre es MIN en Minimax?
+No, depende del json
+37. ¿El usuario controla un bando y el algoritmo controla el otro?
+Ambos bandos son controlados por la maquina
+38. ¿Minimax debe elegir acciones para ambos bandos durante la simulación o solo
+    para el bando cuyo turno está activo?
+    Ambos bandos deben operar bajo las mismas reglas. MAX y MIN no representan inteligencias
+distintas ni niveles diferentes de capacidad; son roles dentro del árbol Minimax.
+39. ¿Puede cambiar el orden de los sucesores para estudiar su efecto en
+    alfa-beta?
+    No se
+40. ¿El orden de sucesores se define en el JSON, en la interfaz o como una
+    configuración interna reproducible?
+
+### Profundidad y estados terminales
+
+51. ¿Qué estados se consideran terminales además de una victoria?
+Solo la victoria o terminacion de turnos globales
+53. ¿Cuál es el límite máximo permitido para la profundidad configurable?
+Lo decides tu, un limite claro para que no se demore mucho ejecutandolo.
+
+### Resultados, interfaz y verificación
+
+61. ¿El modo `partida` debe devolver una secuencia completa de acciones o solo
+    la siguiente acción recomendada?
+    En el modo partida el mapa cambia en cada movimineto y esto hay que tenerlo encuenta
+62. ¿La interfaz debe permitir avanzar la partida paso a paso?
+    Si
+63. ¿Se debe mostrar un historial de estados y acciones?
+    Se debe permitir visualizar un historial de moviminetos y cambios de la partida
+65. ¿Minimax y alfa-beta deben mostrar el árbol explorado o solamente sus
+    métricas? deben mostrar el arbol explorado para ver de donde saco que cosas
+66. ¿Cómo se verificará automáticamente que una acción de captura o robo sea
+    legal?
+    si cumple con las acciones mencionadas en las preguntas anteriores
+67. ¿Qué mensaje debe mostrar la interfaz cuando no existen acciones legales?
+    Partida injugable ya que no existe forma de completar la partida (indicar motivo si  lo hay (Recurso inalcanzable por ambos bandos, etc...))
+68. ¿Debe permitirse modificar costos, obstáculos, profundidad y orden de
+    sucesores desde la interfaz durante la sustentación?
+    No, en la sustentación todos los cambios solicitados seran en codigo asi que necesito que todo elcodigo este bien documentado para entender que hacer cada parte / seccion de codigo
+
+## Decisiones técnicas para cerrar las preguntas pendientes
+
+Estas decisiones completan las respuestas anteriores y serán la referencia
+obligatoria para implementar el simulador de partida, Minimax y alfa-beta.
+
+### Robo automático y protección contra ciclos
+
+- Una unidad roba únicamente si pertenece al bando contrario del portador,
+  termina su movimiento en una casilla ortogonalmente adyacente al portador y
+  el movimiento es legal.
+- El ladrón no ocupa la casilla del portador. No existen capturas ni unidades
+  compartiendo casilla.
+- El robo se resuelve automáticamente después del movimiento y no es una
+  acción independiente.
+- El ladrón recibe dos movimientos adicionales inmediatos después de robar.
+  El movimiento que activa el robo no cuenta como uno de esos movimientos de
+  escape. Durante ese turno puede realizar como máximo tres movimientos:
+  el movimiento que activa el robo y dos movimientos posteriores para alejarse.
+- Cada uno de los dos movimientos adicionales debe ser legal. Si no existe una
+  casilla legal para continuar, el ladrón termina el turno en la posición
+  alcanzada y conserva la bandera.
+- Después de esos dos movimientos adicionales, el ladrón vuelve a la regla
+  normal de un movimiento por turno. La excepción evita que el rival pueda
+  recuperar la bandera con un único movimiento y repetir un ciclo infinito de
+  robo y recuperación.
+- Si el portador queda sin ningún camino legal hasta su base, el recurso vuelve
+  a su posición original y queda libre. El turno continúa normalmente.
+
+La secuencia máxima del turno del ladrón será:
+
+```text
+movimiento hacia una casilla adyacente al portador
+robo automático
+primer movimiento adicional para alejarse
+segundo movimiento adicional para alejarse
+fin del turno
+```
+
+Por ejemplo, si A roba a B y se aleja dos casillas, B no puede volver a quedar
+adyacente a A usando un único movimiento. De esta forma se rompe el ciclo
+inmediato de robo y recuperación que existiría si el ladrón solo pudiera
+alejarse una casilla.
+
+Minimax y alfa-beta deben modelar el robo y sus dos movimientos adicionales
+como una transición compuesta del mismo turno, para que ambos algoritmos
+evalúen exactamente las mismas acciones. Los dos movimientos adicionales no se
+repiten en turnos posteriores ni se activan otra vez por permanecer junto al
+portador.
+
+### Costo y orden de sucesores
+
+- El costo de una transición será el costo del terreno de destino para todos
+  los algoritmos.
+- BFS y DFS priorizan la cantidad de movimientos; UCS y A* priorizan el costo
+  acumulado.
+- El orden de sucesores será interno, determinista y documentado:
+  arriba, derecha, abajo e izquierda.
+- No se cambiará desde la interfaz ni durante la sustentación. Para estudiar
+  alfa-beta, se modificará una constante del código y se repetirá la prueba.
+- En igualdad de prioridad se conservará el orden de los identificadores de
+  unidad.
+
+### Límite global de turnos
+
+- El límite se calculará según el tamaño del mapa:
+
+```text
+limite_turnos = min(500, max(50, 4 * filas * columnas))
+```
+
+- El contador aumenta después de cada movimiento de una unidad.
+- Si ningún bando gana antes del límite, el resultado será empate.
+- Este límite permite más turnos en mapas grandes, pero evita partidas
+  infinitas o ejecuciones excesivamente largas.
+
+### Límite de profundidad adversarial
+
+- La profundidad máxima permitida para Minimax y alfa-beta será `8`.
+- Si el escenario solicita un valor mayor, el backend rechazará la ejecución
+  con un mensaje explícito.
+- La profundidad cuenta niveles de acciones individuales: cada movimiento de
+  un bando representa un nivel del árbol.
+
+### Roles de Minimax
+
+- En la raíz, MAX representa al bando indicado por `turno` en el estado inicial.
+- MIN representa al bando contrario.
+- MAX y MIN no representan capacidades distintas: ambos usan las mismas reglas.
+- En cada nivel solo se generan acciones del bando cuyo turno está activo.
+- La utilidad se evalúa desde la perspectiva del bando MAX de la raíz.
+
+### Utilidad y desempates
+
+- Una victoria de MAX tendrá utilidad `+100000`.
+- Una victoria de MIN tendrá utilidad `-100000`.
+- Un empate por límite de turnos tendrá utilidad `0`.
+- Los estados no terminales se evaluarán considerando posesión del recurso,
+  distancia del portador a su base, distancia del oponente a su base y
+  movilidad disponible.
+- Si dos acciones tienen igual utilidad, se elegirá la primera según el orden
+  determinista de sucesores y luego por orden de identificador de unidad.
+
+### Contrato según el modo
+
+- `busqueda` requiere `prueba.unidad_inicio` y `prueba.objetivo`.
+- `partida` inicia desde `turno`, `unidades`, `recurso` y
+  `portador_recurso`; no requiere objetivo de coordenada.
+- `adversarial` usa el mismo estado inicial de `partida` y la profundidad de
+  `juego.profundidad_maxima_minimax`.
+- Una respuesta de `partida` incluirá el estado actualizado, la acción
+  aplicada, el turno siguiente, el historial y el motivo de terminación.
+- Una respuesta `adversarial` incluirá la acción elegida, su estado sucesor, el
+  valor de utilidad y las métricas del árbol explorado.
+
+### Tipo de unidad
+
+El campo `tipo` será descriptivo para la interfaz, el resumen y la
+documentación. No modificará velocidad, costo, alcance, robo, utilidad ni
+generación de sucesores.

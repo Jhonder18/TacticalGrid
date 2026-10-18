@@ -4,6 +4,7 @@ import { getTerrainPresentation } from './terrainStyles'
 
 interface GridProps {
   escenario: Escenario
+  camino?: Coordenada[]
 }
 
 function samePosition(first: Coordenada, second: Coordenada): boolean {
@@ -63,7 +64,7 @@ function getCellLabel(
   return elements.join(', ')
 }
 
-export function Grid({ escenario }: GridProps) {
+export function Grid({ escenario, camino = [] }: GridProps) {
   const { mapa, terreno, tipos_terreno, bases, recurso, unidades, juego } = escenario
   const rows = Array.from({ length: mapa.filas }, (_, fila) => fila)
   const columns = Array.from({ length: mapa.columnas }, (_, columna) => columna)
@@ -104,9 +105,11 @@ export function Grid({ escenario }: GridProps) {
               const isBaseB = samePosition(bases.B, position)
               const isCarrier = unit?.id === juego.portador_recurso
               const isResource = juego.portador_recurso === null && samePosition(recurso, position)
+              const isRoute = camino.some((point) => samePosition(point, position))
               const classes = [
                 'cell',
                 terrainClass(terrainName, terrain.transitable),
+                isRoute ? 'route-cell' : '',
                 isBaseA ? 'base-a' : '',
                 isBaseB ? 'base-b' : '',
                 isResource ? 'resource' : '',

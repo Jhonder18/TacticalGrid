@@ -67,6 +67,106 @@ def dfs(scenario: Escenario) -> ResultadoBusqueda:
     return _search(scenario, "DFS")
 
 
+def beam_search(scenario: Escenario, k: int) -> ResultadoBusqueda:
+    """Busca por niveles conservando solo los mejores `k` nodos.
+
+    Purpose:
+        Explorar el efecto de limitar agresivamente la memoria de la frontera.
+    Preconditions:
+        `scenario.prueba` debe indicar una unidad y un objetivo; `k` debe ser
+        un entero positivo.
+    Postconditions:
+        Devuelve una ruta si sobrevive al recorte de la frontera. Si Beam Search
+        poda la única ruta válida, devuelve `exito=False` de forma controlada.
+    Complexity:
+        La memoria de la frontera queda limitada a O(k), sin contar los nodos
+        necesarios para reconstruir los caminos conservados.
+    AI usage:
+        No.
+    AI intervention:
+        Se propuso conservar candidatos por distancia Manhattan y costo acumulado.
+    Student validation:
+        Se probarán valores k=1, 2, 4 y 8, además de una ruta descartada por poda.
+    """
+
+    if k <= 0:
+        raise ValueError("El parámetro k debe ser un entero positivo")
+
+    unit_id, target = _get_search_configuration(scenario)
+    initial_state = GameState.from_scenario(scenario)
+    initial_unit = next(
+        unidad for unidad in initial_state.unidades if unidad.id == unit_id
+    )
+    initial_node = SearchNode(
+        state=initial_state,
+        parent=None,
+        action=None,
+        cost=0.0,
+    )
+    frontier = [initial_node]
+    visited = {initial_state}
+    generated = 1
+    expanded = 0
+    max_frontier = 1
+    started_at = perf_counter()
+
+    while frontier:
+        candidates: list[SearchNode] = []
+        for node in frontier:
+            current_position = _unit_position(node.state, unit_id)
+            if current_position == target:
+                return _build_result(
+                    "BEAM_SEARCH",
+                    node,
+                    generated,
+                    expanded,
+                    max_frontier,
+                    perf_counter() - started_at,
+                    initial_unit.posicion,
+                )
+
+            expanded += 1
+            for transition in get_navigation_successors(
+                node.state,
+                scenario,
+                unit_id,
+            ):
+                if transition.state in visited:
+                    continue
+                visited.add(transition.state)
+                candidates.append(
+                    SearchNode(
+                        state=transition.state,
+                        parent=node,
+                        action=transition.action.destino,
+                        cost=node.cost + transition.cost,
+                    )
+                )
+                generated += 1
+
+        candidates.sort(
+            key=lambda candidate: (
+                manhattan_distance(
+                    _unit_position(candidate.state, unit_id),
+                    target,
+                ),
+                candidate.cost,
+            )
+        )
+        frontier = candidates[:k]
+        max_frontier = max(max_frontier, len(frontier))
+
+    return _build_result(
+        "BEAM_SEARCH",
+        None,
+        generated,
+        expanded,
+        max_frontier,
+        perf_counter() - started_at,
+        initial_unit.posicion,
+    )
+
+
 def ucs(scenario: Escenario) -> ResultadoBusqueda:
     """Busca el camino de menor costo acumulado usando una cola de prioridad.
 

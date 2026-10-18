@@ -87,6 +87,21 @@ class SearchEndpointTests(unittest.TestCase):
         self.assertTrue(result.exito)
         self.assertGreater(result.longitud_camino, 0)
 
+    def test_runs_beam_search_with_k(self) -> None:
+        path = EXAMPLES_DIR / "good" / "escenario_busqueda.json"
+        result = asyncio.run(
+            run_search(
+                UploadFile(BytesIO(path.read_bytes()), filename=path.name),
+                "BEAM_SEARCH",
+                "MANHATTAN",
+                2,
+            )
+        )
+
+        self.assertEqual(result.algoritmo, "BEAM_SEARCH")
+        self.assertTrue(result.exito)
+        self.assertLessEqual(result.maximo_frontera, 2)
+
     def test_returns_bad_request_when_search_configuration_is_missing(self) -> None:
         path = EXAMPLES_DIR / "good" / "escenario_busqueda.json"
         payload = json.loads(path.read_text(encoding="utf-8"))

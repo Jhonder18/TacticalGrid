@@ -47,11 +47,13 @@ export async function runSearch(
   file: File,
   algoritmo: AlgoritmoBusquedaDisponible,
   heuristica: HeuristicaDisponible = 'MANHATTAN',
+  k = 1,
 ): Promise<ResultadoBusqueda> {
   const formData = new FormData()
   formData.append('file', file)
   formData.append('algoritmo', algoritmo)
   formData.append('heuristica', heuristica)
+  formData.append('k', String(k))
 
   const response = await fetch(`${API_BASE_URL}/api/search/run`, {
     method: 'POST',
