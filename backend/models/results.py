@@ -24,6 +24,16 @@ class ResultadoBusqueda(BaseModel):
     tiempo: float = Field(ge=0)
 
 
+class NodoArbolAdversarial(BaseModel):
+    id: str
+    profundidad: int = Field(ge=0)
+    jugador: Literal["MAX", "MIN"]
+    accion: Accion | None = None
+    valor: float | None = None
+    estado: Literal["explorado", "evaluado", "podado", "terminal"]
+    hijos: list["NodoArbolAdversarial"] = Field(default_factory=list)
+
+
 class ResultadoAdversarial(BaseModel):
     algoritmo: Literal["MINIMAX", "ALFA_BETA"]
     nodos_generados: int = Field(ge=0)
@@ -33,6 +43,7 @@ class ResultadoAdversarial(BaseModel):
     tiempo: float = Field(ge=0)
     accion_seleccionada: Accion | None
     valor_obtenido: float
+    arbol: NodoArbolAdversarial
 
 
 ResultadoAlgoritmo = Annotated[

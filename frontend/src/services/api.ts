@@ -2,6 +2,7 @@ import type {
   AlgoritmoBusquedaDisponible,
   HeuristicaDisponible,
   ResultadoBusqueda,
+  ResultadoAdversarial,
 } from '../types/types'
 
 const API_BASE_URL = 'http://localhost:8000'
@@ -69,6 +70,31 @@ export async function runSearch(
   }
 
   return body as ResultadoBusqueda
+}
+
+export async function runAdversarial(
+  file: File,
+  algoritmo: 'MINIMAX' | 'ALFA_BETA',
+  profundidad: number,
+): Promise<ResultadoAdversarial> {
+  const formData = new FormData()
+  formData.append('file', file)
+  formData.append('algoritmo', algoritmo)
+  formData.append('profundidad', String(profundidad))
+
+  const response = await fetch(`${API_BASE_URL}/api/adversarial/run`, {
+    method: 'POST',
+    body: formData,
+  })
+  const body = (await response.json()) as ResultadoAdversarial | { detail?: string }
+
+  if (!response.ok) {
+    throw new Error(
+      'detail' in body ? body.detail : 'No se pudo evaluar el turno',
+    )
+  }
+
+  return body as ResultadoAdversarial
 }
 
 export { API_BASE_URL }

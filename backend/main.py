@@ -6,8 +6,8 @@ from fastapi import File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import ValidationError
 
-from backend.algorithms import a_star, beam_search, bfs, dfs, ucs
-from backend.models import Escenario, ResultadoBusqueda
+from backend.algorithms import alpha_beta, a_star, beam_search, bfs, dfs, minimax, ucs
+from backend.models import Escenario, ResultadoAdversarial, ResultadoBusqueda
 
 
 app = FastAPI(
@@ -78,6 +78,40 @@ async def run_search(
         raise HTTPException(
             status_code=400,
             detail=f"No se pudo ejecutar la búsqueda: {error}",
+        ) from error
+
+
+@app.post(
+    "/api/adversarial/run",
+    tags=["Adversarial"],
+    summary="Evaluar el turno actual con búsqueda adversarial",
+    description="Ejecuta Minimax o Alfa-Beta sobre el estado inicial del escenario.",
+    response_model=ResultadoAdversarial,
+)
+async def run_adversarial(
+    file: UploadFile = File(...),
+    algoritmo: Literal["MINIMAX", "ALFA_BETA"] = Form("ALFA_BETA"),
+    profundidad: int | None = Form(None, gt=0, le=8),
+) -> ResultadoAdversarial:
+    scenario = await _load_scenario(file)
+    if profundidad is not None:
+        scenario = scenario.model_copy(
+            deep=True,
+            update={
+                "juego": scenario.juego.model_copy(
+                    update={"profundidad_maxima_minimax": profundidad}
+                )
+            },
+        )
+
+    try:
+        if algoritmo == "MINIMAX":
+            return minimax(scenario)
+        return alpha_beta(scenario)
+    except ValueError as error:
+        raise HTTPException(
+            status_code=400,
+            detail=f"No se pudo evaluar el turno: {error}",
         ) from error
 
 

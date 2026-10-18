@@ -3,6 +3,7 @@ from .results import (
     ResultadoAdversarial,
     ResultadoAlgoritmo,
     ResultadoBusqueda,
+    NodoArbolAdversarial,
 )
 from .game_state import GameState, UnidadEstado
 from .scenario import (
@@ -28,6 +29,7 @@ __all__ = [
     "ResultadoAdversarial",
     "ResultadoAlgoritmo",
     "ResultadoBusqueda",
+    "NodoArbolAdversarial",
     "Terreno",
     "UnidadEstado",
     "Unidad",

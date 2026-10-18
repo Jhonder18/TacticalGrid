@@ -100,6 +100,19 @@ export interface MetricasAdversariales {
   tiempo: number
   accion_seleccionada: Accion | null
   valor_obtenido: number
+  arbol: NodoArbolAdversarial
 }
+
+export interface NodoArbolAdversarial {
+  id: string
+  profundidad: number
+  jugador: 'MAX' | 'MIN'
+  accion: Accion | null
+  valor: number | null
+  estado: 'explorado' | 'evaluado' | 'podado' | 'terminal'
+  hijos: NodoArbolAdversarial[]
+}
+
+export type ResultadoAdversarial = MetricasAdversariales
 
 export type ResultadoMetricas = MetricasBusqueda | MetricasAdversariales

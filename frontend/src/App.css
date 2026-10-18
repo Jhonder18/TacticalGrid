@@ -242,6 +242,41 @@ input[type='number'] {
   color: var(--muted);
   font: 10px var(--mono);
 }
+.loaded-mode {
+  margin: 12px 0;
+  padding: 9px 10px;
+  border-left: 3px solid var(--mint-strong);
+  color: var(--muted);
+  background: #f2f8f4;
+  font: 9px var(--mono);
+  letter-spacing: .6px;
+}
+.loaded-mode strong {
+  color: var(--navy);
+}
+.mode-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: #f3f7f4;
+}
+.mode-tab {
+  padding: 9px 6px;
+  border: 0;
+  border-radius: 3px;
+  color: var(--muted);
+  background: transparent;
+  cursor: pointer;
+  font: 9px var(--mono);
+}
+.mode-tab.active {
+  color: var(--navy);
+  background: #fff;
+  box-shadow: 0 1px 4px #23362d18;
+}
 .secondary-button {
   width: 100%;
   margin-top: 14px;
@@ -511,6 +546,189 @@ input[type='number'] {
 .status-line {
   margin-top: 14px;
   font-size: 10px;
+}
+.decision-card {
+  margin-top: 18px;
+  padding: 18px;
+  border: 1px solid #b9d8ce;
+  border-radius: 7px;
+  background: #f0fbf5;
+}
+.decision-card h3 {
+  margin: 10px 0 8px;
+  font-size: 17px;
+}
+.decision-action {
+  margin: 0;
+  color: var(--navy);
+  font: 12px var(--mono);
+}
+.decision-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin-top: 15px;
+  color: var(--muted);
+  font: 10px var(--mono);
+}
+.decision-metrics strong {
+  color: var(--navy);
+}
+.tree-panel {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 5vw 70px;
+}
+.tree-empty p {
+  color: var(--muted);
+  font: 11px var(--mono);
+}
+.tree-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+}
+.tree-heading h2 {
+  margin: 9px 0 0;
+  font-size: 21px;
+}
+.tree-caption {
+  color: var(--muted);
+  font: 10px var(--mono);
+}
+.tree-legend {
+  display: flex;
+  gap: 14px;
+  margin-top: 18px;
+  color: var(--muted);
+  font: 10px var(--mono);
+}
+.tree-legend span:before {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 5px;
+  border-radius: 2px;
+  content: '';
+}
+.tree-legend-explored:before { background: #dcefe5; }
+.tree-legend-evaluated:before { background: #c8f1df; }
+.tree-legend-pruned:before { background: #ffc7c0; }
+.tree-scroll {
+  overflow: auto;
+  margin-top: 12px;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: #fff;
+}
+.adversarial-tree {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.adversarial-tree {
+  min-width: max-content;
+}
+.tree-node {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.tree-children {
+  position: relative;
+  align-self: center;
+  width: max-content;
+  padding-top: 22px;
+}
+.tree-connector-vertical {
+  position: absolute;
+  top: 0;
+  left: calc(50% - 1px);
+  width: 2px;
+  height: 22px;
+  background: #75ad99;
+}
+.tree-children-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  position: relative;
+  width: max-content;
+}
+.tree-child-branch {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 180px;
+}
+.tree-child-branch:before,
+.tree-child-branch:after {
+  position: absolute;
+  top: 0;
+  height: 3px;
+  background: #75ad99;
+  content: '';
+}
+.tree-child-branch:before {
+  right: 50%;
+  width: calc(50% + 9px);
+}
+.tree-child-branch:after {
+  left: 50%;
+  width: calc(50% + 9px);
+}
+.tree-child-branch:first-child:before {
+  display: none;
+}
+.tree-child-branch:last-child:after {
+  display: none;
+}
+.tree-connector-to-child {
+  width: 2px;
+  height: 22px;
+  background: #75ad99;
+}
+.tree-node-card {
+  display: grid;
+  gap: 4px;
+  width: 180px;
+  padding: 9px;
+  border: 1px solid #b9d8ce;
+  border-radius: 5px;
+  color: var(--muted);
+  background: #f2faf5;
+  font: 9px var(--mono);
+}
+.tree-node-card strong {
+  color: var(--navy);
+}
+.tree-node-card small {
+  color: var(--ink);
+  font-size: 8px;
+}
+.tree-node-status {
+  width: fit-content;
+  padding: 2px 4px;
+  border-radius: 2px;
+  background: #dcefe5;
+}
+.tree-node-evaluado .tree-node-card {
+  background: #e2f8ec;
+}
+.tree-node-terminal .tree-node-card {
+  border-color: #51c99c;
+}
+.tree-node-podado .tree-node-card {
+  border-color: #e58d82;
+  color: #9d392d;
+  background: #fff0ec;
+  opacity: .85;
+}
+.tree-node-podado .tree-node-status {
+  background: #ffc7c0;
 }
 .metrics-section {
   max-width: 1280px;

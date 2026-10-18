@@ -1,7 +1,12 @@
 import unittest
 
 from backend.algorithms import alpha_beta, minimax
+from backend.main import run_adversarial
 from backend.models import Escenario
+from fastapi import UploadFile
+from io import BytesIO
+import asyncio
+import json
 
 
 def build_scenario(depth: int = 2) -> Escenario:
@@ -90,6 +95,25 @@ class MinimaxTests(unittest.TestCase):
     def test_alpha_beta_rejects_depth_above_project_limit(self) -> None:
         with self.assertRaises(ValueError):
             alpha_beta(build_scenario(depth=9))
+
+    def test_adversarial_endpoint_returns_structured_decision(self) -> None:
+        payload = build_scenario(depth=2).model_dump()
+        result = asyncio.run(
+            run_adversarial(
+                UploadFile(
+                    BytesIO(json.dumps(payload).encode("utf-8")),
+                    filename="adversarial.json",
+                ),
+                "ALFA_BETA",
+                1,
+            )
+        )
+
+        self.assertEqual(result.algoritmo, "ALFA_BETA")
+        self.assertIsNotNone(result.accion_seleccionada)
+        self.assertEqual(result.profundidad_alcanzada, 1)
+        self.assertEqual(result.arbol.id, "root")
+        self.assertGreater(len(result.arbol.hijos), 0)
 
 
 if __name__ == "__main__":

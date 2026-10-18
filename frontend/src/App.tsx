@@ -1,14 +1,16 @@
 import { useRef, useState } from 'react'
 import type { ChangeEvent } from 'react'
 import { Grid } from './components/Grid'
+import { AdversarialTree } from './components/AdversarialTree'
 import { ResultsDashboard } from './components/ResultsDashboard'
 import { ScenarioSummary } from './components/ScenarioSummary'
-import { runSearch, validateScenario } from './services/api'
+import { runAdversarial, runSearch, validateScenario } from './services/api'
 import type {
   AlgoritmoBusquedaDisponible,
   Escenario,
   HeuristicaDisponible,
   ResultadoBusqueda,
+  ResultadoAdversarial,
 } from './types/types'
 import './App.css'
 
@@ -32,9 +34,14 @@ function App() {
   const [heuristic, setHeuristic] = useState<HeuristicaDisponible>('MANHATTAN')
   const [beamWidth, setBeamWidth] = useState(1)
   const [searchResult, setSearchResult] = useState<ResultadoBusqueda | null>(null)
+  const [adversarialResult, setAdversarialResult] = useState<ResultadoAdversarial | null>(null)
+  const [adversarialAlgorithm, setAdversarialAlgorithm] = useState<'MINIMAX' | 'ALFA_BETA'>('ALFA_BETA')
+  const [depth, setDepth] = useState(2)
   const [resultHistory, setResultHistory] = useState<ResultadoBusqueda[]>([])
   const [isValidating, setIsValidating] = useState(false)
   const [isRunning, setIsRunning] = useState(false)
+  const scenarioMode = scenario?.prueba?.modo ?? 'busqueda'
+  const isAdversarialMode = scenarioMode !== 'busqueda'
 
   const handleFile = async (file?: File) => {
     if (!file) return
@@ -51,6 +58,7 @@ function App() {
       setScenario(JSON.parse(raw) as Escenario)
       setSelectedFile(file)
       setSearchResult(null)
+      setAdversarialResult(null)
       setResultHistory([])
       setFileName(file.name)
       setNotice({ type: 'success', message: result.mensaje })
@@ -104,6 +112,28 @@ function App() {
     }
   }
 
+  const handleAdversarial = async () => {
+    if (!selectedFile) {
+      setNotice({ type: 'error', message: 'Carga un escenario válido antes de evaluar.' })
+      return
+    }
+
+    setIsRunning(true)
+    setNotice(null)
+    try {
+      const result = await runAdversarial(selectedFile, adversarialAlgorithm, depth)
+      setAdversarialResult(result)
+      setNotice({ type: 'success', message: `${adversarialAlgorithm} recomendó una acción para el turno ${scenario?.turno ?? ''}.` })
+    } catch (error) {
+      setNotice({
+        type: 'error',
+        message: error instanceof Error ? error.message : 'No se pudo evaluar el turno.',
+      })
+    } finally {
+      setIsRunning(false)
+    }
+  }
+
   const rows = scenario?.mapa.filas ?? 8
   const columns = scenario?.mapa.columnas ?? 8
 
@@ -149,6 +179,11 @@ function App() {
           </div>
 
           <div className="section-label section-label-spaced">02 / ALGORITMO</div>
+          <div className="loaded-mode">
+            MODO CARGADO: <strong>{scenarioMode.toUpperCase()}</strong>
+          </div>
+          {!isAdversarialMode ? (
+            <>
           <label className="field-label" htmlFor="algorithm">Método de búsqueda</label>
           <select id="algorithm" value={algorithm} onChange={(event) => setAlgorithm(event.target.value as AlgoritmoBusquedaDisponible)}>
             <option value="BFS">{algorithmLabels.BFS}</option>
@@ -165,20 +200,43 @@ function App() {
           {algorithm === 'BEAM_SEARCH' && (
             <>
               <label className="field-label" htmlFor="beam-width">Ancho de memoria (k)</label>
-              <input
+              <select
                 id="beam-width"
-                type="number"
-                min="1"
-                step="1"
                 value={beamWidth}
-                onChange={(event) => setBeamWidth(Math.max(1, Number(event.target.value) || 1))}
-              />
+                onChange={(event) => setBeamWidth(Number(event.target.value))}
+              >
+                {[1, 2, 4, 8].map((value) => <option key={value} value={value}>{value}</option>)}
+              </select>
               <small className="field-help">Valores recomendados: 1, 2, 4 y 8.</small>
             </>
           )}
           <button className="secondary-button" type="button" onClick={() => void handleSearch()} disabled={!selectedFile || isRunning || isValidating}>
             {isRunning ? 'Ejecutando...' : 'Ejecutar búsqueda'} <span>→</span>
           </button>
+            </>
+          ) : (
+            <>
+              <label className="field-label" htmlFor="adversarial-algorithm">Método adversarial</label>
+              <select id="adversarial-algorithm" value={adversarialAlgorithm} onChange={(event) => setAdversarialAlgorithm(event.target.value as 'MINIMAX' | 'ALFA_BETA')}>
+                <option value="ALFA_BETA">Alfa-Beta - poda optimizada</option>
+                <option value="MINIMAX">Minimax - árbol completo</option>
+              </select>
+              <label className="field-label" htmlFor="depth">Profundidad máxima</label>
+              <select
+                id="depth"
+                value={depth}
+                onChange={(event) => setDepth(Number(event.target.value))}
+              >
+                {Array.from({ length: 8 }, (_, index) => index + 1).map((value) => (
+                  <option key={value} value={value}>{value}</option>
+                ))}
+              </select>
+              <small className="field-help">Límite permitido por el proyecto: 1 a 8 niveles.</small>
+              <button className="secondary-button" type="button" onClick={() => void handleAdversarial()} disabled={!selectedFile || isRunning || isValidating}>
+                {isRunning ? 'Evaluando...' : 'Evaluar turno'} <span>→</span>
+              </button>
+            </>
+          )}
         </aside>
 
         <div className="board-column">
@@ -218,12 +276,40 @@ function App() {
             <span className="status-dot" />
             {isRunning ? 'Ejecutando búsqueda...' : searchResult?.exito ? 'Ruta encontrada y resaltada en el tablero.' : 'Carga un escenario para ejecutar una búsqueda.'}
           </div>
+          {adversarialResult && (
+            <section className="decision-card">
+              <div className="section-label">DECISIÓN TÁCTICA / {adversarialResult.algoritmo}</div>
+              <h3>Recomendación para el bando {scenario?.turno}</h3>
+              <p className="decision-action">
+                {adversarialResult.accion_seleccionada
+                  ? `${adversarialResult.accion_seleccionada.unidad_id}: (${adversarialResult.accion_seleccionada.origen?.fila}, ${adversarialResult.accion_seleccionada.origen?.columna}) → (${adversarialResult.accion_seleccionada.destino?.fila}, ${adversarialResult.accion_seleccionada.destino?.columna})`
+                  : 'No hay una acción legal disponible.'}
+              </p>
+              <div className="decision-metrics">
+                <span>Valor <strong>{adversarialResult.valor_obtenido.toFixed(4)}</strong></span>
+                <span>Nodos <strong>{adversarialResult.nodos_generados}</strong></span>
+                <span>Evaluados <strong>{adversarialResult.nodos_evaluados}</strong></span>
+                <span>Podados <strong>{adversarialResult.nodos_podados}</strong></span>
+                <span>Profundidad <strong>{adversarialResult.profundidad_alcanzada}</strong></span>
+                <span>Tiempo <strong>{(adversarialResult.tiempo * 1000).toFixed(2)} ms</strong></span>
+              </div>
+            </section>
+          )}
         </div>
       </section>
 
       {scenario && <ScenarioSummary escenario={scenario} />}
 
-      <ResultsDashboard results={resultHistory} />
+      {isAdversarialMode ? (
+        adversarialResult
+          ? <AdversarialTree root={adversarialResult.arbol} />
+          : (
+            <section className="tree-panel tree-empty">
+              <div className="section-label">03 / ÁRBOL ADVERSARIAL</div>
+              <p>Evalúa el turno para visualizar el árbol de decisiones.</p>
+            </section>
+          )
+      ) : <ResultsDashboard results={resultHistory} />}
     </main>
   )
 }
