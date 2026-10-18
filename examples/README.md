@@ -19,6 +19,42 @@ Los archivos de `good/` deben ser aceptados con HTTP 200:
   ruta más larga y económica para BFS frente a UCS.
 - `escenario_obstaculos_heuristica.json`: obstáculos y costos variados para
   comparar DFS, UCS y las heurísticas de A*.
+- `caso_1_bfs_dfs.json`: Caso 1, diseñado para observar diferencias de
+  exploración entre BFS y DFS.
+- `caso_2_bfs_ucs.json`: Caso 2, ruta corta de BFS frente a ruta económica de
+  UCS.
+- `caso_3_obstaculo_astar.json`: Caso 3, obstáculo grande que obliga a A* a
+  desviarse.
+- `caso_4_heuristicas.json`: Caso 4, escenario estándar para comparar
+  Manhattan y Euclidiana.
+- `caso_5_beam.json`: Caso 5, Beam Search falla con `k=1` y encuentra ruta
+  con `k=4`.
+- `caso_6_portador_a.json` y `caso_6_portador_b.json`: Caso 6, mismo mapa con
+  estados compuestos diferentes según el bando que porta el recurso.
+- `caso_7_intercepcion.json`: Caso 7, el movimiento recomendado bloquea la
+  aproximación del rival en lugar de dirigirse directamente al recurso.
+- `caso_8_poda.json`: Caso 8, Minimax y Alfa-Beta devuelven la misma decisión,
+  mientras Alfa-Beta genera menos nodos.
+- `caso_9_orden_poda.json`: Caso 9, un orden de sucesores favorable conserva
+  la decisión y reduce los nodos generados por Alfa-Beta.
+- `caso_10_profundidades.json`: Caso 10, escenario para ejecutar con
+  profundidad 2, 3 y 5 y comparar la carga del árbol.
+
+Los casos adversariales se pueden cargar desde los botones rápidos de la
+interfaz. El Caso 6 tiene una segunda variante (`caso_6_portador_b.json`) para
+comparar explícitamente el portador contrario. En el Caso 10 se cambia la
+profundidad desde el selector antes de pulsar `Evaluar turno`.
+
+Los diez casos demostrativos propios usan mapas de 20 x 20 y al menos tres
+unidades por bando, de acuerdo con las reglas mínimas del proyecto. En el Caso
+7, `B1` ya transporta el recurso y `A1` actúa como interceptor: Minimax debe
+acercar `A1` al portador para bloquear su avance, en lugar de perseguir un
+recurso que ya no está en la zona neutral.
+
+`orden_sucesores` es una extensión propia del equipo. El documento permite
+agregar campos adicionales al JSON siempre que no cambien el significado de
+los campos obligatorios. Si se omite, se conserva el orden predeterminado
+`ARRIBA`, `DERECHA`, `ABAJO`, `IZQUIERDA`.
 
 ## Escenarios inválidos
 

@@ -24,6 +24,19 @@ const algorithmLabels: Record<AlgoritmoBusquedaDisponible, string> = {
   BEAM_SEARCH: 'Beam Search - memoria limitada',
 }
 
+const quickCases = [
+  { id: 1, label: 'Caso 1 · BFS vs DFS', file: 'caso_1_bfs_dfs.json' },
+  { id: 2, label: 'Caso 2 · BFS vs UCS', file: 'caso_2_bfs_ucs.json' },
+  { id: 3, label: 'Caso 3 · Obstáculo A*', file: 'caso_3_obstaculo_astar.json' },
+  { id: 4, label: 'Caso 4 · Heurísticas', file: 'caso_4_heuristicas.json' },
+  { id: 5, label: 'Caso 5 · Beam Search', file: 'caso_5_beam.json' },
+  { id: 6, label: 'Caso 6 · Portador A', file: 'caso_6_portador_a.json' },
+  { id: 7, label: 'Caso 7 · Interceptar', file: 'caso_7_intercepcion.json' },
+  { id: 8, label: 'Caso 8 · Minimax vs Alfa-Beta', file: 'caso_8_poda.json' },
+  { id: 9, label: 'Caso 9 · Orden de sucesores', file: 'caso_9_orden_poda.json' },
+  { id: 10, label: 'Caso 10 · Profundidades 2/3/5', file: 'caso_10_profundidades.json' },
+] as const
+
 function App() {
   const inputRef = useRef<HTMLInputElement>(null)
   const [notice, setNotice] = useState<Notice>(null)
@@ -78,6 +91,22 @@ function App() {
   const onFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     void handleFile(event.target.files?.[0])
     event.target.value = ''
+  }
+
+  const handleQuickCase = async (fileName: string) => {
+    try {
+      const response = await fetch(`/casos/${fileName}`)
+      if (!response.ok) {
+        throw new Error(`No se pudo cargar el caso (${response.status}).`)
+      }
+      const blob = await response.blob()
+      await handleFile(new File([blob], fileName, { type: 'application/json' }))
+    } catch (error) {
+      setNotice({
+        type: 'error',
+        message: error instanceof Error ? error.message : 'No se pudo cargar el caso.',
+      })
+    }
   }
 
   const handleSearch = async () => {
@@ -176,6 +205,20 @@ function App() {
             </button>
             <input ref={inputRef} type="file" accept=".json,application/json" hidden onChange={onFileChange} />
             <span className="file-name">{fileName}</span>
+            <div className="quick-cases">
+              <span className="field-label">Casos demostrativos</span>
+              {quickCases.map((quickCase) => (
+                <button
+                  className="quick-case-button"
+                  key={quickCase.id}
+                  type="button"
+                  onClick={() => void handleQuickCase(quickCase.file)}
+                  disabled={isValidating || isRunning}
+                >
+                  {quickCase.label}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="section-label section-label-spaced">02 / ALGORITMO</div>

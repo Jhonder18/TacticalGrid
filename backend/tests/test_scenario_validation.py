@@ -37,6 +37,11 @@ class ScenarioValidationTests(unittest.TestCase):
                 response = self.call_endpoint(path)
                 self.assertEqual(response["valido"], True)
 
+    def test_static_demonstration_cases_are_accepted(self) -> None:
+        for path in sorted((EXAMPLES_DIR / "good").glob("caso_*.json")):
+            with self.subTest(path=path.name):
+                self.assertEqual(self.call_endpoint(path)["valido"], True)
+
     def test_bad_examples_are_rejected(self) -> None:
         expected_messages = {
             "dimensiones_inconsistentes.json": "matriz terreno",

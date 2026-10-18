@@ -59,6 +59,7 @@ class Escenario(BaseModel):
     turno: Literal["A", "B"]
     juego: Juego
     prueba: Prueba | None = None
+    orden_sucesores: list[Literal["ARRIBA", "DERECHA", "ABAJO", "IZQUIERDA"]] | None = None
 
     @model_validator(mode="after")
     def validar_consistencia(self) -> "Escenario":

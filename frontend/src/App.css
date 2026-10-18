@@ -208,6 +208,32 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.quick-cases {
+  display: grid;
+  gap: 6px;
+  margin-top: 20px;
+}
+.quick-cases .field-label {
+  margin: 0 0 3px;
+}
+.quick-case-button {
+  padding: 8px 9px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  color: var(--navy);
+  background: #f7faf8;
+  cursor: pointer;
+  font: 9px var(--mono);
+  text-align: left;
+}
+.quick-case-button:hover {
+  border-color: var(--mint-strong);
+  background: var(--mint);
+}
+.quick-case-button:disabled {
+  cursor: not-allowed;
+  opacity: .5;
+}
 .section-label-spaced {
   margin-top: 30px;
 }

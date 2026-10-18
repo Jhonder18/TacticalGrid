@@ -4,12 +4,13 @@ from backend.models import Accion, Coordenada, Escenario, GameState, UnidadEstad
 from backend.models.game_state import Bando, Posicion
 
 
-_DIRECCIONES: tuple[Posicion, ...] = (
-    (-1, 0),
-    (0, 1),
-    (1, 0),
-    (0, -1),
-)
+_DIRECCIONES_POR_NOMBRE: dict[str, Posicion] = {
+    "ARRIBA": (-1, 0),
+    "DERECHA": (0, 1),
+    "ABAJO": (1, 0),
+    "IZQUIERDA": (0, -1),
+}
+_ORDEN_PREDETERMINADO = ("ARRIBA", "DERECHA", "ABAJO", "IZQUIERDA")
 
 
 @dataclass(frozen=True, slots=True)
@@ -109,7 +110,9 @@ def _get_unit_successors(
     posiciones_ocupadas = {unidad.posicion for unidad in state.unidades}
     sucesores: list[Transition] = []
 
-    for desplazamiento_fila, desplazamiento_columna in _DIRECCIONES:
+    orden = scenario.orden_sucesores or list(_ORDEN_PREDETERMINADO)
+    for direccion in orden:
+        desplazamiento_fila, desplazamiento_columna = _DIRECCIONES_POR_NOMBRE[direccion]
         destino = (
             unidad.posicion[0] + desplazamiento_fila,
             unidad.posicion[1] + desplazamiento_columna,
