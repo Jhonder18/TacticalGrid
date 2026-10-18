@@ -566,9 +566,15 @@ limite_turnos = min(500, max(50, 4 * filas * columnas))
 - Una victoria de MAX tendrá utilidad `+100000`.
 - Una victoria de MIN tendrá utilidad `-100000`.
 - Un empate por límite de turnos tendrá utilidad `0`.
-- Los estados no terminales se evaluarán considerando posesión del recurso,
-  distancia del portador a su base, distancia del oponente a su base y
-  movilidad disponible.
+- `evaluate_utility(state, player, scenario)` evalúa desde la perspectiva del
+  jugador recibido, que representa a MAX; cambiar el jugador invierte el signo.
+- Los estados no terminales combinan tres componentes normalizados:
+  - cercanía relativa al recurso, con peso `0.30`;
+  - avance del portador hacia su propia base, con peso `0.40`;
+  - amenaza relativa de las unidades enemigas sobre el objetivo estratégico,
+    con peso `0.30`.
+- La utilidad terminal domina la fórmula heurística: llegar con el recurso a la
+  base propia vale `+100000` para ese bando y `-100000` para el rival.
 - Si dos acciones tienen igual utilidad, se elegirá la primera según el orden
   determinista de sucesores y luego por orden de identificador de unidad.
 
