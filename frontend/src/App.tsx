@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import type { ChangeEvent } from 'react'
 import { Grid } from './components/Grid'
+import { ResultsDashboard } from './components/ResultsDashboard'
 import { ScenarioSummary } from './components/ScenarioSummary'
 import { runSearch, validateScenario } from './services/api'
 import type {
@@ -31,6 +32,7 @@ function App() {
   const [heuristic, setHeuristic] = useState<HeuristicaDisponible>('MANHATTAN')
   const [beamWidth, setBeamWidth] = useState(1)
   const [searchResult, setSearchResult] = useState<ResultadoBusqueda | null>(null)
+  const [resultHistory, setResultHistory] = useState<ResultadoBusqueda[]>([])
   const [isValidating, setIsValidating] = useState(false)
   const [isRunning, setIsRunning] = useState(false)
 
@@ -49,6 +51,7 @@ function App() {
       setScenario(JSON.parse(raw) as Escenario)
       setSelectedFile(file)
       setSearchResult(null)
+      setResultHistory([])
       setFileName(file.name)
       setNotice({ type: 'success', message: result.mensaje })
     } catch (error) {
@@ -81,6 +84,10 @@ function App() {
     try {
       const result = await runSearch(selectedFile, algorithm, heuristic, beamWidth)
       setSearchResult(result)
+      setResultHistory((previous) => [
+        result,
+        ...previous.filter((entry) => entry.algoritmo !== result.algoritmo),
+      ].slice(0, 8))
       setNotice({
         type: result.exito ? 'success' : 'error',
         message: result.exito
@@ -179,12 +186,22 @@ function App() {
             <div>
               <span className="live-pill">{scenario ? 'SCENARIO' : 'LIVE MAP'}</span>
               <h2>Vista previa del escenario <small>{rows} × {columns}</small></h2>
+              {scenario?.prueba?.objetivo && (
+                <p className="objective-label">
+                  Objetivo de búsqueda: <strong>({scenario.prueba.objetivo.fila}, {scenario.prueba.objetivo.columna})</strong>
+                  <span> coordenadas 0-based</span>
+                </p>
+              )}
             </div>
             <div className="turn-badge"><span>Turno actual</span><strong>{scenario?.turno ?? 'A'}</strong></div>
           </div>
           <div className="board-card">
             {scenario ? (
-              <Grid escenario={scenario} camino={searchResult?.camino ?? []} />
+              <Grid
+                escenario={scenario}
+                camino={searchResult?.camino ?? []}
+                objetivo={scenario.prueba?.objetivo}
+              />
             ) : (
               <div className="empty-board">Carga un escenario válido para visualizar el mapa.</div>
             )}
@@ -206,17 +223,7 @@ function App() {
 
       {scenario && <ScenarioSummary escenario={scenario} />}
 
-      <section className="metrics-section">
-        <div className="section-label">03 / MÉTRICAS DE EXPERIMENTACIÓN</div>
-        <div className="metrics-grid">
-          <article><span>ESTADOS GENERADOS</span><strong>{searchResult?.estados_generados ?? '—'}</strong><small>Estados incorporados a la búsqueda</small></article>
-          <article><span>ESTADOS EXPANDIDOS</span><strong>{searchResult?.estados_expandidos ?? '—'}</strong><small>Estados retirados de la frontera</small></article>
-          <article><span>COSTO ACUMULADO</span><strong>{searchResult?.costo ?? '—'}</strong><small>Según terreno recorrido</small></article>
-          <article><span>LONGITUD</span><strong>{searchResult?.longitud_camino ?? '—'}</strong><small>Movimientos del camino</small></article>
-          <article><span>MÁXIMO DE FRONTERA</span><strong>{searchResult?.maximo_frontera ?? '—'}</strong><small>Mayor tamaño alcanzado</small></article>
-          <article><span>TIEMPO</span><strong>{searchResult ? `${(searchResult.tiempo * 1000).toFixed(2)} ms` : '—'}</strong><small>Rendimiento del algoritmo</small></article>
-        </div>
-      </section>
+      <ResultsDashboard results={resultHistory} />
     </main>
   )
 }

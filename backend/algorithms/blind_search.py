@@ -470,7 +470,7 @@ def _unit_position(state: GameState, unit_id: str) -> tuple[int, int]:
 
 
 def _build_result(
-    algorithm: Literal["BFS", "DFS", "UCS", "A_ESTRELLA"],
+    algorithm: Literal["BFS", "DFS", "UCS", "A_ESTRELLA", "BEAM_SEARCH"],
     node: SearchNode | None,
     generated: int,
     expanded: int,

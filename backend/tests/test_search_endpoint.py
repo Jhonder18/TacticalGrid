@@ -15,12 +15,26 @@ EXAMPLES_DIR = Path(__file__).parents[2] / "examples"
 
 
 class SearchEndpointTests(unittest.TestCase):
+    RESULT_FIELDS = {
+        "algoritmo",
+        "exito",
+        "camino",
+        "costo",
+        "longitud_camino",
+        "estados_generados",
+        "estados_expandidos",
+        "maximo_frontera",
+        "tiempo",
+    }
+
     def call_endpoint(self, filename: str, algorithm: str) -> Any:
         path = EXAMPLES_DIR / "good" / filename
         return asyncio.run(
             run_search(
                 UploadFile(BytesIO(path.read_bytes()), filename=path.name),
                 algorithm,
+                "MANHATTAN",
+                1,
             )
         )
 
@@ -31,6 +45,12 @@ class SearchEndpointTests(unittest.TestCase):
         self.assertTrue(result.exito)
         self.assertGreater(result.longitud_camino, 0)
         self.assertGreater(result.estados_generados, 0)
+
+    def test_all_search_algorithms_return_the_same_schema(self) -> None:
+        for algorithm in ("BFS", "DFS", "UCS", "A_ESTRELLA", "BEAM_SEARCH"):
+            result = self.call_endpoint("escenario_busqueda.json", algorithm)
+
+            self.assertEqual(set(result.model_dump()), self.RESULT_FIELDS)
 
     def test_runs_dfs_from_a_valid_scenario(self) -> None:
         result = self.call_endpoint("escenario_busqueda.json", "DFS")

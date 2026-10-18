@@ -5,6 +5,7 @@ import { getTerrainPresentation } from './terrainStyles'
 interface GridProps {
   escenario: Escenario
   camino?: Coordenada[]
+  objetivo?: Coordenada
 }
 
 function samePosition(first: Coordenada, second: Coordenada): boolean {
@@ -64,7 +65,7 @@ function getCellLabel(
   return elements.join(', ')
 }
 
-export function Grid({ escenario, camino = [] }: GridProps) {
+export function Grid({ escenario, camino = [], objetivo }: GridProps) {
   const { mapa, terreno, tipos_terreno, bases, recurso, unidades, juego } = escenario
   const rows = Array.from({ length: mapa.filas }, (_, fila) => fila)
   const columns = Array.from({ length: mapa.columnas }, (_, columna) => columna)
@@ -76,7 +77,7 @@ export function Grid({ escenario, camino = [] }: GridProps) {
         style={{ gridTemplateColumns: `repeat(${mapa.columnas}, 1fr)` }}
       >
         {columns.map((column) => (
-          <span key={column}>{String(column + 1).padStart(2, '0')}</span>
+          <span key={column}>{String(column).padStart(2, '0')}</span>
         ))}
       </div>
       <div className="grid-body">
@@ -85,7 +86,7 @@ export function Grid({ escenario, camino = [] }: GridProps) {
           style={{ gridTemplateRows: `repeat(${mapa.filas}, 1fr)` }}
         >
           {rows.map((row) => (
-            <span key={row}>{String(row + 1).padStart(2, '0')}</span>
+            <span key={row}>{String(row).padStart(2, '0')}</span>
           ))}
         </div>
         <div
@@ -106,10 +107,12 @@ export function Grid({ escenario, camino = [] }: GridProps) {
               const isCarrier = unit?.id === juego.portador_recurso
               const isResource = juego.portador_recurso === null && samePosition(recurso, position)
               const isRoute = camino.some((point) => samePosition(point, position))
+              const isObjective = objetivo !== undefined && samePosition(objetivo, position)
               const classes = [
                 'cell',
                 terrainClass(terrainName, terrain.transitable),
                 isRoute ? 'route-cell' : '',
+                isObjective ? 'objective-cell' : '',
                 isBaseA ? 'base-a' : '',
                 isBaseB ? 'base-b' : '',
                 isResource ? 'resource' : '',
@@ -148,6 +151,7 @@ export function Grid({ escenario, camino = [] }: GridProps) {
                       {isCarrier && <span className="carrier-badge">◆</span>}
                     </span>
                   )}
+                  {isObjective && <span className="cell-marker objective-marker">OBJ</span>}
                 </div>
               )
             }),
