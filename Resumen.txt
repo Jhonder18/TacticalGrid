@@ -560,6 +560,14 @@ limite_turnos = min(500, max(50, 4 * filas * columnas))
 - MAX y MIN no representan capacidades distintas: ambos usan las mismas reglas.
 - En cada nivel solo se generan acciones del bando cuyo turno está activo.
 - La utilidad se evalúa desde la perspectiva del bando MAX de la raíz.
+- Minimax inicia con el estado completo de `GameState`, genera sucesores
+  legales y alterna MAX/MIN según `state.turno`.
+- La recursión se detiene estrictamente al alcanzar la profundidad configurada,
+  un estado terminal o un estado sin sucesores.
+- El límite máximo operativo es `8`; una profundidad superior se rechaza.
+- `nodos_generados` incluye la raíz y cada sucesor creado; `nodos_evaluados`
+  cuenta las hojas evaluadas por utilidad; `profundidad_alcanzada` registra el
+  nivel más profundo visitado.
 
 ### Utilidad y desempates
 
