@@ -1,0 +1,283 @@
+T-19: Implementar transiciones de partida por turnos
+Descripcion:
+### Descripcion
+Implementar la aplicacion de una accion valida sobre el estado actual de una
+partida utilizando las reglas ya establecidas en Resumen.txt.
+
+### Frontend
+- [x] Preparar el modelo TypeScript para representar el estado actualizado.
+- [x] Preparar la vista para mostrar el turno siguiente.
+
+### Backend
+- [x] Crear una funcion de dominio para aplicar una accion valida a GameState.
+- [x] Validar que la unidad pertenezca al bando del turno actual.
+- [x] Validar limites del mapa, obstaculos, ocupacion y movimiento ortogonal.
+- [x] Actualizar la posicion de la unidad sin mutar el estado original.
+- [x] Actualizar el turno despues de aplicar una accion valida.
+- [x] Actualizar portador y posicion del recurso cuando corresponda.
+- [x] Detectar victoria, bloqueo y estado terminado usando las reglas existentes.
+- [x] Reutilizar get_successors para evitar duplicar reglas de movimiento.
+- [x] Agregar pruebas para acciones validas e invalidas.
+
+
+T-20: Crear endpoint para ejecutar un turno
+Descripcion:
+### Descripcion
+Exponer mediante FastAPI la ejecucion de una accion de partida sobre un
+escenario validado.
+
+### Frontend
+- [x] Agregar los tipos de request y response del turno.
+- [x] Agregar la funcion del servicio HTTP para ejecutar un turno.
+
+### Backend
+- [x] Crear el endpoint POST /api/game/turn.
+- [x] Recibir el escenario y la accion en el formato JSON del proyecto.
+- [x] Validar el escenario antes de ejecutar la accion.
+- [x] Ejecutar la transicion mediante la funcion de dominio de T-19.
+- [x] Retornar el estado actualizado, turno siguiente y estado de la partida.
+- [x] Retornar errores HTTP 400 para escenarios o acciones invalidas.
+- [x] Crear el modelo Pydantic de respuesta.
+- [x] Agregar pruebas del endpoint para exito, error y victoria.
+
+
+T-21: Completar simulacion del modo partida
+Descripcion:
+### Descripcion
+Permitir ejecutar varios turnos consecutivos desde la interfaz cuando el JSON
+cargado tenga prueba.modo = partida.
+
+### Frontend
+- [ ] Mostrar controles de partida solo en el modo partida.
+- [ ] Mostrar el turno y el bando que deben actuar.
+- [ ] Permitir seleccionar una unidad del bando activo.
+- [ ] Mostrar las acciones validas de la unidad seleccionada.
+- [ ] Agregar el boton Aplicar turno.
+- [ ] Actualizar el tablero con el estado retornado por el backend.
+- [ ] Mostrar el portador, el estado de victoria y el estado de bloqueo.
+- [ ] Agregar el boton Reiniciar partida.
+- [ ] Desactivar acciones cuando la partida termine.
+- [ ] Mostrar errores sin borrar el escenario cargado.
+
+### Backend
+- [ ] Verificar que el endpoint de T-20 soporte varios turnos consecutivos.
+- [ ] Verificar que el turno cambie correctamente entre peticiones.
+- [ ] Verificar que una partida terminada no acepte nuevas acciones.
+- [ ] Agregar pruebas de una secuencia de al menos cinco turnos.
+
+
+T-22: Reforzar validacion de escenarios externos
+Descripcion:
+### Descripcion
+Completar la validacion del contrato JSON para aceptar escenarios externos
+validos y rechazar escenarios inconsistentes sin modificar parcialmente el
+escenario actual.
+
+### Frontend
+- [ ] Mantener el escenario anterior cuando falle la validacion de un archivo.
+- [ ] Mostrar el campo y la regla que causaron el error.
+- [ ] Mostrar correctamente escenarios con dimensiones diferentes a 20 x 20.
+
+### Backend
+- [ ] Validar unidad_inicio y objetivo cuando el modo sea busqueda.
+- [ ] Validar que las posiciones iniciales de las unidades no se repitan.
+- [ ] Validar que las bases A y B sean diferentes.
+- [ ] Validar orden_sucesores cuando el campo este presente.
+- [ ] Rechazar direcciones repetidas o desconocidas en orden_sucesores.
+- [ ] Mantener la validacion de profundidad dentro del limite del proyecto.
+- [ ] Crear escenarios invalidos para cada regla nueva.
+- [ ] Probar que los escenarios validos actuales sigan siendo aceptados.
+
+
+T-23: Verificar rutas y metricas de busqueda
+Descripcion:
+### Descripcion
+Comprobar que las rutas producidas por BFS, DFS, UCS, A*, y Beam Search son
+validas y que sus metricas corresponden al escenario ejecutado.
+
+### Frontend
+- [ ] Mostrar en el dashboard todas las metricas exigidas por el proyecto.
+- [ ] Mostrar longitud, costo, estados generados y estados expandidos.
+- [ ] Mostrar maximo de frontera y tiempo de ejecucion.
+- [ ] Mostrar claramente cuando Beam Search no encuentra solucion.
+
+### Backend
+- [ ] Verificar cada movimiento consecutivo de una ruta.
+- [ ] Verificar que una ruta no atraviese obstaculos.
+- [ ] Recalcular el costo de la ruta desde el JSON.
+- [ ] Verificar que el estado final cumpla el objetivo.
+- [ ] Verificar los resultados de los Casos 1 a 5.
+- [ ] Ejecutar Beam Search con k = 1, 2, 4 y 8.
+- [ ] Agregar pruebas de rutas invalidas o resultados inconsistentes.
+
+
+T-24: Comparar metricas de Minimax y Alfa-Beta
+Descripcion:
+### Descripcion
+Comparar los resultados de Minimax y Alfa-Beta sobre los escenarios
+adversariales ya preparados en los Casos 6 a 10.
+
+### Frontend
+- [ ] Mostrar accion seleccionada y valor obtenido para ambos algoritmos.
+- [ ] Mostrar nodos generados, evaluados y podados.
+- [ ] Mostrar profundidad alcanzada y tiempo de ejecucion.
+- [ ] Mostrar porcentaje de reduccion de nodos de Alfa-Beta.
+- [ ] Mostrar una tabla de comparacion para el mismo escenario.
+
+### Backend
+- [ ] Ejecutar Minimax y Alfa-Beta con la misma profundidad.
+- [ ] Comprobar que seleccionen la misma accion.
+- [ ] Comprobar que retornen el mismo valor.
+- [ ] Comprobar que Alfa-Beta genere menos nodos en el Caso 8.
+- [ ] Comparar el orden predeterminado y alterado en el Caso 9.
+- [ ] Comparar profundidades 2, 3 y 5 en el Caso 10.
+- [ ] Registrar resultados reproducibles para el informe final.
+
+
+T-25: Documentar heuristicas y funcion de utilidad
+Descripcion:
+### Descripcion
+Documentar las decisiones ya implementadas sobre heuristicas, utilidad,
+pesos, profundidad y poda para la sustentacion del proyecto.
+
+### Frontend
+- [ ] Mostrar en la interfaz el nombre de la heuristica seleccionada.
+- [ ] Mostrar los parametros utilizados en cada ejecucion.
+
+### Backend
+- [ ] Documentar la formula f(n) = g(n) + h(n).
+- [ ] Documentar la distancia Manhattan y la informacion que utiliza.
+- [ ] Documentar la distancia Euclidiana y la informacion que utiliza.
+- [ ] Documentar el costo computacional de ambas heuristicas.
+- [ ] Documentar admisibilidad y limitaciones de ambas heuristicas.
+- [ ] Documentar los pesos de la funcion evaluate_utility.
+- [ ] Documentar los valores terminales de victoria y derrota.
+- [ ] Documentar MAX, MIN y el limite de profundidad.
+- [ ] Documentar orden_sucesores como extension propia permitida por el JSON.
+- [ ] Verificar que la documentacion coincida con el codigo.
+
+
+T-26: Generar informe de resultados de los Casos 1 a 10
+Descripcion:
+### Descripcion
+Crear las tablas de resultados esperados y obtenidos para demostrar cada caso
+reproducible solicitado por el documento del proyecto.
+
+### Frontend
+- [ ] Verificar visualmente los resultados de cada caso desde los botones
+  rapidos.
+- [ ] Registrar capturas o evidencia de rutas, metricas y arboles.
+
+### Backend
+- [ ] Registrar BFS frente a DFS en el Caso 1.
+- [ ] Registrar BFS frente a UCS en el Caso 2.
+- [ ] Registrar el desvio por obstaculos en el Caso 3.
+- [ ] Registrar Manhattan frente a Euclidiana en el Caso 4.
+- [ ] Registrar Beam Search con k = 1, 2, 4 y 8 en el Caso 5.
+- [ ] Registrar la diferencia de portador en el Caso 6.
+- [ ] Registrar la intercepcion del portador en el Caso 7.
+- [ ] Registrar Minimax frente a Alfa-Beta en el Caso 8.
+- [ ] Registrar el efecto del orden de sucesores en el Caso 9.
+- [ ] Registrar la carga de profundidades 2, 3 y 5 en el Caso 10.
+- [ ] Incluir algoritmo, parametros, exito, costo, nodos y tiempo.
+
+
+T-27: Probar compatibilidad con un JSON externo
+Descripcion:
+### Descripcion
+Comprobar que la aplicacion funciona con un escenario nuevo que no haya sido
+preparado previamente y que no requiere cambios en el codigo.
+
+### Frontend
+- [ ] Cargar el escenario externo desde el selector de archivos.
+- [ ] Ejecutar busqueda y revisar el tablero y las metricas.
+- [ ] Ejecutar modo adversarial cuando el escenario lo permita.
+- [ ] Confirmar que la interfaz se adapte a sus dimensiones.
+
+### Backend
+- [ ] Crear un escenario externo con dimensiones diferentes.
+- [ ] Incluir un terreno adicional con costo configurable.
+- [ ] Cambiar obstaculos, bases, unidades y recurso.
+- [ ] Ejecutar BFS, UCS, A* y Beam Search.
+- [ ] Ejecutar Minimax o Alfa-Beta si el escenario es adversarial.
+- [ ] Verificar que los costos se lean del JSON.
+- [ ] Verificar que no existan posiciones codificadas en los algoritmos.
+- [ ] Agregar una prueba de escenario externo valido.
+- [ ] Agregar una prueba de una variante externa invalida.
+
+
+T-28: Realizar prueba manual completa de la interfaz
+Descripcion:
+### Descripcion
+Validar visualmente la aplicacion completa antes de preparar la entrega.
+
+### Frontend
+- [ ] Iniciar backend y frontend desde un clon limpio.
+- [ ] Verificar el endpoint /api/health.
+- [ ] Cargar manualmente un escenario valido.
+- [ ] Cargar los botones rapidos de los Casos 1 a 10.
+- [ ] Ejecutar BFS, DFS, UCS, A*, y Beam Search.
+- [ ] Probar Beam Search con k = 1, 2, 4 y 8.
+- [ ] Ejecutar Minimax y Alfa-Beta.
+- [ ] Revisar el arbol adversarial y sus conectores.
+- [ ] Revisar la visualizacion de nodos podados.
+- [ ] Probar profundidades 2, 3 y 5.
+- [ ] Probar un JSON invalido.
+- [ ] Confirmar que una carga invalida no borre el escenario actual.
+- [ ] Probar el modo partida cuando T-21 este completada.
+- [ ] Revisar la interfaz en una ventana pequena.
+
+### Backend
+- [ ] Ejecutar la suite completa de pruebas.
+- [ ] Confirmar que no existan errores en los logs durante la prueba manual.
+- [ ] Confirmar que los resultados visibles coincidan con la respuesta de la API.
+
+
+T-29: Preparar documentacion final y sustentacion
+-------------------------------------------------
+Descripcion:
+### Descripcion
+Organizar la documentacion final con instrucciones de ejecucion, arquitectura,
+reglas, algoritmos, casos y resultados.
+
+### Frontend
+- [ ] Documentar el flujo de carga de escenarios.
+- [ ] Documentar los controles de busqueda y adversarial.
+- [ ] Documentar los botones rapidos de casos.
+- [ ] Documentar el flujo del modo partida.
+- [ ] Incluir capturas de la interfaz y del arbol adversarial.
+
+### Backend
+- [ ] Documentar la estructura del proyecto.
+- [ ] Documentar los endpoints disponibles.
+- [ ] Documentar el contrato JSON.
+- [ ] Documentar las reglas del estado y de los sucesores.
+- [ ] Documentar BFS, DFS, UCS, A*, Beam Search, Minimax y Alfa-Beta.
+- [ ] Documentar las metricas retornadas.
+- [ ] Documentar como ejecutar las pruebas.
+- [ ] Revisar que README.md y Resumen.txt esten actualizados.
+
+
+T-30: Validar y preparar entrega final
+---------------------------------------
+Descripcion:
+### Descripcion
+Ejecutar la validacion final, limpiar el repositorio y preparar el commit de
+entrega del proyecto.
+
+### Frontend
+- [ ] Ejecutar npm run lint.
+- [ ] Ejecutar npm run build.
+- [ ] Confirmar que no existan errores de TypeScript.
+- [ ] Confirmar que los escenarios publicos requeridos esten incluidos.
+
+### Backend
+- [ ] Ejecutar la suite completa de unittest.
+- [ ] Ejecutar git diff --check.
+- [ ] Revisar requirements.txt.
+- [ ] Revisar que venv, node_modules, __pycache__ y dist no esten versionados.
+- [ ] Revisar que no existan secretos en el repositorio.
+- [ ] Verificar que el proyecto funcione desde un clon limpio.
+- [ ] Crear el commit final con el resumen de la entrega.
+- [ ] Hacer push de la rama final.
+- [ ] Actualizar GitHub Projects con la evidencia de cada tarea.

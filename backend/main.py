@@ -7,7 +7,17 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import ValidationError
 
 from backend.algorithms import alpha_beta, a_star, beam_search, bfs, dfs, minimax, ucs
-from backend.models import Escenario, ResultadoAdversarial, ResultadoBusqueda
+from backend.core.game import apply_action
+from backend.models import (
+    Accion,
+    Escenario,
+    GameState,
+    ResultadoAdversarial,
+    ResultadoBusqueda,
+    ResultadoTurno,
+    EstadoPartidaResponse,
+    UnidadEstadoResponse,
+)
 
 
 app = FastAPI(
@@ -113,6 +123,59 @@ async def run_adversarial(
             status_code=400,
             detail=f"No se pudo evaluar el turno: {error}",
         ) from error
+
+
+@app.post(
+    "/api/game/turn",
+    tags=["Game"],
+    summary="Aplicar una acción de partida",
+    description="Valida un escenario y aplica una acción legal al estado actual.",
+    response_model=ResultadoTurno,
+)
+async def run_game_turn(
+    file: UploadFile = File(...),
+    accion: str = Form(...),
+) -> ResultadoTurno:
+    scenario = await _load_scenario(file)
+    try:
+        action = Accion.model_validate_json(accion)
+        result = apply_action(
+            GameState.from_scenario(scenario),
+            scenario,
+            action,
+        )
+    except (ValueError, ValidationError) as error:
+        raise HTTPException(
+            status_code=400,
+            detail=f"No se pudo aplicar el turno: {error}",
+        ) from error
+
+    return ResultadoTurno(
+        estado=EstadoPartidaResponse(
+            unidades=[
+                UnidadEstadoResponse(
+                    id=unit.id,
+                    bando=unit.bando,
+                    posicion={"fila": unit.posicion[0], "columna": unit.posicion[1]},
+                )
+                for unit in result.estado.unidades
+            ],
+            portador_recurso=result.estado.portador_recurso,
+            posicion_recurso=(
+                None
+                if result.estado.posicion_recurso is None
+                else {
+                    "fila": result.estado.posicion_recurso[0],
+                    "columna": result.estado.posicion_recurso[1],
+                }
+            ),
+            turno=result.estado.turno,
+        ),
+        accion=result.accion,
+        costo=result.costo,
+        estado_partida=result.estado_partida,
+        turno_siguiente=result.turno_siguiente,
+    )
 
 
 async def _load_scenario(file: UploadFile) -> Escenario:

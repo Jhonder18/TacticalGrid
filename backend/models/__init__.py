@@ -3,6 +3,9 @@ from .results import (
     ResultadoAdversarial,
     ResultadoAlgoritmo,
     ResultadoBusqueda,
+    ResultadoTurno,
+    EstadoPartidaResponse,
+    UnidadEstadoResponse,
     NodoArbolAdversarial,
 )
 from .game_state import GameState, UnidadEstado
@@ -29,6 +32,9 @@ __all__ = [
     "ResultadoAdversarial",
     "ResultadoAlgoritmo",
     "ResultadoBusqueda",
+    "ResultadoTurno",
+    "EstadoPartidaResponse",
+    "UnidadEstadoResponse",
     "NodoArbolAdversarial",
     "Terreno",
     "UnidadEstado",

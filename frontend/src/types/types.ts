@@ -56,6 +56,27 @@ export interface Escenario {
   prueba?: Prueba
 }
 
+export type EstadoPartida =
+  | 'en curso'
+  | 'victoria_A'
+  | 'victoria_B'
+  | 'bloqueado'
+
+export interface EstadoPartidaActual {
+  unidades: Unidades
+  portador_recurso: string | null
+  posicion_recurso: Coordenada | null
+  turno: Bando
+}
+
+export interface ResultadoTurno {
+  estado: EstadoPartidaActual
+  accion: Accion
+  costo: number
+  estado_partida: EstadoPartida
+  turno_siguiente: Bando | null
+}
+
 export type AlgoritmoBusqueda =
   'BFS' | 'DFS' | 'UCS' | 'A_ESTRELLA' | 'BEAM_SEARCH'
 

@@ -46,6 +46,27 @@ class ResultadoAdversarial(BaseModel):
     arbol: NodoArbolAdversarial
 
 
+class UnidadEstadoResponse(BaseModel):
+    id: str
+    bando: Literal["A", "B"]
+    posicion: Coordenada
+
+
+class EstadoPartidaResponse(BaseModel):
+    unidades: list[UnidadEstadoResponse]
+    portador_recurso: str | None
+    posicion_recurso: Coordenada | None
+    turno: Literal["A", "B"]
+
+
+class ResultadoTurno(BaseModel):
+    estado: EstadoPartidaResponse
+    accion: Accion
+    costo: float = Field(ge=0)
+    estado_partida: Literal["en curso", "victoria_A", "victoria_B", "bloqueado"]
+    turno_siguiente: Literal["A", "B"] | None
+
+
 ResultadoAlgoritmo = Annotated[
     ResultadoBusqueda | ResultadoAdversarial,
     Field(discriminator="algoritmo"),

@@ -55,6 +55,8 @@ function App() {
   const [isRunning, setIsRunning] = useState(false)
   const scenarioMode = scenario?.prueba?.modo ?? 'busqueda'
   const isAdversarialMode = scenarioMode !== 'busqueda'
+  const isPartidaMode = scenarioMode === 'partida'
+  const nextTurn = scenario?.turno === 'A' ? 'B' : 'A'
 
   const handleFile = async (file?: File) => {
     if (!file) return
@@ -294,7 +296,11 @@ function App() {
                 </p>
               )}
             </div>
-            <div className="turn-badge"><span>Turno actual</span><strong>{scenario?.turno ?? 'A'}</strong></div>
+            <div className="turn-badge">
+              <span>Turno actual</span>
+              <strong>{scenario?.turno ?? 'A'}</strong>
+              {isPartidaMode && <small>Siguiente: {nextTurn}</small>}
+            </div>
           </div>
           <div className="board-card">
             {scenario ? (

@@ -3,6 +3,8 @@ import type {
   HeuristicaDisponible,
   ResultadoBusqueda,
   ResultadoAdversarial,
+  Accion,
+  ResultadoTurno,
 } from '../types/types'
 
 const API_BASE_URL = 'http://localhost:8000'
@@ -95,6 +97,29 @@ export async function runAdversarial(
   }
 
   return body as ResultadoAdversarial
+}
+
+export async function runGameTurn(
+  file: File,
+  accion: Accion,
+): Promise<ResultadoTurno> {
+  const formData = new FormData()
+  formData.append('file', file)
+  formData.append('accion', JSON.stringify(accion))
+
+  const response = await fetch(`${API_BASE_URL}/api/game/turn`, {
+    method: 'POST',
+    body: formData,
+  })
+  const body = (await response.json()) as ResultadoTurno | { detail?: string }
+
+  if (!response.ok) {
+    throw new Error(
+      'detail' in body ? body.detail : 'No se pudo aplicar el turno',
+    )
+  }
+
+  return body as ResultadoTurno
 }
 
 export { API_BASE_URL }
