@@ -1,6 +1,6 @@
 import unittest
 
-from backend.algorithms import minimax
+from backend.algorithms import alpha_beta, minimax
 from backend.models import Escenario
 
 
@@ -68,6 +68,28 @@ class MinimaxTests(unittest.TestCase):
     def test_minimax_rejects_depth_above_project_limit(self) -> None:
         with self.assertRaises(ValueError):
             minimax(build_scenario(depth=9))
+
+    def test_alpha_beta_returns_same_decision_and_value_as_minimax(self) -> None:
+        scenario = build_scenario(depth=4)
+
+        minimax_result = minimax(scenario)
+        alpha_beta_result = alpha_beta(scenario)
+
+        self.assertEqual(
+            alpha_beta_result.accion_seleccionada,
+            minimax_result.accion_seleccionada,
+        )
+        self.assertEqual(alpha_beta_result.valor_obtenido, minimax_result.valor_obtenido)
+        self.assertEqual(alpha_beta_result.profundidad_alcanzada, 4)
+        self.assertGreater(alpha_beta_result.nodos_podados, 0)
+        self.assertLess(
+            alpha_beta_result.nodos_generados,
+            minimax_result.nodos_generados,
+        )
+
+    def test_alpha_beta_rejects_depth_above_project_limit(self) -> None:
+        with self.assertRaises(ValueError):
+            alpha_beta(build_scenario(depth=9))
 
 
 if __name__ == "__main__":

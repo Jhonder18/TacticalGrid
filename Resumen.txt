@@ -568,6 +568,12 @@ limite_turnos = min(500, max(50, 4 * filas * columnas))
 - `nodos_generados` incluye la raíz y cada sucesor creado; `nodos_evaluados`
   cuenta las hojas evaluadas por utilidad; `profundidad_alcanzada` registra el
   nivel más profundo visitado.
+- Alfa-beta conserva la misma evaluación, profundidad, orden de sucesores y
+  desempate de Minimax. Mantiene los límites `alpha` y `beta`; cuando
+  `beta <= alpha`, descarta los sucesores restantes de esa rama.
+- `nodos_podados` cuenta las acciones sucesoras que no se expandieron por un
+  corte alfa o beta. Con la misma configuración, Alfa-beta debe retornar la
+  misma acción y utilidad que Minimax, pero puede generar menos nodos.
 
 ### Utilidad y desempates
 

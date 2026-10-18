@@ -1,8 +1,9 @@
-from .adversarial import minimax
+from .adversarial import alpha_beta, minimax
 from .blind_search import a_star, beam_search, bfs, dfs, ucs
 from .heuristics import euclidean_distance, manhattan_distance
 
 __all__ = [
+	"alpha_beta",
 	"minimax",
 	"a_star",
 	"beam_search",
