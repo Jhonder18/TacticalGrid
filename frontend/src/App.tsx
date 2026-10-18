@@ -5,6 +5,7 @@ import type {
   AlgoritmoBusquedaDisponible,
   Coordenada,
   Escenario,
+  HeuristicaDisponible,
   ResultadoBusqueda,
 } from './types/types'
 import './App.css'
@@ -82,6 +83,7 @@ const algorithmLabels: Record<AlgoritmoBusquedaDisponible, string> = {
   BFS: 'BFS - amplitud',
   DFS: 'DFS - profundidad',
   UCS: 'UCS - costo uniforme',
+  A_ESTRELLA: 'A* - búsqueda informada',
 }
 
 function coordinateKey(coordinate: Coordenada): string {
@@ -141,6 +143,7 @@ function App() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [scenario, setScenario] = useState<Escenario | null>(null)
   const [algorithm, setAlgorithm] = useState<AlgoritmoBusquedaDisponible>('BFS')
+  const [heuristic, setHeuristic] = useState<HeuristicaDisponible>('MANHATTAN')
   const [searchResult, setSearchResult] = useState<ResultadoBusqueda | null>(
     null,
   )
@@ -201,7 +204,7 @@ function App() {
     setSearchResult(null)
     setNotice(null)
     try {
-      const result = await runSearch(selectedFile, algorithm)
+      const result = await runSearch(selectedFile, algorithm, heuristic)
       setSearchResult(result)
       setNotice({
         type: result.exito ? 'success' : 'error',
@@ -328,6 +331,20 @@ function App() {
             <option value="BFS">{algorithmLabels.BFS}</option>
             <option value="DFS">{algorithmLabels.DFS}</option>
             <option value="UCS">{algorithmLabels.UCS}</option>
+            <option value="A_ESTRELLA">{algorithmLabels.A_ESTRELLA}</option>
+          </select>
+          <label className="field-label" htmlFor="heuristic">
+            Heurística
+          </label>
+          <select
+            id="heuristic"
+            value={heuristic}
+            disabled={algorithm !== 'A_ESTRELLA'}
+            onChange={(event) =>
+              setHeuristic(event.target.value as HeuristicaDisponible)
+            }
+          >
+            <option value="MANHATTAN">Manhattan</option>
           </select>
           <button
             className="secondary-button"

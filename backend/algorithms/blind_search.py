@@ -5,6 +5,7 @@ from time import perf_counter
 from typing import Literal
 
 from backend.core.successors import get_navigation_successors
+from backend.algorithms.heuristics import manhattan_distance
 from backend.models import Coordenada, Escenario, GameState, ResultadoBusqueda
 
 
@@ -153,6 +154,111 @@ def ucs(scenario: Escenario) -> ResultadoBusqueda:
     )
 
 
+def a_star(
+    scenario: Escenario,
+    heuristic: Literal["MANHATTAN"] = "MANHATTAN",
+) -> ResultadoBusqueda:
+    """Busca con A* priorizando `f(n) = g(n) + h(n)`.
+
+    Purpose:
+        Encontrar una ruta de bajo costo guiando la exploración hacia el objetivo.
+    Preconditions:
+        `scenario.prueba` debe indicar una unidad de inicio y un objetivo; la heurística
+        solicitada debe estar implementada.
+    Postconditions:
+        Devuelve una ruta y métricas con el mismo contrato que BFS, DFS y UCS.
+    Complexity:
+        Tiempo O((V + E) log V) y memoria O(V), con una heurística O(1) por estado.
+    AI usage:
+        No.
+    AI intervention:
+        Se propuso combinar costo acumulado y distancia Manhattan en la prioridad.
+    Student validation:
+        Se comparará con UCS para comprobar el costo y con una prueba de la heurística.
+    """
+
+    if heuristic != "MANHATTAN":
+        raise ValueError(f"Heurística no soportada: {heuristic}")
+
+    unit_id, target = _get_search_configuration(scenario)
+    initial_state = GameState.from_scenario(scenario)
+    initial_unit = next(
+        unidad for unidad in initial_state.unidades if unidad.id == unit_id
+    )
+    initial_node = SearchNode(
+        state=initial_state,
+        parent=None,
+        action=None,
+        cost=0.0,
+    )
+    initial_heuristic = manhattan_distance(initial_unit.posicion, target)
+    frontier: list[tuple[float, int, SearchNode]] = [
+        (initial_heuristic, 0, initial_node)
+    ]
+    best_costs = {initial_state: 0.0}
+    sequence = 0
+    generated = 1
+    expanded = 0
+    max_frontier = 1
+    started_at = perf_counter()
+
+    while frontier:
+        _, _, node = heappop(frontier)
+        if node.cost != best_costs.get(node.state):
+            continue
+
+        current_position = _unit_position(node.state, unit_id)
+        if current_position == target:
+            return _build_result(
+                "A_ESTRELLA",
+                node,
+                generated,
+                expanded,
+                max_frontier,
+                perf_counter() - started_at,
+                initial_unit.posicion,
+            )
+
+        expanded += 1
+        for transition in get_navigation_successors(
+            node.state,
+            scenario,
+            unit_id,
+        ):
+            successor_cost = node.cost + transition.cost
+            previous_cost = best_costs.get(transition.state)
+            if previous_cost is not None and successor_cost >= previous_cost:
+                continue
+
+            best_costs[transition.state] = successor_cost
+            sequence += 1
+            successor = SearchNode(
+                state=transition.state,
+                parent=node,
+                action=transition.action.destino,
+                cost=successor_cost,
+            )
+            successor_position = _unit_position(successor.state, unit_id)
+            priority = successor_cost + manhattan_distance(
+                successor_position,
+                target,
+            )
+            heappush(frontier, (priority, sequence, successor))
+            generated += 1
+
+        max_frontier = max(max_frontier, len(frontier))
+
+    return _build_result(
+        "A_ESTRELLA",
+        None,
+        generated,
+        expanded,
+        max_frontier,
+        perf_counter() - started_at,
+        initial_unit.posicion,
+    )
+
+
 def _search(
     scenario: Escenario,
     algorithm: Literal["BFS", "DFS"],
@@ -256,7 +362,7 @@ def _unit_position(state: GameState, unit_id: str) -> tuple[int, int]:
 
 
 def _build_result(
-    algorithm: Literal["BFS", "DFS", "UCS"],
+    algorithm: Literal["BFS", "DFS", "UCS", "A_ESTRELLA"],
     node: SearchNode | None,
     generated: int,
     expanded: int,

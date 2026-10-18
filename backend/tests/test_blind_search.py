@@ -1,6 +1,6 @@
 import unittest
 
-from backend.algorithms import bfs, dfs, ucs
+from backend.algorithms import a_star, bfs, dfs, manhattan_distance, ucs
 from backend.models import Coordenada, Escenario
 
 
@@ -106,6 +106,11 @@ def build_cost_scenario() -> Escenario:
 
 
 class BlindSearchTests(unittest.TestCase):
+    def test_manhattan_distance_counts_orthogonal_movements(self) -> None:
+        self.assertEqual(manhattan_distance((0, 0), (0, 0)), 0)
+        self.assertEqual(manhattan_distance((0, 0), (2, 3)), 5)
+        self.assertEqual(manhattan_distance((4, 2), (1, 5)), 6)
+
     def test_bfs_finds_shortest_path_and_records_metrics(self) -> None:
         result = bfs(build_search_scenario())
 
@@ -137,6 +142,17 @@ class BlindSearchTests(unittest.TestCase):
         self.assertLess(bfs_result.longitud_camino, ucs_result.longitud_camino)
         self.assertGreater(bfs_result.costo, ucs_result.costo)
         self.assertEqual(ucs_result.costo, 6)
+
+    def test_a_star_matches_ucs_cost_with_manhattan(self) -> None:
+        scenario = build_cost_scenario()
+
+        a_star_result = a_star(scenario)
+        ucs_result = ucs(scenario)
+
+        self.assertEqual(a_star_result.algoritmo, "A_ESTRELLA")
+        self.assertTrue(a_star_result.exito)
+        self.assertEqual(a_star_result.costo, ucs_result.costo)
+        self.assertEqual(a_star_result.longitud_camino, ucs_result.longitud_camino)
 
     def test_search_reports_failure_when_target_is_blocked(self) -> None:
         scenario = build_search_scenario()

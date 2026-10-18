@@ -71,7 +71,9 @@ export interface MetricasBusqueda {
   tiempo: number
 }
 
-export type AlgoritmoBusquedaDisponible = 'BFS' | 'DFS' | 'UCS'
+export type AlgoritmoBusquedaDisponible = 'BFS' | 'DFS' | 'UCS' | 'A_ESTRELLA'
+
+export type HeuristicaDisponible = 'MANHATTAN'
 
 export type ResultadoBusqueda = MetricasBusqueda
 

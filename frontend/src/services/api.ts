@@ -1,5 +1,6 @@
 import type {
   AlgoritmoBusquedaDisponible,
+  HeuristicaDisponible,
   ResultadoBusqueda,
 } from '../types/types'
 
@@ -45,10 +46,12 @@ export async function validateScenario(
 export async function runSearch(
   file: File,
   algoritmo: AlgoritmoBusquedaDisponible,
+  heuristica: HeuristicaDisponible = 'MANHATTAN',
 ): Promise<ResultadoBusqueda> {
   const formData = new FormData()
   formData.append('file', file)
   formData.append('algoritmo', algoritmo)
+  formData.append('heuristica', heuristica)
 
   const response = await fetch(`${API_BASE_URL}/api/search/run`, {
     method: 'POST',
