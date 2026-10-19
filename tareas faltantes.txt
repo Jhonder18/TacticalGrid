@@ -41,40 +41,58 @@ escenario validado.
 - [x] Agregar pruebas del endpoint para exito, error y victoria.
 
 
-T-21: Completar simulacion del modo partida
+T-21: Implementar simulador automatico de partidas y reproduccion visual
 Descripcion:
 ### Descripcion
-Permitir ejecutar varios turnos consecutivos desde la interfaz cuando el JSON
-cargado tenga prueba.modo = partida.
+Reemplazar el control manual de acciones por un simulador automatico para el
+modo partida. El backend debe decidir las acciones de ambos bandos a partir del
+estado actual, del mapa y del algoritmo seleccionado, sin reglas especificas
+para nombres de archivos, coordenadas o escenarios concretos. La interfaz debe
+permitir observar la partida turno a turno y paso a paso.
 
 ### Frontend
-- [ ] Mostrar controles de partida solo en el modo partida.
-- [ ] Mostrar el turno y el bando que deben actuar.
-- [ ] Permitir seleccionar una unidad del bando activo.
-- [ ] Mostrar las acciones validas de la unidad seleccionada.
-- [ ] Agregar el boton Aplicar turno.
-- [ ] Actualizar el tablero con el estado retornado por el backend.
-- [ ] Mostrar el portador, el estado de victoria y el estado de bloqueo.
-- [ ] Agregar el boton Reiniciar partida.
-- [ ] Desactivar acciones cuando la partida termine.
-- [ ] Mostrar errores sin borrar el escenario cargado.
+- [x] Mostrar controles de partida solo en el modo partida.
+- [x] Mostrar el turno actual y el bando que actua.
+- [x] Permitir seleccionar el algoritmo que usaran ambos bandos.
+- [x] Agregar el boton Siguiente turno para observar una decision automatica.
+- [x] Agregar el boton Calcular partida completa.
+- [x] Actualizar el tablero con cada estado retornado por el backend.
+- [x] Mostrar la unidad, accion y pasos internos decididos por el backend.
+- [x] Agregar controles Anterior, Iniciar/Pausar y Siguiente.
+- [x] Agregar reproduccion automatica con control de velocidad.
+- [x] Visualizar por separado el movimiento de robo y los dos movimientos
+  adicionales de escape.
+- [x] Mostrar el portador, el estado de victoria, bloqueo y empate.
+- [x] Agregar el boton Reiniciar partida.
+- [x] Desactivar acciones cuando la partida termine.
+- [x] Mostrar errores sin borrar el escenario cargado.
 
 ### Backend
-- [ ] Verificar que el endpoint de T-20 soporte varios turnos consecutivos.
-- [ ] Verificar que el turno cambie correctamente entre peticiones.
-- [ ] Verificar que una partida terminada no acepte nuevas acciones.
-- [ ] Agregar pruebas de una secuencia de al menos cinco turnos.
+- [x] Hacer que el endpoint de turno decida automaticamente la unidad y accion.
+- [x] Crear el endpoint POST /api/game/simulate para ejecutar la partida.
+- [x] Verificar que el turno cambie correctamente entre transiciones.
+- [x] Verificar que una partida terminada no acepte nuevas acciones.
+- [x] Aplicar movimientos, recoleccion, robo y escapes de forma inmutable.
+- [x] Hacer que el portador avance hacia su propia base.
+- [x] Hacer que las unidades defensoras persigan al portador enemigo.
+- [x] Restaurar el recurso a su posicion original cuando el portador queda
+  sin camino legal a su base.
+- [x] Detectar estados repetidos y declarar empate por bucle.
+- [x] Exponer el estado final y el historial completo de la simulacion.
+- [x] Agregar pruebas de secuencias de al menos cinco turnos, robo, escape,
+  bloqueo, restauracion y deteccion de ciclos.
 
 
-T-22: Reforzar validacion de escenarios externos
+T-22: Validar reglas dinamicas de partidas y escenarios externos
 Descripcion:
 ### Descripcion
 Completar la validacion del contrato JSON para aceptar escenarios externos
 validos y rechazar escenarios inconsistentes sin modificar parcialmente el
-escenario actual.
+escenario actual. Las reglas de partida deben depender exclusivamente del
+escenario cargado: mapa, terrenos, obstaculos, bases, unidades y recurso.
 
 ### Frontend
-- [ ] Mantener el escenario anterior cuando falle la validacion de un archivo.
+- [x] Mantener el escenario anterior cuando falle la validacion de un archivo.
 - [ ] Mostrar el campo y la regla que causaron el error.
 - [ ] Mostrar correctamente escenarios con dimensiones diferentes a 20 x 20.
 
@@ -87,6 +105,12 @@ escenario actual.
 - [ ] Mantener la validacion de profundidad dentro del limite del proyecto.
 - [ ] Crear escenarios invalidos para cada regla nueva.
 - [ ] Probar que los escenarios validos actuales sigan siendo aceptados.
+- [x] Evitar coordenadas y nombres de escenarios codificados en la logica de
+  partida.
+- [x] Considerar terrenos transitables con costos diferentes y muros no
+  transitables.
+- [x] Considerar la ocupacion dinamica de todas las unidades al calcular
+  caminos y bloqueos.
 
 
 T-23: Verificar rutas y metricas de busqueda
@@ -179,6 +203,8 @@ reproducible solicitado por el documento del proyecto.
 - [ ] Registrar Minimax frente a Alfa-Beta en el Caso 8.
 - [ ] Registrar el efecto del orden de sucesores en el Caso 9.
 - [ ] Registrar la carga de profundidades 2, 3 y 5 en el Caso 10.
+- [ ] Registrar la simulacion automatica de partidas y sus estados terminales.
+- [ ] Registrar los ejemplos de robo de bandera y bandera bloqueada.
 - [ ] Incluir algoritmo, parametros, exito, costo, nodos y tiempo.
 
 
@@ -193,6 +219,8 @@ preparado previamente y que no requiere cambios en el codigo.
 - [ ] Ejecutar busqueda y revisar el tablero y las metricas.
 - [ ] Ejecutar modo adversarial cuando el escenario lo permita.
 - [ ] Confirmar que la interfaz se adapte a sus dimensiones.
+- [ ] Ejecutar una partida automatica con un escenario externo.
+- [ ] Confirmar la reproduccion por pasos, robo, escape y retorno del recurso.
 
 ### Backend
 - [ ] Crear un escenario externo con dimensiones diferentes.
@@ -204,6 +232,8 @@ preparado previamente y que no requiere cambios en el codigo.
 - [ ] Verificar que no existan posiciones codificadas en los algoritmos.
 - [ ] Agregar una prueba de escenario externo valido.
 - [ ] Agregar una prueba de una variante externa invalida.
+- [x] Incluir escenarios externos de busqueda, adversarial y partida para
+  comprobar que no dependen de los ejemplos internos.
 
 
 T-28: Realizar prueba manual completa de la interfaz
@@ -215,7 +245,7 @@ Validar visualmente la aplicacion completa antes de preparar la entrega.
 - [ ] Iniciar backend y frontend desde un clon limpio.
 - [ ] Verificar el endpoint /api/health.
 - [ ] Cargar manualmente un escenario valido.
-- [ ] Cargar los botones rapidos de los Casos 1 a 10.
+- [ ] Seleccionar los Casos 1 a 10 desde el selector de ejemplos.
 - [ ] Ejecutar BFS, DFS, UCS, A*, y Beam Search.
 - [ ] Probar Beam Search con k = 1, 2, 4 y 8.
 - [ ] Ejecutar Minimax y Alfa-Beta.
@@ -224,7 +254,10 @@ Validar visualmente la aplicacion completa antes de preparar la entrega.
 - [ ] Probar profundidades 2, 3 y 5.
 - [ ] Probar un JSON invalido.
 - [ ] Confirmar que una carga invalida no borre el escenario actual.
-- [ ] Probar el modo partida cuando T-21 este completada.
+- [ ] Probar el modo partida automatica cuando T-21 este completada.
+- [ ] Probar reproduccion paso a paso, pausa, velocidad y deteccion de bucles.
+- [ ] Confirmar que las alertas desaparezcan despues de 10 segundos y se
+  pausen al pasar el cursor.
 - [ ] Revisar la interfaz en una ventana pequena.
 
 ### Backend
@@ -243,8 +276,11 @@ reglas, algoritmos, casos y resultados.
 ### Frontend
 - [ ] Documentar el flujo de carga de escenarios.
 - [ ] Documentar los controles de busqueda y adversarial.
-- [ ] Documentar los botones rapidos de casos.
-- [ ] Documentar el flujo del modo partida.
+- [ ] Documentar el selector de ejemplos.
+- [ ] Documentar el flujo del modo partida automatica.
+- [ ] Documentar el robo, los movimientos de escape, el bloqueo y el empate
+  por bucle.
+- [ ] Documentar las alertas temporales y su barra de tiempo.
 - [ ] Incluir capturas de la interfaz y del arbol adversarial.
 
 ### Backend
@@ -254,6 +290,7 @@ reglas, algoritmos, casos y resultados.
 - [ ] Documentar las reglas del estado y de los sucesores.
 - [ ] Documentar BFS, DFS, UCS, A*, Beam Search, Minimax y Alfa-Beta.
 - [ ] Documentar las metricas retornadas.
+- [ ] Documentar POST /api/game/simulate, los pasos internos y el motivo final.
 - [ ] Documentar como ejecutar las pruebas.
 - [ ] Revisar que README.md y Resumen.txt esten actualizados.
 

@@ -3,8 +3,8 @@ import type {
   HeuristicaDisponible,
   ResultadoBusqueda,
   ResultadoAdversarial,
-  Accion,
   ResultadoTurno,
+  ResultadoSimulacion,
 } from '../types/types'
 
 const API_BASE_URL = 'http://localhost:8000'
@@ -101,11 +101,15 @@ export async function runAdversarial(
 
 export async function runGameTurn(
   file: File,
-  accion: Accion,
+  algoritmo: AlgoritmoBusquedaDisponible,
+  heuristica: HeuristicaDisponible = 'MANHATTAN',
+  k = 4,
 ): Promise<ResultadoTurno> {
   const formData = new FormData()
   formData.append('file', file)
-  formData.append('accion', JSON.stringify(accion))
+  formData.append('algoritmo', algoritmo)
+  formData.append('heuristica', heuristica)
+  formData.append('k', String(k))
 
   const response = await fetch(`${API_BASE_URL}/api/game/turn`, {
     method: 'POST',
@@ -120,6 +124,28 @@ export async function runGameTurn(
   }
 
   return body as ResultadoTurno
+}
+
+export async function simulateGame(
+  file: File,
+  algoritmo: AlgoritmoBusquedaDisponible,
+  heuristica: HeuristicaDisponible = 'MANHATTAN',
+  k = 4,
+): Promise<ResultadoSimulacion> {
+  const formData = new FormData()
+  formData.append('file', file)
+  formData.append('algoritmo', algoritmo)
+  formData.append('heuristica', heuristica)
+  formData.append('k', String(k))
+  const response = await fetch(`${API_BASE_URL}/api/game/simulate`, {
+    method: 'POST',
+    body: formData,
+  })
+  const body = (await response.json()) as ResultadoSimulacion | { detail?: string }
+  if (!response.ok) {
+    throw new Error('detail' in body ? body.detail : 'No se pudo simular la partida')
+  }
+  return body as ResultadoSimulacion
 }
 
 export { API_BASE_URL }

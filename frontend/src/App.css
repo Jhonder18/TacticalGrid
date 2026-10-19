@@ -210,29 +210,11 @@
 }
 .quick-cases {
   display: grid;
-  gap: 6px;
+  gap: 8px;
   margin-top: 20px;
 }
 .quick-cases .field-label {
-  margin: 0 0 3px;
-}
-.quick-case-button {
-  padding: 8px 9px;
-  border: 1px solid var(--line);
-  border-radius: 4px;
-  color: var(--navy);
-  background: #f7faf8;
-  cursor: pointer;
-  font: 9px var(--mono);
-  text-align: left;
-}
-.quick-case-button:hover {
-  border-color: var(--mint-strong);
-  background: var(--mint);
-}
-.quick-case-button:disabled {
-  cursor: not-allowed;
-  opacity: .5;
+  margin: 0;
 }
 .section-label-spaced {
   margin-top: 30px;
@@ -279,6 +261,95 @@ input[type='number'] {
 }
 .loaded-mode strong {
   color: var(--navy);
+}
+.game-status-card {
+  display: grid;
+  gap: 4px;
+  margin: 16px 0;
+  padding: 10px;
+  border-left: 3px solid var(--mint-strong);
+  background: #f2f8f4;
+  color: var(--muted);
+  font: 10px var(--mono);
+}
+.game-status-card strong {
+  color: var(--navy);
+}
+.game-restart-button {
+  margin-top: 8px;
+  background: #f6f1e8;
+  color: var(--navy);
+}
+.game-history-controls {
+  display: grid;
+  gap: 6px;
+  margin-top: 16px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  font: 10px var(--mono);
+  color: var(--muted);
+}
+.game-history-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+.game-history-controls button {
+  padding: 6px 8px;
+  border: 1px solid #cbd8d1;
+  border-radius: 4px;
+  background: #fff;
+  color: var(--navy);
+  cursor: pointer;
+}
+.game-history-controls .play-button {
+  background: var(--navy);
+  color: #fff;
+}
+.game-speed-control {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+}
+.game-speed-control input {
+  accent-color: var(--mint-strong);
+}
+.game-speed-control output {
+  min-width: 34px;
+  color: var(--navy);
+  font-weight: 700;
+  text-align: right;
+}
+.game-history-controls button:disabled {
+  cursor: not-allowed;
+  opacity: .45;
+}
+.game-history-list {
+  max-height: 150px;
+  overflow-y: auto;
+  margin: 0;
+  padding-left: 22px;
+  line-height: 1.5;
+}
+.game-history-list li.active {
+  color: var(--navy);
+  font-weight: 700;
+}
+.game-step-button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.game-step-button:hover {
+  color: var(--navy);
+  text-decoration: underline;
 }
 .mode-tabs {
   display: grid;
@@ -998,6 +1069,9 @@ input[type='number'] {
   position: fixed;
   z-index: 5;
   top: 92px;
+  position: fixed;
+  z-index: 10;
+  overflow: hidden;
   right: 28px;
   display: flex;
   align-items: center;
@@ -1008,6 +1082,22 @@ input[type='number'] {
   border-radius: 7px;
   box-shadow: 0 12px 30px #23362d33;
   font: 12px/1.4 var(--sans);
+}
+.toast-message {
+  flex: 1;
+}
+.toast-progress {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: currentColor;
+  opacity: .55;
+  transition: width .1s linear;
+}
+.toast:hover {
+  box-shadow: 0 12px 30px #23362d44, 0 0 0 2px currentColor;
 }
 .toast-success {
   border-color: #9ad9bb;

@@ -1,7 +1,13 @@
+from collections import deque
 from dataclasses import dataclass
 from typing import Literal
 
-from backend.core.successors import Transition, get_successors
+from backend.core.successors import (
+    Transition,
+    TransitionStep,
+    get_navigation_successors,
+    get_successors,
+)
 from backend.models import Accion, Escenario, GameState
 
 
@@ -17,6 +23,7 @@ class ResultadoTurno:
     costo: float
     estado_partida: EstadoPartida
     turno_siguiente: str | None
+    pasos: tuple[TransitionStep, ...]
 
 
 def apply_action(
@@ -38,8 +45,19 @@ def apply_action(
         )
 
     transition = _find_matching_transition(state, scenario, action)
-    next_state = transition.state
+    next_state = _restore_blocked_carrier(transition.state, scenario)
     status = get_game_status(next_state, scenario)
+    steps = transition.steps
+    if steps and steps[-1].state != next_state:
+        last_step = steps[-1]
+        steps = (
+            *steps[:-1],
+            TransitionStep(
+                action=last_step.action,
+                state=next_state,
+                cost=last_step.cost,
+            ),
+        )
 
     return ResultadoTurno(
         estado=next_state,
@@ -47,6 +65,52 @@ def apply_action(
         costo=transition.cost,
         estado_partida=status,
         turno_siguiente=None if status != "en curso" else next_state.turno,
+        pasos=steps,
+    )
+
+
+def _restore_blocked_carrier(state: GameState, scenario: Escenario) -> GameState:
+    if state.portador_recurso is None:
+        return state
+    carrier = next(unit for unit in state.unidades if unit.id == state.portador_recurso)
+    base = scenario.bases.A if carrier.bando == "A" else scenario.bases.B
+    target = (base.fila, base.columna)
+    pending = deque([carrier.posicion])
+    visited = {carrier.posicion}
+    while pending:
+        position = pending.popleft()
+        if position == target:
+            return state
+        current = GameState(
+            unidades=tuple(
+                unit
+                if unit.id != carrier.id
+                else type(unit)(
+                    id=unit.id,
+                    bando=unit.bando,
+                    posicion=position,
+                )
+                for unit in state.unidades
+            ),
+            portador_recurso=state.portador_recurso,
+            posicion_recurso=state.posicion_recurso,
+            turno=state.turno,
+        )
+        for transition in get_navigation_successors(current, scenario, carrier.id):
+            next_position = next(
+                unit.posicion
+                for unit in transition.state.unidades
+                if unit.id == carrier.id
+            )
+            if next_position in visited:
+                continue
+            visited.add(next_position)
+            pending.append(next_position)
+    return GameState(
+        unidades=state.unidades,
+        portador_recurso=None,
+        posicion_recurso=(scenario.recurso.fila, scenario.recurso.columna),
+        turno=state.turno,
     )
 
 

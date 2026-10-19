@@ -8,7 +8,17 @@ interfaz o con la API `POST /api/scenario/validate`.
 Los archivos de `good/` deben ser aceptados con HTTP 200:
 
 - `escenario_busqueda.json`: prueba de navegación con A*.
-- `escenario_partida.json`: estado inicial para una partida por turnos.
+- `escenario_partida.json`: estado inicial para una partida automática. El
+  backend decide la unidad y el movimiento de ambos bandos y expone la
+  secuencia completa mediante `POST /api/game/simulate`; la interfaz solo
+  recorre el historial.
+- `escenario_robo_bandera.json`: B comienza cerca de A1, que ya porta el
+  recurso. Permite observar el robo automático por adyacencia y los dos
+  movimientos extra de escape del ladrón.
+- `escenario_bandera_bloqueada.json`: A1 recoge el recurso y B1 ocupa la
+  única salida del corredor. Después del movimiento de B, el backend detecta
+  que el portador no tiene camino legal a su base y devuelve el recurso a su
+  posición original.
 - `escenario_adversarial.json`: estado preparado para Minimax y alfa-beta.
 - `escenario_volcanico.json`: mapa de ceniza, lava y cráteres.
 - `escenario_acuatico.json`: mapa de agua, orillas, puentes y rocas.

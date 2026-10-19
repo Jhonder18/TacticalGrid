@@ -63,18 +63,43 @@ export type EstadoPartida =
   | 'bloqueado'
 
 export interface EstadoPartidaActual {
-  unidades: Unidades
+  unidades: UnidadEstadoResponse[]
   portador_recurso: string | null
   posicion_recurso: Coordenada | null
   turno: Bando
 }
 
+export interface UnidadEstadoResponse {
+  id: string
+  bando: Bando
+  posicion: Coordenada
+}
+
 export interface ResultadoTurno {
+  algoritmo: AlgoritmoBusquedaDisponible
+  heuristica: HeuristicaDisponible
   estado: EstadoPartidaActual
   accion: Accion
   costo: number
   estado_partida: EstadoPartida
   turno_siguiente: Bando | null
+  pasos: PasoTurno[]
+}
+
+export interface PasoTurno {
+  accion: Accion
+  estado: EstadoPartidaActual
+  costo: number
+}
+
+export interface ResultadoSimulacion {
+  algoritmo: AlgoritmoBusquedaDisponible
+  heuristica: HeuristicaDisponible
+  limite_turnos: number
+  turnos_ejecutados: number
+  estado_final: EstadoPartida | 'empate'
+  motivo_final: string | null
+  historial: ResultadoTurno[]
 }
 
 export type AlgoritmoBusqueda =

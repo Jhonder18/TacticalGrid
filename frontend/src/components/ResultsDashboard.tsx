@@ -34,6 +34,7 @@ export function ResultsDashboard({ results }: ResultsDashboardProps) {
             <tr>
               <th>Método</th>
               <th>Éxito</th>
+              <th>Camino</th>
               <th>Longitud</th>
               <th>Costo</th>
               <th>Nodos</th>
@@ -49,6 +50,11 @@ export function ResultsDashboard({ results }: ResultsDashboardProps) {
                 <td><span className={`result-status ${result.exito ? 'success' : 'failure'}`}>
                   {result.exito ? 'Sí' : 'No'}
                 </span></td>
+                <td className="result-path">
+                  {result.camino.length
+                    ? result.camino.map((step) => `(${step.fila},${step.columna})`).join(' → ')
+                    : 'Sin camino'}
+                </td>
                 <td>{result.longitud_camino}</td>
                 <td>{formatCost(result.costo)}</td>
                 <td>{result.estados_generados}</td>
@@ -58,7 +64,7 @@ export function ResultsDashboard({ results }: ResultsDashboardProps) {
               </tr>
             )) : (
               <tr>
-                <td className="results-empty" colSpan={8}>
+                <td className="results-empty" colSpan={9}>
                   Todavía no hay ejecuciones almacenadas en esta sesión.
                 </td>
               </tr>

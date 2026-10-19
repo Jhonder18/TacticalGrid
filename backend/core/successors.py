@@ -20,6 +20,14 @@ class Transition:
     state: GameState
     action: Accion
     cost: float
+    steps: tuple["TransitionStep", ...] = ()
+
+
+@dataclass(frozen=True, slots=True)
+class TransitionStep:
+    action: Accion
+    state: GameState
+    cost: float
 
 
 def get_successors(
@@ -106,6 +114,7 @@ def _get_unit_successors(
     scenario: Escenario,
     unidad: UnidadEstado,
     cambia_turno: bool,
+    resolver_robo: bool = True,
 ) -> tuple[Transition, ...]:
     posiciones_ocupadas = {unidad.posicion for unidad in state.unidades}
     sucesores: list[Transition] = []
@@ -144,27 +153,163 @@ def _get_unit_successors(
             portador = unidad.id
             posicion_recurso = None
 
-        successor = GameState(
+        state_after_move = GameState(
             unidades=unidades_actualizadas,
             portador_recurso=portador,
             posicion_recurso=posicion_recurso,
+            turno=state.turno,
+        )
+        cost_total = costo
+        steps = (
+            TransitionStep(
+                action=Accion(
+                    tipo="mover",
+                    unidad_id=unidad.id,
+                    origen=_coordenada(unidad.posicion),
+                    destino=_coordenada(destino),
+                ),
+                state=state_after_move,
+                cost=costo,
+            ),
+        )
+        if resolver_robo:
+            state_after_move, extra_cost, extra_steps = _resolve_robbery(
+                state_after_move,
+                scenario,
+                unidad_actualizada,
+                steps[0].action,
+                costo,
+            )
+            cost_total += extra_cost
+            if extra_steps:
+                steps = extra_steps
+
+        successor = GameState(
+            unidades=state_after_move.unidades,
+            portador_recurso=state_after_move.portador_recurso,
+            posicion_recurso=state_after_move.posicion_recurso,
             turno=(
                 _siguiente_turno(state.turno)
                 if cambia_turno
                 else state.turno
             ),
         )
-        action = Accion(
-            tipo="mover",
-            unidad_id=unidad.id,
-            origen=_coordenada(unidad.posicion),
-            destino=_coordenada(destino),
-        )
+        action = steps[0].action
         sucesores.append(
-            Transition(state=successor, action=action, cost=costo)
+            Transition(
+                state=successor,
+                action=action,
+                cost=cost_total,
+                steps=tuple(
+                    TransitionStep(
+                        action=step.action,
+                        state=GameState(
+                            unidades=step.state.unidades,
+                            portador_recurso=step.state.portador_recurso,
+                            posicion_recurso=step.state.posicion_recurso,
+                            turno=successor.turno,
+                        ),
+                        cost=step.cost,
+                    )
+                    for step in steps
+                ),
+            )
         )
 
     return tuple(sucesores)
+
+
+def _resolve_robbery(
+    state: GameState,
+    scenario: Escenario,
+    moving_unit: UnidadEstado,
+    move_action: Accion,
+    move_cost: float,
+) -> tuple[GameState, float, tuple[TransitionStep, ...]]:
+    carrier = next(
+        (unit for unit in state.unidades if unit.id == state.portador_recurso),
+        None,
+    )
+    if carrier is None or carrier.bando == moving_unit.bando:
+        return state, 0.0, ()
+    if abs(carrier.posicion[0] - moving_unit.posicion[0]) + abs(
+        carrier.posicion[1] - moving_unit.posicion[1]
+    ) != 1:
+        return state, 0.0, ()
+
+    current = GameState(
+        unidades=state.unidades,
+        portador_recurso=moving_unit.id,
+        posicion_recurso=None,
+        turno=state.turno,
+    )
+    extra_cost = 0.0
+    extra_steps: list[TransitionStep] = [
+        TransitionStep(
+            action=move_action,
+            state=current,
+            cost=move_cost,
+        )
+    ]
+    for _ in range(2):
+        robber = next(
+            unit for unit in current.unidades if unit.id == moving_unit.id
+        )
+        escapes = _get_unit_successors(
+            current,
+            scenario,
+            robber,
+            cambia_turno=False,
+            resolver_robo=False,
+        )
+        if not escapes:
+            break
+        escape = max(
+            escapes,
+            key=lambda transition: (
+                -_distance_to_own_base(
+                    transition.state,
+                    scenario,
+                    moving_unit.id,
+                ),
+                _distance_to_enemy_carrier(transition.state, carrier),
+                -transition.cost,
+            ),
+        )
+        extra_steps.append(
+            TransitionStep(
+                action=escape.action,
+                state=escape.state,
+                cost=escape.cost,
+            )
+        )
+        current = escape.state
+        extra_cost += escape.cost
+    return current, extra_cost, tuple(extra_steps)
+
+
+def _distance_to_enemy_carrier(
+    state: GameState,
+    carrier: UnidadEstado,
+) -> int:
+    robber = next(
+        unit for unit in state.unidades if unit.id == state.portador_recurso
+    )
+    return abs(robber.posicion[0] - carrier.posicion[0]) + abs(
+        robber.posicion[1] - carrier.posicion[1]
+    )
+
+
+def _distance_to_own_base(
+    state: GameState,
+    scenario: Escenario,
+    unit_id: str,
+) -> int:
+    robber = next(unit for unit in state.unidades if unit.id == unit_id)
+    base = scenario.bases.A if robber.bando == "A" else scenario.bases.B
+    return abs(robber.posicion[0] - base.fila) + abs(
+        robber.posicion[1] - base.columna
+    )
 
 
 def _es_movimiento_legal(

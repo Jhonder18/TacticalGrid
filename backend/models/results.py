@@ -59,12 +59,31 @@ class EstadoPartidaResponse(BaseModel):
     turno: Literal["A", "B"]
 
 
+class PasoTurno(BaseModel):
+    accion: Accion
+    estado: EstadoPartidaResponse
+    costo: float = Field(ge=0)
+
+
 class ResultadoTurno(BaseModel):
+    algoritmo: Literal["BFS", "DFS", "UCS", "A_ESTRELLA", "BEAM_SEARCH"]
+    heuristica: Literal["MANHATTAN", "EUCLIDEA"]
     estado: EstadoPartidaResponse
     accion: Accion
     costo: float = Field(ge=0)
     estado_partida: Literal["en curso", "victoria_A", "victoria_B", "bloqueado"]
     turno_siguiente: Literal["A", "B"] | None
+    pasos: list[PasoTurno]
+
+
+class ResultadoSimulacion(BaseModel):
+    algoritmo: Literal["BFS", "DFS", "UCS", "A_ESTRELLA", "BEAM_SEARCH"]
+    heuristica: Literal["MANHATTAN", "EUCLIDEA"]
+    limite_turnos: int = Field(gt=0)
+    turnos_ejecutados: int = Field(ge=0)
+    estado_final: Literal["en curso", "victoria_A", "victoria_B", "bloqueado", "empate"]
+    motivo_final: str | None = None
+    historial: list[ResultadoTurno]
 
 
 ResultadoAlgoritmo = Annotated[

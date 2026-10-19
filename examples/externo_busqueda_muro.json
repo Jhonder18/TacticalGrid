@@ -1,0 +1,49 @@
+{
+  "version": "1.0",
+  "mapa": {
+    "filas": 10,
+    "columnas": 10
+  },
+  "tipos_terreno": {
+    "camino": {"costo": 1, "transitable": true},
+    "pasto": {"costo": 2, "transitable": true},
+    "bosque": {"costo": 4, "transitable": true},
+    "pantano": {"costo": 7, "transitable": true},
+    "muro": {"transitable": false}
+  },
+  "terreno": [
+    ["camino", "camino", "camino", "camino", "camino", "muro", "camino", "camino", "camino", "camino"],
+    ["camino", "pasto", "pasto", "camino", "camino", "muro", "camino", "pasto", "camino", "camino"],
+    ["camino", "pasto", "camino", "camino", "camino", "muro", "camino", "pasto", "pasto", "camino"],
+    ["camino", "camino", "camino", "bosque", "bosque", "muro", "camino", "camino", "camino", "camino"],
+    ["camino", "camino", "camino", "bosque", "camino", "muro", "pantano", "camino", "camino", "camino"],
+    ["camino", "camino", "camino", "camino", "camino", "muro", "pantano", "camino", "camino", "camino"],
+    ["camino", "pasto", "pasto", "camino", "camino", "muro", "camino", "camino", "bosque", "camino"],
+    ["camino", "pasto", "camino", "camino", "camino", "muro", "camino", "bosque", "bosque", "camino"],
+    ["camino", "camino", "camino", "camino", "camino", "camino", "camino", "camino", "camino", "camino"],
+    ["camino", "camino", "camino", "camino", "camino", "camino", "camino", "camino", "camino", "camino"]
+  ],
+  "bases": {
+    "A": {"fila": 0, "columna": 0},
+    "B": {"fila": 9, "columna": 9}
+  },
+  "recurso": {"fila": 8, "columna": 5},
+  "unidades": [
+    {"id": "A1", "bando": "A", "tipo": "estandar", "fila": 0, "columna": 0},
+    {"id": "A2", "bando": "A", "tipo": "estandar", "fila": 0, "columna": 1},
+    {"id": "A3", "bando": "A", "tipo": "estandar", "fila": 1, "columna": 0},
+    {"id": "B1", "bando": "B", "tipo": "estandar", "fila": 9, "columna": 9},
+    {"id": "B2", "bando": "B", "tipo": "estandar", "fila": 9, "columna": 8},
+    {"id": "B3", "bando": "B", "tipo": "estandar", "fila": 8, "columna": 9}
+  ],
+  "turno": "A",
+  "juego": {
+    "portador_recurso": null,
+    "profundidad_maxima_minimax": 3
+  },
+  "prueba": {
+    "modo": "busqueda",
+    "unidad_inicio": "A1",
+    "objetivo": {"fila": 0, "columna": 9}
+  }
+}

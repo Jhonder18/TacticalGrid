@@ -1,20 +1,24 @@
-import { useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { ChangeEvent } from 'react'
 import { Grid } from './components/Grid'
 import { AdversarialTree } from './components/AdversarialTree'
 import { ResultsDashboard } from './components/ResultsDashboard'
 import { ScenarioSummary } from './components/ScenarioSummary'
-import { runAdversarial, runSearch, validateScenario } from './services/api'
+import { runAdversarial, runGameTurn, runSearch, simulateGame, validateScenario } from './services/api'
 import type {
   AlgoritmoBusquedaDisponible,
   Escenario,
   HeuristicaDisponible,
   ResultadoBusqueda,
   ResultadoAdversarial,
+  EstadoPartida,
+  ResultadoTurno,
+  ResultadoSimulacion,
 } from './types/types'
 import './App.css'
 
 type Notice = { type: 'success' | 'error'; message: string } | null
+const NOTICE_DURATION_MS = 10_000
 
 const algorithmLabels: Record<AlgoritmoBusquedaDisponible, string> = {
   BFS: 'BFS - amplitud',
@@ -40,9 +44,12 @@ const quickCases = [
 function App() {
   const inputRef = useRef<HTMLInputElement>(null)
   const [notice, setNotice] = useState<Notice>(null)
+  const [noticeRemaining, setNoticeRemaining] = useState(NOTICE_DURATION_MS)
+  const noticePausedRef = useRef(false)
   const [fileName, setFileName] = useState('Ningún escenario cargado')
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [scenario, setScenario] = useState<Escenario | null>(null)
+  const [initialScenario, setInitialScenario] = useState<Escenario | null>(null)
   const [algorithm, setAlgorithm] = useState<AlgoritmoBusquedaDisponible>('BFS')
   const [heuristic, setHeuristic] = useState<HeuristicaDisponible>('MANHATTAN')
   const [beamWidth, setBeamWidth] = useState(1)
@@ -53,10 +60,54 @@ function App() {
   const [resultHistory, setResultHistory] = useState<ResultadoBusqueda[]>([])
   const [isValidating, setIsValidating] = useState(false)
   const [isRunning, setIsRunning] = useState(false)
+  const [gameStatus, setGameStatus] = useState<EstadoPartida>('en curso')
+  const [lastGameAction, setLastGameAction] = useState<ResultadoTurno['accion'] | null>(null)
+  const [gameAlgorithm, setGameAlgorithm] = useState<AlgoritmoBusquedaDisponible>('BFS')
+  const [gameHeuristic, setGameHeuristic] = useState<HeuristicaDisponible>('MANHATTAN')
+  const [gameBeamWidth, setGameBeamWidth] = useState(4)
+  const [gameSimulation, setGameSimulation] = useState<ResultadoSimulacion | null>(null)
+  const [gameHistoryIndex, setGameHistoryIndex] = useState(-1)
+  const [gameStepIndex, setGameStepIndex] = useState(-1)
+  const [isGamePlaying, setIsGamePlaying] = useState(false)
+  const [gameSpeed, setGameSpeed] = useState(50)
   const scenarioMode = scenario?.prueba?.modo ?? 'busqueda'
   const isAdversarialMode = scenarioMode !== 'busqueda'
   const isPartidaMode = scenarioMode === 'partida'
   const nextTurn = scenario?.turno === 'A' ? 'B' : 'A'
+
+  useEffect(() => {
+    noticePausedRef.current = false
+    if (!notice) return
+
+    const startedAt = Date.now()
+    let pausedAt: number | null = null
+    let pausedDuration = 0
+    const resetProgress = window.setTimeout(
+      () => setNoticeRemaining(NOTICE_DURATION_MS),
+      0,
+    )
+    const timer = window.setInterval(() => {
+      if (noticePausedRef.current) {
+        pausedAt ??= Date.now()
+        return
+      }
+      if (pausedAt !== null) {
+        pausedDuration += Date.now() - pausedAt
+        pausedAt = null
+      }
+      const elapsed = Date.now() - startedAt - pausedDuration
+      const remaining = Math.max(0, NOTICE_DURATION_MS - elapsed)
+      setNoticeRemaining(remaining)
+      if (remaining === 0) {
+        setNotice(null)
+      }
+    }, 100)
+
+    return () => {
+      window.clearTimeout(resetProgress)
+      window.clearInterval(timer)
+    }
+  }, [notice])
 
   const handleFile = async (file?: File) => {
     if (!file) return
@@ -70,11 +121,19 @@ function App() {
     try {
       const raw = await file.text()
       const result = await validateScenario(file)
-      setScenario(JSON.parse(raw) as Escenario)
+      const loadedScenario = JSON.parse(raw) as Escenario
+      setScenario(loadedScenario)
+      setInitialScenario(loadedScenario)
       setSelectedFile(file)
       setSearchResult(null)
       setAdversarialResult(null)
       setResultHistory([])
+      setGameStatus('en curso')
+      setLastGameAction(null)
+      setGameSimulation(null)
+      setGameHistoryIndex(-1)
+      setGameStepIndex(-1)
+      setIsGamePlaying(false)
       setFileName(file.name)
       setNotice({ type: 'success', message: result.mensaje })
     } catch (error) {
@@ -88,6 +147,144 @@ function App() {
     } finally {
       setIsValidating(false)
     }
+
+  }
+
+  const handleGameTurn = async () => {
+    if (!selectedFile || !scenario || gameStatus !== 'en curso') return
+    if (gameSimulation) {
+      advanceGameHistory(1)
+      return
+    }
+    setIsRunning(true)
+    setNotice(null)
+    try {
+      const result = await runGameTurn(selectedFile, gameAlgorithm, gameHeuristic, gameBeamWidth)
+      const updatedScenario = applyTurnResult(scenario, result)
+      setScenario(updatedScenario)
+      setSelectedFile(new File([JSON.stringify(updatedScenario)], fileName, { type: 'application/json' }))
+      setGameStatus(result.estado_partida)
+      setLastGameAction(result.accion)
+      setNotice({
+        type: 'success',
+        message: result.estado_partida === 'en curso'
+          ? `Turno aplicado. Ahora juega el bando ${result.turno_siguiente}.`
+          : `La partida terminó: ${result.estado_partida}.`,
+      })
+    } catch (error) {
+      setNotice({
+        type: 'error',
+        message: error instanceof Error ? error.message : 'No se pudo aplicar el turno.',
+      })
+    } finally {
+      setIsRunning(false)
+    }
+
+  }
+
+  const handlePlayGame = async () => {
+    if (!selectedFile || !scenario || gameStatus !== 'en curso') return
+    setIsRunning(true)
+    setIsGamePlaying(false)
+    setNotice(null)
+    try {
+      const simulation = await simulateGame(selectedFile, gameAlgorithm, gameHeuristic, gameBeamWidth)
+      setGameSimulation(simulation)
+      setGameHistoryIndex(-1)
+      setGameStepIndex(-1)
+      setNotice({
+        type: simulation.estado_final === 'empate' ? 'error' : 'success',
+        message: simulation.motivo_final
+          ? `${simulation.motivo_final} Se calcularon ${simulation.turnos_ejecutados} turnos.`
+          : `Simulación calculada: ${simulation.turnos_ejecutados} turnos. Usa los controles para recorrerla.`,
+      })
+    } catch (error) {
+      setNotice({
+        type: 'error',
+        message: error instanceof Error ? error.message : 'No se pudo ejecutar la partida.',
+      })
+    } finally {
+      setIsRunning(false)
+    }
+  }
+
+  const showGameStep = useCallback((turnIndex: number, stepIndex: number) => {
+    if (!gameSimulation || !initialScenario) return
+    let frame = structuredClone(initialScenario)
+    for (let index = 0; index < turnIndex; index += 1) {
+      frame = applyTurnResult(frame, gameSimulation.historial[index])
+    }
+    const turn = gameSimulation.historial[turnIndex]
+    const step = turn.pasos[stepIndex]
+    setGameHistoryIndex(turnIndex)
+    setGameStepIndex(stepIndex)
+    setScenario(applyStateToScenario(frame, step.estado))
+    setGameStatus(stepIndex === turn.pasos.length - 1 ? turn.estado_partida : 'en curso')
+    setLastGameAction(step.accion)
+  }, [gameSimulation, initialScenario])
+
+  const advanceGameHistory = useCallback((direction: 1 | -1) => {
+    if (!gameSimulation || !scenario) return
+    let nextTurnIndex = gameHistoryIndex
+    let nextStepIndex = gameStepIndex
+    if (direction === 1) {
+      if (nextTurnIndex < 0) {
+        nextTurnIndex = 0
+        nextStepIndex = 0
+      } else if (nextStepIndex + 1 < gameSimulation.historial[nextTurnIndex].pasos.length) {
+        nextStepIndex += 1
+      } else if (nextTurnIndex + 1 < gameSimulation.historial.length) {
+        nextTurnIndex += 1
+        nextStepIndex = 0
+      }
+    } else if (nextTurnIndex < 0) {
+      return
+    } else if (nextStepIndex > 0) {
+      nextStepIndex -= 1
+    } else if (nextTurnIndex > 0) {
+      nextTurnIndex -= 1
+      nextStepIndex = gameSimulation.historial[nextTurnIndex].pasos.length - 1
+    } else {
+      nextTurnIndex = -1
+      nextStepIndex = -1
+    }
+
+    setGameHistoryIndex(nextTurnIndex)
+    setGameStepIndex(nextStepIndex)
+    if (nextTurnIndex < 0) {
+      setScenario(structuredClone(initialScenario ?? scenario))
+      setGameStatus('en curso')
+      setLastGameAction(null)
+      return
+    }
+    showGameStep(nextTurnIndex, nextStepIndex)
+  }, [gameHistoryIndex, gameSimulation, gameStepIndex, initialScenario, scenario, showGameStep])
+
+  useEffect(() => {
+    if (!isGamePlaying || !gameSimulation) return
+    const lastTurnIndex = gameSimulation.historial.length - 1
+    const lastStepIndex = gameSimulation.historial[lastTurnIndex].pasos.length - 1
+    if (gameHistoryIndex === lastTurnIndex && gameStepIndex >= lastStepIndex) {
+      const timer = window.setTimeout(() => setIsGamePlaying(false), 0)
+      return () => window.clearTimeout(timer)
+    }
+    const delay = Math.max(100, 1100 - gameSpeed * 10)
+    const timer = window.setTimeout(() => advanceGameHistory(1), delay)
+    return () => window.clearTimeout(timer)
+  }, [advanceGameHistory, gameHistoryIndex, gameSimulation, gameSpeed, gameStepIndex, isGamePlaying])
+
+  const handleRestartGame = () => {
+    if (!initialScenario) return
+    const restored = structuredClone(initialScenario)
+    setScenario(restored)
+    setSelectedFile(new File([JSON.stringify(restored)], fileName, { type: 'application/json' }))
+    setGameStatus('en curso')
+    setLastGameAction(null)
+    setGameSimulation(null)
+    setGameHistoryIndex(-1)
+    setGameStepIndex(-1)
+    setIsGamePlaying(false)
+    setNotice({ type: 'success', message: 'La partida fue reiniciada.' })
   }
 
   const onFileChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -101,6 +298,7 @@ function App() {
       if (!response.ok) {
         throw new Error(`No se pudo cargar el caso (${response.status}).`)
       }
+
       const blob = await response.blob()
       await handleFile(new File([blob], fileName, { type: 'application/json' }))
     } catch (error) {
@@ -108,6 +306,12 @@ function App() {
         type: 'error',
         message: error instanceof Error ? error.message : 'No se pudo cargar el caso.',
       })
+    }
+  }
+
+  const selectQuickCase = (event: ChangeEvent<HTMLSelectElement>) => {
+    if (event.target.value) {
+      void handleQuickCase(event.target.value)
     }
   }
 
@@ -171,10 +375,20 @@ function App() {
   return (
     <main className="app-shell">
       {notice && (
-        <div className={`toast toast-${notice.type}`} role="alert">
+        <div
+          className={`toast toast-${notice.type}`}
+          role="alert"
+          onMouseEnter={() => {
+            noticePausedRef.current = true
+          }}
+          onMouseLeave={() => {
+            noticePausedRef.current = false
+          }}
+        >
           <span className="toast-icon">{notice.type === 'success' ? 'OK' : '!'}</span>
-          <span>{notice.message}</span>
+          <span className="toast-message">{notice.message}</span>
           <button type="button" onClick={() => setNotice(null)} aria-label="Cerrar alerta">x</button>
+          <span className="toast-progress" style={{ width: `${(noticeRemaining / NOTICE_DURATION_MS) * 100}%` }} />
         </div>
       )}
 
@@ -208,18 +422,18 @@ function App() {
             <input ref={inputRef} type="file" accept=".json,application/json" hidden onChange={onFileChange} />
             <span className="file-name">{fileName}</span>
             <div className="quick-cases">
-              <span className="field-label">Casos demostrativos</span>
-              {quickCases.map((quickCase) => (
-                <button
-                  className="quick-case-button"
-                  key={quickCase.id}
-                  type="button"
-                  onClick={() => void handleQuickCase(quickCase.file)}
-                  disabled={isValidating || isRunning}
-                >
-                  {quickCase.label}
-                </button>
-              ))}
+              <label className="field-label" htmlFor="quick-case">Casos demostrativos</label>
+              <select
+                id="quick-case"
+                defaultValue=""
+                disabled={isValidating || isRunning}
+                onChange={selectQuickCase}
+              >
+                <option value="">Selecciona un ejemplo...</option>
+                {quickCases.map((quickCase) => (
+                  <option key={quickCase.id} value={quickCase.file}>{quickCase.label}</option>
+                ))}
+              </select>
             </div>
           </div>
 
@@ -258,6 +472,55 @@ function App() {
           <button className="secondary-button" type="button" onClick={() => void handleSearch()} disabled={!selectedFile || isRunning || isValidating}>
             {isRunning ? 'Ejecutando...' : 'Ejecutar búsqueda'} <span>→</span>
           </button>
+            </>
+          ) : isPartidaMode ? (
+            <>
+              <div className="game-status-card">
+                <strong>Partida automática</strong>
+                <span>Estado: {gameStatus}</span>
+                <span>Turno del backend: {scenario?.turno}</span>
+                {lastGameAction && (
+                  <span>
+                    Última decisión: {lastGameAction.unidad_id} → ({lastGameAction.destino?.fila}, {lastGameAction.destino?.columna})
+                  </span>
+                )}
+              </div>
+              <label className="field-label" htmlFor="partida-algorithm">Algoritmo de ambos bandos</label>
+              <select
+                id="partida-algorithm"
+                value={gameAlgorithm}
+                disabled={isRunning || gameStatus !== 'en curso'}
+                onChange={(event) => setGameAlgorithm(event.target.value as AlgoritmoBusquedaDisponible)}
+              >
+                {Object.entries(algorithmLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+              </select>
+              <label className="field-label" htmlFor="partida-heuristic">Heurística</label>
+              <select
+                id="partida-heuristic"
+                value={gameHeuristic}
+                disabled={isRunning || gameStatus !== 'en curso' || gameAlgorithm !== 'A_ESTRELLA'}
+                onChange={(event) => setGameHeuristic(event.target.value as HeuristicaDisponible)}
+              >
+                <option value="MANHATTAN">Manhattan</option>
+                <option value="EUCLIDEA">Euclídea</option>
+              </select>
+              {gameAlgorithm === 'BEAM_SEARCH' && (
+                <>
+                  <label className="field-label" htmlFor="partida-beam-width">Ancho de Beam Search</label>
+                  <select id="partida-beam-width" value={gameBeamWidth} disabled={isRunning || gameStatus !== 'en curso'} onChange={(event) => setGameBeamWidth(Number(event.target.value))}>
+                    {[1, 2, 4, 8].map((value) => <option key={value} value={value}>{value}</option>)}
+                  </select>
+                </>
+              )}
+              <button className="secondary-button" type="button" onClick={() => void handleGameTurn()} disabled={isRunning || isValidating || gameStatus !== 'en curso'}>
+                {isRunning ? 'Ejecutando...' : 'Siguiente turno'} <span>→</span>
+              </button>
+              <button className="secondary-button" type="button" onClick={() => void handlePlayGame()} disabled={isRunning || isValidating || gameStatus !== 'en curso'}>
+                Calcular partida completa <span>↗</span>
+              </button>
+              <button className="secondary-button game-restart-button" type="button" onClick={handleRestartGame} disabled={isRunning || !initialScenario}>
+                Reiniciar partida
+              </button>
             </>
           ) : (
             <>
@@ -321,6 +584,57 @@ function App() {
               <span><i className="legend-swatch carrier" /> Portador</span>
             </div>
           </div>
+          {isPartidaMode && gameSimulation && (
+            <div className="game-history-controls">
+              <div className="game-history-buttons">
+                <button type="button" onClick={() => advanceGameHistory(-1)} disabled={isRunning || (gameHistoryIndex < 0 && gameStepIndex < 0)}>Anterior</button>
+                <button type="button" className="play-button" onClick={() => setIsGamePlaying((playing) => !playing)} disabled={isRunning || gameSimulation.historial.length === 0}>
+                  {isGamePlaying ? 'Pausar' : 'Iniciar'}
+                </button>
+                <button type="button" onClick={() => advanceGameHistory(1)} disabled={isRunning || (gameHistoryIndex === gameSimulation.historial.length - 1 && gameStepIndex >= gameSimulation.historial[gameHistoryIndex].pasos.length - 1)}>Siguiente</button>
+              </div>
+              <div className="game-speed-control">
+                <label htmlFor="game-speed">Velocidad de juego</label>
+                <input id="game-speed" type="range" min="10" max="100" step="10" value={gameSpeed} onChange={(event) => setGameSpeed(Number(event.target.value))} />
+                <output htmlFor="game-speed">{gameSpeed}%</output>
+              </div>
+              <span>
+                Turno {Math.max(0, gameHistoryIndex + 1)} · Paso {Math.max(0, gameStepIndex + 1)} · Resultado: {gameSimulation.estado_final}
+                {gameSimulation.motivo_final ? ` · ${gameSimulation.motivo_final}` : ''}
+              </span>
+              <ol className="game-history-list">
+                {gameSimulation.historial.map((turn, index) => (
+                  <li className={index === gameHistoryIndex ? 'active' : ''} key={`${turn.accion.unidad_id}-${index}`}>
+                    <div>
+                      T{index + 1}: {turn.accion.unidad_id} ({turn.accion.destino?.fila}, {turn.accion.destino?.columna}) · {turn.estado_partida}
+                    </div>
+                    {turn.pasos.length > 1 && (
+                      <ol className="game-turn-steps">
+                        {turn.pasos.map((step, stepIndex) => (
+                          <li className={index === gameHistoryIndex && stepIndex === gameStepIndex ? 'active' : ''} key={`${index}-${stepIndex}`}>
+                            <button
+                              type="button"
+                              className="game-step-button"
+                              onClick={() => showGameStep(index, stepIndex)}
+                            >
+                            {stepIndex === 0 ? 'Robo / movimiento' : `Escape ${stepIndex}`}:
+                            {' '}
+                            ({step.accion.origen?.fila}, {step.accion.origen?.columna})
+                            {' → '}
+                            ({step.accion.destino?.fila}, {step.accion.destino?.columna})
+                            {stepIndex === 0 && turn.estado.portador_recurso === turn.accion.unidad_id
+                              ? ' · recurso tomado'
+                              : ''}
+                            </button>
+                          </li>
+                        ))}
+                      </ol>
+                    )}
+                  </li>
+                ))}
+              </ol>
+            </div>
+          )}
           <div className="status-line">
             <span className="status-dot" />
             {isRunning ? 'Ejecutando búsqueda...' : searchResult?.exito ? 'Ruta encontrada y resaltada en el tablero.' : 'Carga un escenario para ejecutar una búsqueda.'}
@@ -349,7 +663,7 @@ function App() {
 
       {scenario && <ScenarioSummary escenario={scenario} />}
 
-      {isAdversarialMode ? (
+      {isAdversarialMode && !isPartidaMode ? (
         adversarialResult
           ? <AdversarialTree root={adversarialResult.arbol} />
           : (
@@ -361,6 +675,26 @@ function App() {
       ) : <ResultsDashboard results={resultHistory} />}
     </main>
   )
+}
+
+function applyTurnResult(scenario: Escenario, result: ResultadoTurno): Escenario {
+  return applyStateToScenario(scenario, result.estado)
+}
+
+function applyStateToScenario(scenario: Escenario, state: ResultadoTurno['estado']): Escenario {
+  const units = scenario.unidades.map((unit) => {
+    const updated = state.unidades.find((candidate) => candidate.id === unit.id)
+    return updated ? { ...unit, ...updated.posicion } : unit
+  })
+  const carrier = state.portador_recurso
+  const carrierUnit = units.find((unit) => unit.id === carrier)
+  return {
+    ...scenario,
+    unidades: units,
+    turno: state.turno,
+    recurso: carrierUnit ? { fila: carrierUnit.fila, columna: carrierUnit.columna } : state.posicion_recurso ?? scenario.recurso,
+    juego: { ...scenario.juego, portador_recurso: carrier },
+  }
 }
 
 export default App
