@@ -37,7 +37,7 @@ class Unidad(Coordenada):
 
 class Juego(BaseModel):
     portador_recurso: str | None = None
-    profundidad_maxima_minimax: int = Field(strict=True, gt=0)
+    profundidad_maxima_minimax: int = Field(strict=True, gt=0, le=8)
 
 
 class Prueba(BaseModel):
@@ -95,10 +95,17 @@ class Escenario(BaseModel):
                     f"{nombre} está sobre un terreno no transitable"
                 )
 
+        if (
+            self.bases.A.fila == self.bases.B.fila
+            and self.bases.A.columna == self.bases.B.columna
+        ):
+            raise ValueError("Las bases A y B deben estar en posiciones diferentes")
+
         ids = [unidad.id for unidad in self.unidades]
         if len(ids) != len(set(ids)):
             raise ValueError("Los identificadores de las unidades deben ser únicos")
 
+        ocupadas: set[tuple[int, int]] = set()
         for unidad in self.unidades:
             self._validar_posicion(unidad, filas, columnas, f"unidad {unidad.id}")
             terreno = self.tipos_terreno[self.terreno[unidad.fila][unidad.columna]]
@@ -106,6 +113,21 @@ class Escenario(BaseModel):
                 raise ValueError(
                     f"La unidad {unidad.id} está sobre un terreno no transitable"
                 )
+            posicion = (unidad.fila, unidad.columna)
+            if posicion in ocupadas:
+                raise ValueError(
+                    "Las posiciones iniciales de las unidades no pueden repetirse"
+                )
+            ocupadas.add(posicion)
+
+        if self.orden_sucesores is not None:
+            if len(self.orden_sucesores) != len(set(self.orden_sucesores)):
+                raise ValueError(
+                    "orden_sucesores no puede contener direcciones repetidas"
+                )
+
+        if self.prueba is not None and self.prueba.modo == "busqueda":
+            self._validar_prueba_busqueda(filas, columnas)
 
         portador = self.juego.portador_recurso
         if portador is not None and portador not in set(ids):
@@ -122,6 +144,34 @@ class Escenario(BaseModel):
                 )
 
         return self
+
+    def _validar_prueba_busqueda(
+        self,
+        filas: int,
+        columnas: int,
+    ) -> None:
+        prueba = self.prueba
+        assert prueba is not None
+
+        if prueba.unidad_inicio is None:
+            raise ValueError(
+                "La prueba en modo busqueda debe indicar unidad_inicio"
+            )
+        if prueba.unidad_inicio not in {unidad.id for unidad in self.unidades}:
+            raise ValueError(
+                "unidad_inicio debe identificar una unidad existente"
+            )
+
+        if prueba.objetivo is None:
+            raise ValueError(
+                "La prueba en modo busqueda debe indicar objetivo"
+            )
+        self._validar_posicion(prueba.objetivo, filas, columnas, "objetivo")
+        terreno = self.tipos_terreno[
+            self.terreno[prueba.objetivo.fila][prueba.objetivo.columna]
+        ]
+        if not terreno.transitable:
+            raise ValueError("El objetivo está sobre un terreno no transitable")
 
     @staticmethod
     def _validar_posicion(

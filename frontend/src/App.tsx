@@ -137,9 +137,6 @@ function App() {
       setFileName(file.name)
       setNotice({ type: 'success', message: result.mensaje })
     } catch (error) {
-      setScenario(null)
-      setSelectedFile(null)
-      setFileName('Ningún escenario cargado')
       setNotice({
         type: 'error',
         message: error instanceof Error ? error.message : 'No se pudo validar el escenario.',

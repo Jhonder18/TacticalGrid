@@ -125,11 +125,26 @@ class MinimaxTests(unittest.TestCase):
             json.loads((examples / "caso_6_portador_b.json").read_text())
         )
         self.assertEqual(carrier_a.terreno, carrier_b.terreno)
-        self.assertEqual(carrier_a.unidades, carrier_b.unidades)
         self.assertEqual(carrier_a.turno, carrier_b.turno)
         self.assertEqual(carrier_a.recurso, carrier_b.recurso)
         self.assertEqual(carrier_a.juego.portador_recurso, "A1")
         self.assertEqual(carrier_b.juego.portador_recurso, "B1")
+        for scenario, carrier_id in ((carrier_a, "A1"), (carrier_b, "B1")):
+            carriers = [
+                unidad
+                for unidad in scenario.unidades
+                if unidad.id == carrier_id
+            ]
+            self.assertEqual(len(carriers), 1)
+            self.assertEqual(
+                (carriers[0].fila, carriers[0].columna),
+                (scenario.recurso.fila, scenario.recurso.columna),
+            )
+        for scenario in (carrier_a, carrier_b):
+            positions = [
+                (unidad.fila, unidad.columna) for unidad in scenario.unidades
+            ]
+            self.assertEqual(len(positions), len(set(positions)))
         self.assertNotEqual(
             GameState.from_scenario(carrier_a).state_key(),
             GameState.from_scenario(carrier_b).state_key(),

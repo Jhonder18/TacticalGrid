@@ -1,0 +1,34 @@
+{
+  "version": "1.0",
+  "mapa": {"filas": 5, "columnas": 5},
+  "tipos_terreno": {
+    "camino": {"costo": 1, "transitable": true},
+    "caro": {"costo": 9, "transitable": true}
+  },
+  "terreno": [
+    ["camino", "caro", "caro", "caro", "camino"],
+    ["camino", "camino", "camino", "camino", "camino"],
+    ["camino", "camino", "camino", "camino", "camino"],
+    ["camino", "camino", "camino", "camino", "camino"],
+    ["camino", "camino", "camino", "camino", "camino"]
+  ],
+  "bases": {
+    "A": {"fila": 0, "columna": 0},
+    "B": {"fila": 4, "columna": 4}
+  },
+  "recurso": {"fila": 2, "columna": 2},
+  "unidades": [
+    {"id": "A1", "bando": "A", "tipo": "estandar", "fila": 0, "columna": 0},
+    {"id": "B1", "bando": "B", "tipo": "estandar", "fila": 4, "columna": 4}
+  ],
+  "turno": "A",
+  "juego": {
+    "portador_recurso": null,
+    "profundidad_maxima_minimax": 4
+  },
+  "prueba": {
+    "modo": "busqueda",
+    "unidad_inicio": "A9",
+    "objetivo": {"fila": 2, "columna": 2}
+  }
+}

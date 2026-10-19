@@ -51,10 +51,43 @@ class ScenarioValidationTests(unittest.TestCase):
             "base_sobre_obstaculo.json": "Base A",
             "recurso_sobre_obstaculo.json": "Recurso",
             "portador_desincronizado.json": "misma posición que el recurso",
+            "unidad_inicio_inexistente.json": "unidad_inicio debe identificar una unidad existente",
+            "objetivo_sobre_obstaculo.json": "El objetivo está sobre un terreno no transitable",
+            "unidades_superpuestas.json": "posiciones iniciales de las unidades no pueden repetirse",
+            "bases_iguales.json": "Las bases A y B deben estar en posiciones diferentes",
+            "orden_direcciones_repetidas.json": "no puede contener direcciones repetidas",
+            "profundidad_fuera_de_rango.json": "profundidad_maxima_minimax",
         }
         for filename, message in expected_messages.items():
             with self.subTest(filename=filename):
                 self.assert_rejected(EXAMPLES_DIR / "bad" / filename, message)
+
+    def test_search_mode_requires_unit_and_objective(self) -> None:
+        base = json.loads(
+            (EXAMPLES_DIR / "fixtures" / "ucs_demo.json").read_text(encoding="utf-8")
+        )
+
+        missing_unit = json.loads(json.dumps(base))
+        missing_unit["prueba"]["unidad_inicio"] = None
+        self.assert_rejected_payload(missing_unit, "debe indicar unidad_inicio")
+
+        missing_objective = json.loads(json.dumps(base))
+        missing_objective["prueba"]["objetivo"] = None
+        self.assert_rejected_payload(missing_objective, "debe indicar objetivo")
+
+    def assert_rejected_payload(
+        self,
+        payload: dict[str, Any],
+        expected_message: str,
+    ) -> None:
+        file = UploadFile(
+            BytesIO(json.dumps(payload).encode("utf-8")),
+            filename="payload.json",
+        )
+        with self.assertRaises(HTTPException) as context:
+            asyncio.run(validate_scenario(file))
+        self.assertEqual(context.exception.status_code, 400)
+        self.assertIn(expected_message, context.exception.detail)
 
     def test_non_json_file_is_rejected(self) -> None:
         with self.assertRaises(HTTPException) as context:
