@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import ValidationError
 
 from backend.algorithms import alpha_beta, a_star, beam_search, bfs, dfs, minimax, ucs
+from backend.core.adversarial_comparison import comparar_adversarial
 from backend.core.game import apply_action, get_game_status
 from backend.core.game_policy import choose_turn_transition
 from backend.models import (
@@ -15,6 +16,7 @@ from backend.models import (
     GameState,
     ResultadoAdversarial,
     ResultadoBusqueda,
+    ResultadoComparacionAdversarial,
     ResultadoTurno,
     ResultadoSimulacion,
     EstadoPartidaResponse,
@@ -170,6 +172,37 @@ async def run_adversarial(
         raise HTTPException(
             status_code=400,
             detail=f"No se pudo evaluar el turno: {error}",
+        ) from error
+
+
+@app.post(
+    "/api/adversarial/compare",
+    tags=["Adversarial"],
+    summary="Comparar Minimax y Alfa-Beta sobre el mismo escenario",
+    description="Ejecuta ambos algoritmos con la misma profundidad y resume coincidencias y ahorro de nodos.",
+    response_model=ResultadoComparacionAdversarial,
+)
+async def compare_adversarial(
+    file: UploadFile = File(...),
+    profundidad: int | None = Form(None, gt=0, le=8),
+) -> ResultadoComparacionAdversarial:
+    scenario = await _load_scenario(file)
+    if profundidad is not None:
+        scenario = scenario.model_copy(
+            deep=True,
+            update={
+                "juego": scenario.juego.model_copy(
+                    update={"profundidad_maxima_minimax": profundidad}
+                )
+            },
+        )
+
+    try:
+        return comparar_adversarial(scenario)
+    except ValueError as error:
+        raise HTTPException(
+            status_code=400,
+            detail=f"No se pudo comparar los algoritmos: {error}",
         ) from error
 
 

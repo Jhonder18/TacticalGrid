@@ -3,6 +3,7 @@ __all__ = [
     "evaluate_utility",
     "get_navigation_successors",
     "get_successors",
+    "comparar_adversarial",
 ]
 
 
@@ -19,4 +20,8 @@ def __getattr__(name: str):
         from .utility import evaluate_utility
 
         return evaluate_utility
+    if name == "comparar_adversarial":
+        from .adversarial_comparison import comparar_adversarial
+
+        return comparar_adversarial
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

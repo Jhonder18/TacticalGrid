@@ -1,0 +1,227 @@
+[
+  {
+    "escenario": "caso_6_portador_a",
+    "profundidad": 3,
+    "misma_accion": true,
+    "mismo_valor": true,
+    "reduccion_nodos_porcentaje": 77.9449,
+    "minimax": {
+      "algoritmo": "MINIMAX",
+      "profundidad": 3,
+      "nodos_generados": 399,
+      "nodos_evaluados": 346,
+      "nodos_podados": 0,
+      "accion_seleccionada": "A2: (9, 10) -> (9, 11)",
+      "valor_obtenido": 0.22000000000000003
+    },
+    "alpha_beta": {
+      "algoritmo": "ALFA_BETA",
+      "profundidad": 3,
+      "nodos_generados": 88,
+      "nodos_evaluados": 62,
+      "nodos_podados": 112,
+      "accion_seleccionada": "A2: (9, 10) -> (9, 11)",
+      "valor_obtenido": 0.22000000000000003
+    }
+  },
+  {
+    "escenario": "caso_6_portador_b",
+    "profundidad": 3,
+    "misma_accion": true,
+    "mismo_valor": true,
+    "reduccion_nodos_porcentaje": 68.0312,
+    "minimax": {
+      "algoritmo": "MINIMAX",
+      "profundidad": 3,
+      "nodos_generados": 513,
+      "nodos_evaluados": 453,
+      "nodos_podados": 0,
+      "accion_seleccionada": "A2: (9, 10) -> (8, 10)",
+      "valor_obtenido": 0.2472222222222222
+    },
+    "alpha_beta": {
+      "algoritmo": "ALFA_BETA",
+      "profundidad": 3,
+      "nodos_generados": 164,
+      "nodos_evaluados": 134,
+      "nodos_podados": 87,
+      "accion_seleccionada": "A2: (9, 10) -> (8, 10)",
+      "valor_obtenido": 0.2472222222222222
+    }
+  },
+  {
+    "escenario": "caso_7_intercepcion",
+    "profundidad": 3,
+    "misma_accion": true,
+    "mismo_valor": true,
+    "reduccion_nodos_porcentaje": 82.4348,
+    "minimax": {
+      "algoritmo": "MINIMAX",
+      "profundidad": 3,
+      "nodos_generados": 1150,
+      "nodos_evaluados": 1039,
+      "nodos_podados": 0,
+      "accion_seleccionada": "A1: (10, 10) -> (10, 11)",
+      "valor_obtenido": -0.22666666666666668
+    },
+    "alpha_beta": {
+      "algoritmo": "ALFA_BETA",
+      "profundidad": 3,
+      "nodos_generados": 202,
+      "nodos_evaluados": 162,
+      "nodos_podados": 184,
+      "accion_seleccionada": "A1: (10, 10) -> (10, 11)",
+      "valor_obtenido": -0.22666666666666668
+    }
+  },
+  {
+    "escenario": "caso_8_poda",
+    "profundidad": 4,
+    "misma_accion": true,
+    "mismo_valor": true,
+    "reduccion_nodos_porcentaje": 92.4624,
+    "minimax": {
+      "algoritmo": "MINIMAX",
+      "profundidad": 4,
+      "nodos_generados": 9247,
+      "nodos_evaluados": 8284,
+      "nodos_podados": 0,
+      "accion_seleccionada": "A1: (9, 9) -> (9, 10)",
+      "valor_obtenido": 0.2976190476190476
+    },
+    "alpha_beta": {
+      "algoritmo": "ALFA_BETA",
+      "profundidad": 4,
+      "nodos_generados": 697,
+      "nodos_evaluados": 489,
+      "nodos_podados": 1409,
+      "accion_seleccionada": "A1: (9, 9) -> (9, 10)",
+      "valor_obtenido": 0.2976190476190476
+    }
+  },
+  {
+    "escenario": "caso_9_orden_poda",
+    "profundidad": 3,
+    "misma_accion": true,
+    "mismo_valor": true,
+    "reduccion_nodos_porcentaje": 81.9315,
+    "minimax": {
+      "algoritmo": "MINIMAX",
+      "profundidad": 3,
+      "nodos_generados": 963,
+      "nodos_evaluados": 872,
+      "nodos_podados": 0,
+      "accion_seleccionada": "A1: (9, 9) -> (9, 10)",
+      "valor_obtenido": 0.299047619047619
+    },
+    "alpha_beta": {
+      "algoritmo": "ALFA_BETA",
+      "profundidad": 3,
+      "nodos_generados": 174,
+      "nodos_evaluados": 143,
+      "nodos_podados": 126,
+      "accion_seleccionada": "A1: (9, 9) -> (9, 10)",
+      "valor_obtenido": 0.299047619047619
+    }
+  },
+  {
+    "escenario": "caso_10_profundidades",
+    "profundidad": 5,
+    "misma_accion": true,
+    "mismo_valor": true,
+    "reduccion_nodos_porcentaje": 96.4031,
+    "minimax": {
+      "algoritmo": "MINIMAX",
+      "profundidad": 5,
+      "nodos_generados": 99003,
+      "nodos_evaluados": 89756,
+      "nodos_podados": 0,
+      "accion_seleccionada": "A1: (9, 9) -> (9, 10)",
+      "valor_obtenido": 0.3
+    },
+    "alpha_beta": {
+      "algoritmo": "ALFA_BETA",
+      "profundidad": 5,
+      "nodos_generados": 3561,
+      "nodos_evaluados": 2828,
+      "nodos_podados": 3967,
+      "accion_seleccionada": "A1: (9, 9) -> (9, 10)",
+      "valor_obtenido": 0.3
+    }
+  },
+  {
+    "escenario": "caso_10_profundidades_p2",
+    "profundidad": 2,
+    "misma_accion": true,
+    "mismo_valor": true,
+    "reduccion_nodos_porcentaje": 59.3407,
+    "minimax": {
+      "algoritmo": "MINIMAX",
+      "profundidad": 2,
+      "nodos_generados": 91,
+      "nodos_evaluados": 80,
+      "nodos_podados": 0,
+      "accion_seleccionada": "A1: (9, 9) -> (9, 10)",
+      "valor_obtenido": 0.26
+    },
+    "alpha_beta": {
+      "algoritmo": "ALFA_BETA",
+      "profundidad": 2,
+      "nodos_generados": 37,
+      "nodos_evaluados": 26,
+      "nodos_podados": 54,
+      "accion_seleccionada": "A1: (9, 9) -> (9, 10)",
+      "valor_obtenido": 0.26
+    }
+  },
+  {
+    "escenario": "caso_10_profundidades_p3",
+    "profundidad": 3,
+    "misma_accion": true,
+    "mismo_valor": true,
+    "reduccion_nodos_porcentaje": 78.4008,
+    "minimax": {
+      "algoritmo": "MINIMAX",
+      "profundidad": 3,
+      "nodos_generados": 963,
+      "nodos_evaluados": 872,
+      "nodos_podados": 0,
+      "accion_seleccionada": "A1: (9, 9) -> (9, 10)",
+      "valor_obtenido": 0.299047619047619
+    },
+    "alpha_beta": {
+      "algoritmo": "ALFA_BETA",
+      "profundidad": 3,
+      "nodos_generados": 208,
+      "nodos_evaluados": 171,
+      "nodos_podados": 152,
+      "accion_seleccionada": "A1: (9, 9) -> (9, 10)",
+      "valor_obtenido": 0.299047619047619
+    }
+  },
+  {
+    "escenario": "caso_10_profundidades_p5",
+    "profundidad": 5,
+    "misma_accion": true,
+    "mismo_valor": true,
+    "reduccion_nodos_porcentaje": 96.4031,
+    "minimax": {
+      "algoritmo": "MINIMAX",
+      "profundidad": 5,
+      "nodos_generados": 99003,
+      "nodos_evaluados": 89756,
+      "nodos_podados": 0,
+      "accion_seleccionada": "A1: (9, 9) -> (9, 10)",
+      "valor_obtenido": 0.3
+    },
+    "alpha_beta": {
+      "algoritmo": "ALFA_BETA",
+      "profundidad": 5,
+      "nodos_generados": 3561,
+      "nodos_evaluados": 2828,
+      "nodos_podados": 3967,
+      "accion_seleccionada": "A1: (9, 9) -> (9, 10)",
+      "valor_obtenido": 0.3
+    }
+  }
+]

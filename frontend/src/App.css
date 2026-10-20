@@ -1197,3 +1197,63 @@ input[type='number'] {
     top: 84px;
   }
 }
+.comparison-panel {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 5vw 70px;
+}
+.comparison-scroll {
+  overflow: auto;
+  margin-top: 18px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: #fff;
+}
+.comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  font: 11px var(--mono);
+}
+.comparison-table th,
+.comparison-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  white-space: nowrap;
+}
+.comparison-table thead th {
+  color: var(--muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.comparison-table tbody th {
+  font-weight: 700;
+}
+.comparison-table tbody tr:last-child th,
+.comparison-table tbody tr:last-child td {
+  border-bottom: none;
+}
+.comparison-action {
+  font-family: var(--mono);
+}
+.comparison-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: space-between;
+  margin-top: 14px;
+  padding: 12px 16px;
+  border-radius: 7px;
+  font: 11px var(--mono);
+}
+.comparison-match {
+  border: 1px solid #c8f1df;
+  background: #eefaf3;
+  color: #12694a;
+}
+.comparison-diff {
+  border: 1px solid #ffc7c0;
+  background: #fff2f0;
+  color: #a33124;
+}

@@ -2,15 +2,17 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import type { ChangeEvent } from 'react'
 import { Grid } from './components/Grid'
 import { AdversarialTree } from './components/AdversarialTree'
+import { AdversarialComparison } from './components/AdversarialComparison'
 import { ResultsDashboard } from './components/ResultsDashboard'
 import { ScenarioSummary } from './components/ScenarioSummary'
-import { runAdversarial, runGameTurn, runSearch, simulateGame, validateScenario } from './services/api'
+import { runAdversarial, runAdversarialComparison, runGameTurn, runSearch, simulateGame, validateScenario } from './services/api'
 import type {
   AlgoritmoBusquedaDisponible,
   Escenario,
   HeuristicaDisponible,
   ResultadoBusqueda,
   ResultadoAdversarial,
+  ResultadoComparacionAdversarial,
   EstadoPartida,
   ResultadoTurno,
   ResultadoSimulacion,
@@ -55,6 +57,7 @@ function App() {
   const [beamWidth, setBeamWidth] = useState(1)
   const [searchResult, setSearchResult] = useState<ResultadoBusqueda | null>(null)
   const [adversarialResult, setAdversarialResult] = useState<ResultadoAdversarial | null>(null)
+  const [adversarialComparison, setAdversarialComparison] = useState<ResultadoComparacionAdversarial | null>(null)
   const [adversarialAlgorithm, setAdversarialAlgorithm] = useState<'MINIMAX' | 'ALFA_BETA'>('ALFA_BETA')
   const [depth, setDepth] = useState(2)
   const [resultHistory, setResultHistory] = useState<ResultadoBusqueda[]>([])
@@ -127,6 +130,7 @@ function App() {
       setSelectedFile(file)
       setSearchResult(null)
       setAdversarialResult(null)
+      setAdversarialComparison(null)
       setResultHistory([])
       setGameStatus('en curso')
       setLastGameAction(null)
@@ -366,6 +370,33 @@ function App() {
     }
   }
 
+  const handleAdversarialComparison = async () => {
+    if (!selectedFile) {
+      setNotice({ type: 'error', message: 'Carga un escenario válido antes de comparar.' })
+      return
+    }
+
+    setIsRunning(true)
+    setNotice(null)
+    try {
+      const result = await runAdversarialComparison(selectedFile, depth)
+      setAdversarialComparison(result)
+      setNotice({
+        type: 'success',
+        message: result.misma_accion && result.mismo_valor
+          ? `Minimax y Alfa-Beta coinciden; Alfa-Beta redujo ${result.reduccion_nodos_porcentaje.toFixed(2)}% de nodos.`
+          : 'Minimax y Alfa-Beta difieren en su decisión.',
+      })
+    } catch (error) {
+      setNotice({
+        type: 'error',
+        message: error instanceof Error ? error.message : 'No se pudo comparar los algoritmos.',
+      })
+    } finally {
+      setIsRunning(false)
+    }
+  }
+
   const rows = scenario?.mapa.filas ?? 8
   const columns = scenario?.mapa.columnas ?? 8
 
@@ -540,6 +571,9 @@ function App() {
               <button className="secondary-button" type="button" onClick={() => void handleAdversarial()} disabled={!selectedFile || isRunning || isValidating}>
                 {isRunning ? 'Evaluando...' : 'Evaluar turno'} <span>→</span>
               </button>
+              <button className="secondary-button" type="button" onClick={() => void handleAdversarialComparison()} disabled={!selectedFile || isRunning || isValidating}>
+                Comparar Minimax vs Alfa-Beta <span>⇄</span>
+              </button>
             </>
           )}
         </aside>
@@ -670,6 +704,10 @@ function App() {
             </section>
           )
       ) : <ResultsDashboard results={resultHistory} />}
+
+      {isAdversarialMode && !isPartidaMode && adversarialComparison && (
+        <AdversarialComparison comparacion={adversarialComparison} />
+      )}
     </main>
   )
 }

@@ -3,6 +3,7 @@ import type {
   HeuristicaDisponible,
   ResultadoBusqueda,
   ResultadoAdversarial,
+  ResultadoComparacionAdversarial,
   ResultadoTurno,
   ResultadoSimulacion,
 } from '../types/types'
@@ -97,6 +98,31 @@ export async function runAdversarial(
   }
 
   return body as ResultadoAdversarial
+}
+
+export async function runAdversarialComparison(
+  file: File,
+  profundidad: number,
+): Promise<ResultadoComparacionAdversarial> {
+  const formData = new FormData()
+  formData.append('file', file)
+  formData.append('profundidad', String(profundidad))
+
+  const response = await fetch(`${API_BASE_URL}/api/adversarial/compare`, {
+    method: 'POST',
+    body: formData,
+  })
+  const body = (await response.json()) as
+    | ResultadoComparacionAdversarial
+    | { detail?: string }
+
+  if (!response.ok) {
+    throw new Error(
+      'detail' in body ? body.detail : 'No se pudo comparar Minimax y Alfa-Beta',
+    )
+  }
+
+  return body as ResultadoComparacionAdversarial
 }
 
 export async function runGameTurn(

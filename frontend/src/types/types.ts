@@ -162,4 +162,13 @@ export interface NodoArbolAdversarial {
 
 export type ResultadoAdversarial = MetricasAdversariales
 
+export interface ResultadoComparacionAdversarial {
+  profundidad: number
+  minimax: MetricasAdversariales
+  alpha_beta: MetricasAdversariales
+  misma_accion: boolean
+  mismo_valor: boolean
+  reduccion_nodos_porcentaje: number
+}
+
 export type ResultadoMetricas = MetricasBusqueda | MetricasAdversariales

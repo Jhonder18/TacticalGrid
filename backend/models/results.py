@@ -47,6 +47,15 @@ class ResultadoAdversarial(BaseModel):
     arbol: NodoArbolAdversarial
 
 
+class ResultadoComparacionAdversarial(BaseModel):
+    profundidad: int = Field(gt=0)
+    minimax: ResultadoAdversarial
+    alpha_beta: ResultadoAdversarial
+    misma_accion: bool
+    mismo_valor: bool
+    reduccion_nodos_porcentaje: float
+
+
 class UnidadEstadoResponse(BaseModel):
     id: str
     bando: Literal["A", "B"]
