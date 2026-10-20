@@ -303,18 +303,18 @@ Ejecutar la validacion final, limpiar el repositorio y preparar el commit de
 entrega del proyecto.
 
 ### Frontend
-- [ ] Ejecutar npm run lint.
-- [ ] Ejecutar npm run build.
-- [ ] Confirmar que no existan errores de TypeScript.
-- [ ] Confirmar que los escenarios publicos requeridos esten incluidos.
+- [x] Ejecutar npm run lint.
+- [x] Ejecutar npm run build.
+- [x] Confirmar que no existan errores de TypeScript.
+- [x] Confirmar que los escenarios publicos requeridos esten incluidos.
 
 ### Backend
-- [ ] Ejecutar la suite completa de unittest.
-- [ ] Ejecutar git diff --check.
-- [ ] Revisar requirements.txt.
-- [ ] Revisar que venv, node_modules, __pycache__ y dist no esten versionados.
-- [ ] Revisar que no existan secretos en el repositorio.
-- [ ] Verificar que el proyecto funcione desde un clon limpio.
-- [ ] Crear el commit final con el resumen de la entrega.
-- [ ] Hacer push de la rama final.
+- [x] Ejecutar la suite completa de unittest.
+- [x] Ejecutar git diff --check.
+- [x] Revisar requirements.txt.
+- [x] Revisar que venv, node_modules, __pycache__ y dist no esten versionados.
+- [x] Revisar que no existan secretos en el repositorio.
+- [x] Verificar que el proyecto funcione desde un clon limpio.
+- [x] Crear el commit final con el resumen de la entrega.
+- [x] Hacer push de la rama final.
 - [ ] Actualizar GitHub Projects con la evidencia de cada tarea.
