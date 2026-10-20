@@ -129,6 +129,12 @@ export type HeuristicaDisponible = 'MANHATTAN' | 'EUCLIDEA'
 
 export type ResultadoBusqueda = MetricasBusqueda
 
+export interface EjecucionBusqueda {
+  resultado: ResultadoBusqueda
+  heuristica: HeuristicaDisponible
+  k: number | null
+}
+
 export type AlgoritmoAdversarial = 'MINIMAX' | 'ALFA_BETA'
 
 export interface Accion {

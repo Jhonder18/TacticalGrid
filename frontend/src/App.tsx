@@ -9,6 +9,7 @@ import { runAdversarial, runAdversarialComparison, runGameTurn, runSearch, simul
 import type {
   AlgoritmoBusquedaDisponible,
   Escenario,
+  EjecucionBusqueda,
   HeuristicaDisponible,
   ResultadoBusqueda,
   ResultadoAdversarial,
@@ -60,7 +61,7 @@ function App() {
   const [adversarialComparison, setAdversarialComparison] = useState<ResultadoComparacionAdversarial | null>(null)
   const [adversarialAlgorithm, setAdversarialAlgorithm] = useState<'MINIMAX' | 'ALFA_BETA'>('ALFA_BETA')
   const [depth, setDepth] = useState(2)
-  const [resultHistory, setResultHistory] = useState<ResultadoBusqueda[]>([])
+  const [resultHistory, setResultHistory] = useState<EjecucionBusqueda[]>([])
   const [isValidating, setIsValidating] = useState(false)
   const [isRunning, setIsRunning] = useState(false)
   const [gameStatus, setGameStatus] = useState<EstadoPartida>('en curso')
@@ -329,8 +330,8 @@ function App() {
       const result = await runSearch(selectedFile, algorithm, heuristic, beamWidth)
       setSearchResult(result)
       setResultHistory((previous) => [
-        result,
-        ...previous.filter((entry) => entry.algoritmo !== result.algoritmo),
+        { resultado: result, heuristica: heuristic, k: algorithm === 'BEAM_SEARCH' ? beamWidth : null },
+        ...previous.filter((entry) => entry.resultado.algoritmo !== result.algoritmo),
       ].slice(0, 8))
       setNotice({
         type: result.exito ? 'success' : 'error',
@@ -482,8 +483,11 @@ function App() {
           <label className="field-label" htmlFor="heuristic">Heurística</label>
           <select id="heuristic" value={heuristic} disabled={algorithm !== 'A_ESTRELLA'} onChange={(event) => setHeuristic(event.target.value as HeuristicaDisponible)}>
             <option value="MANHATTAN">Manhattan</option>
-            <option value="EUCLIDEA">Heurística Propia</option>
+            <option value="EUCLIDEA">Euclídea (propia)</option>
           </select>
+          {algorithm === 'A_ESTRELLA' && (
+            <small className="field-help">Heurística activa: {heuristic === 'MANHATTAN' ? 'Manhattan' : 'Euclídea (propia)'}.</small>
+          )}
           {algorithm === 'BEAM_SEARCH' && (
             <>
               <label className="field-label" htmlFor="beam-width">Ancho de memoria (k)</label>
@@ -530,7 +534,7 @@ function App() {
                 onChange={(event) => setGameHeuristic(event.target.value as HeuristicaDisponible)}
               >
                 <option value="MANHATTAN">Manhattan</option>
-                <option value="EUCLIDEA">Euclídea</option>
+                <option value="EUCLIDEA">Euclídea (propia)</option>
               </select>
               {gameAlgorithm === 'BEAM_SEARCH' && (
                 <>

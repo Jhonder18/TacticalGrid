@@ -1030,6 +1030,10 @@ input[type='number'] {
   border-radius: 3px;
   font-size: 9px;
 }
+.result-params {
+  color: var(--muted);
+  font-family: var(--mono);
+}
 .result-status.success {
   color: #196944;
   background: #e2f8ec;

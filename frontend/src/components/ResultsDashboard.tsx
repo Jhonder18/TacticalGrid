@@ -1,7 +1,7 @@
-import type { ResultadoBusqueda } from '../types/types'
+import type { EjecucionBusqueda, ResultadoBusqueda } from '../types/types'
 
 interface ResultsDashboardProps {
-  results: ResultadoBusqueda[]
+  results: EjecucionBusqueda[]
 }
 
 const algorithmLabels: Record<ResultadoBusqueda['algoritmo'], string> = {
@@ -12,8 +12,24 @@ const algorithmLabels: Record<ResultadoBusqueda['algoritmo'], string> = {
   BEAM_SEARCH: 'Beam Search',
 }
 
+const heuristicLabels: Record<'MANHATTAN' | 'EUCLIDEA', string> = {
+  MANHATTAN: 'Manhattan',
+  EUCLIDEA: 'Euclídea (propia)',
+}
+
 function formatCost(cost: number): string {
   return Number.isInteger(cost) ? String(cost) : cost.toFixed(2)
+}
+
+function formatParameters(entry: EjecucionBusqueda): string {
+  const { resultado, heuristica, k } = entry
+  if (resultado.algoritmo === 'A_ESTRELLA') {
+    return `h: ${heuristicLabels[heuristica]}`
+  }
+  if (resultado.algoritmo === 'BEAM_SEARCH') {
+    return `k: ${k ?? resultado.k ?? 1}`
+  }
+  return '—'
 }
 
 export function ResultsDashboard({ results }: ResultsDashboardProps) {
@@ -33,6 +49,7 @@ export function ResultsDashboard({ results }: ResultsDashboardProps) {
           <thead>
             <tr>
               <th>Método</th>
+              <th>Parámetros</th>
               <th>Éxito</th>
               <th>Camino</th>
               <th>Longitud</th>
@@ -44,7 +61,8 @@ export function ResultsDashboard({ results }: ResultsDashboardProps) {
             </tr>
           </thead>
           <tbody>
-            {results.length ? results.map((result) => {
+            {results.length ? results.map((entry) => {
+              const result = entry.resultado
               const beamFailed = result.algoritmo === 'BEAM_SEARCH' && !result.exito
               return (
               <tr
@@ -52,6 +70,7 @@ export function ResultsDashboard({ results }: ResultsDashboardProps) {
                 className={beamFailed ? 'beam-failed-row' : undefined}
               >
                 <td><strong>{algorithmLabels[result.algoritmo]}</strong></td>
+                <td className="result-params">{formatParameters(entry)}</td>
                 <td><span className={`result-status ${result.exito ? 'success' : 'failure'}`}>
                   {result.exito ? 'Sí' : 'No'}
                 </span></td>
@@ -72,7 +91,7 @@ export function ResultsDashboard({ results }: ResultsDashboardProps) {
               )
             }) : (
               <tr>
-                <td className="results-empty" colSpan={9}>
+                <td className="results-empty" colSpan={10}>
                   Todavía no hay ejecuciones almacenadas en esta sesión.
                 </td>
               </tr>
