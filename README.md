@@ -1,7 +1,14 @@
 # TacticalGrid
 
 Plataforma académica para ejecutar, observar y medir algoritmos de inteligencia
-artificial sobre un tablero cuadriculado 2D.
+artificial sobre un tablero cuadriculado 2D. Permite cargar escenarios JSON
+externos, ejecutar búsquedas (BFS, DFS, UCS, A*, Beam Search), tomar decisiones
+adversariales (Minimax y Alfa-Beta) y simular partidas automáticas.
+
+## Integrantes
+
+- Carlos Gómez ([Cgomez2107](https://github.com/Cgomez2107)) — planificación y desarrollo.
+- Jhon Hander Patiño Londoño ([Jhonder18](https://github.com/Jhonder18)) — planificación y desarrollo.
 
 ## Requisitos
 
@@ -25,15 +32,14 @@ Vite estará disponible en `http://localhost:5173`.
 En PowerShell, desde la raíz del proyecto:
 
 ```powershell
-New-Item -ItemType Directory -Force backend | Out-Null
-py -3 -m venv backend\venv
-.\backend\venv\Scripts\Activate.ps1
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
 python -m pip install -r backend\requirements.txt
 python -m uvicorn backend.main:app --reload --port 8000
 ```
 
-La API estará disponible en `http://localhost:8000`. FastAPI incluye documentación
-interactiva automáticamente:
+La API estará disponible en `http://localhost:8000`. FastAPI incluye
+documentación interactiva:
 
 - Swagger UI: `http://localhost:8000/docs`
 - ReDoc: `http://localhost:8000/redoc`
@@ -41,22 +47,61 @@ interactiva automáticamente:
 
 La comprobación de salud está disponible en `http://localhost:8000/api/health`.
 
-Para validar un escenario JSON sin aplicarlo al estado actual, usa:
+## Endpoints
 
-```text
-POST http://localhost:8000/api/scenario/validate
-```
+| Método | Ruta | Descripción |
+| --- | --- | --- |
+| GET | `/api/health` | Estado del servicio |
+| POST | `/api/scenario/validate` | Validar un escenario JSON |
+| POST | `/api/search/run` | Ejecutar BFS, DFS, UCS, A* o Beam Search |
+| POST | `/api/adversarial/run` | Ejecutar Minimax o Alfa-Beta |
+| POST | `/api/adversarial/compare` | Comparar Minimax y Alfa-Beta |
+| POST | `/api/report/full` | Informe consolidado de los Casos 1 a 10 |
+| POST | `/api/game/turn` | Aplicar un turno de partida |
+| POST | `/api/game/simulate` | Simular una partida completa |
 
-El endpoint recibe el archivo en el campo multipart `file`, devuelve `200` para
-escenarios válidos y `400` con la regla incumplida cuando el escenario es
-rechazado.
+Los endpoints reciben el archivo en el campo multipart `file`. El detalle de
+parámetros, respuestas y errores está en
+[docs/documento_tecnico.md](docs/documento_tecnico.md).
 
-Los escenarios de demostración están en [examples/](<./examples/>). Para probar
-automáticamente todos los casos válidos e inválidos:
+## Escenarios
+
+Los escenarios de demostración están en [examples/](<./examples/>):
+
+- `good/`: escenarios válidos (incluidos los Casos 1 a 10).
+- `bad/`: escenarios inválidos, uno por regla de validación.
+- `externo_*.json`: escenarios externos de búsqueda, adversarial y partida.
+
+El contrato del formato JSON está en
+[docs/documento_tecnico.md](docs/documento_tecnico.md#3-contrato-json).
+
+## Pruebas
+
+Backend:
 
 ```powershell
-.\backend\venv\Scripts\python.exe -m unittest discover -s backend\tests -v
+python -m unittest discover -s backend/tests
 ```
+
+Frontend:
+
+```powershell
+cd frontend
+npx tsc --noEmit
+npx eslint --max-warnings=0 .
+npx oxlint .
+npx vite build
+```
+
+## Documentación
+
+- [Documento técnico](docs/documento_tecnico.md): estructura, endpoints, contrato
+  JSON, reglas, algoritmos, métricas y pruebas.
+- [Manual de usuario](docs/manual_usuario.md): uso de la interfaz.
+- [Heurísticas y utilidad](docs/heuristicas_y_utilidad.md): A* y función de
+  utilidad.
+- [Informe de resultados](docs/informe_resultados_casos.md): Casos 1 a 10.
+- [Prueba manual de la interfaz](docs/prueba_manual_interfaz.md): evidencia (T-28).
 
 ## Estructura
 
@@ -68,8 +113,11 @@ frontend/
     services/
     types/
 backend/
-  api/
-  algorithms/
-  core/
-  models/
+  algorithms/    BFS, DFS, UCS, A*, Beam Search, Minimax, Alfa-Beta
+  core/          Estado, sucesores, partida, utilidad, verificación e informes
+  models/        Escenario, GameState y resultados
+  scripts/       Generadores de reportes
+  tests/         Suite de pruebas
+docs/
+examples/
 ```

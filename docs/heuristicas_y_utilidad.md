@@ -4,6 +4,10 @@ Documento técnico de sustentación. Cada afirmación se respalda con la ubicaci
 real en el código para comprobar que la documentación coincide con la
 implementación.
 
+Complementa al [documento técnico](documento_tecnico.md), que describe la
+estructura del proyecto, los endpoints, el contrato JSON, las reglas de estado y
+los algoritmos.
+
 Índice:
 
 1. [A\*: fórmula f(n) = g(n) + h(n)](#1-a-fórmula-fn--gn--hn)

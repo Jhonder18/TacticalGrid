@@ -1,46 +1,61 @@
-# React + TypeScript + Vite
+# Frontend de TacticalGrid
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Interfaz en React + TypeScript construida con Vite. Muestra el tablero, ejecuta
+búsquedas y decisiones adversariales, y reproduce partidas automáticas
+consumiendo la API del backend.
 
-Currently, two official plugins are available:
+## Requisitos
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Node.js 18+
 
-## React Compiler
+## Puesta en marcha
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```powershell
+npm install
+npm run dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+La aplicación queda disponible en `http://localhost:5173`. Requiere el backend
+en ejecución en `http://localhost:8000`.
+
+## Estructura de `src/`
+
+```text
+src/
+  App.tsx                 # Componente principal y flujo de la interfaz
+  components/
+    Grid.tsx              # Tablero dinámico
+    ResultsDashboard.tsx  # Tabla de métricas de búsqueda
+    AdversarialTree.tsx   # Árbol adversarial y nodos podados
+    AdversarialComparison.tsx # Comparación Minimax vs Alfa-Beta
+    ScenarioSummary.tsx   # Resumen del escenario
+    terrainStyles.ts      # Colores por tipo de terreno
+  services/api.ts         # Cliente HTTP de los endpoints
+  hooks/                  # Hooks auxiliares (reservado)
+  types/types.ts          # Tipos TypeScript del contrato
+```
+
+El flujo de uso se describe en [../docs/manual_usuario.md](../docs/manual_usuario.md).
+
+## Scripts
+
+```powershell
+npm run dev            # Servidor de desarrollo
+npm run build          # Compilación de producción
+npm run preview        # Vista previa de la compilación
+npm run lint           # ESLint
+npm run lint:oxlint    # Oxlint
+npm run format:check   # Verificación de formato
+npm run format         # Aplicar formato
+```
 
 ## Calidad de código
 
-```powershell
-npm run lint
-npm run lint:oxlint
-npm run format:check
-```
-
-Para aplicar el formato automáticamente:
+Antes de integrar cambios:
 
 ```powershell
-npm run format
+npx tsc --noEmit
+npx eslint --max-warnings=0 .
+npx oxlint .
+npx vite build
 ```

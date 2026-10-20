@@ -7,6 +7,9 @@ de ejecutar los endpoints reales del backend con `TestClient`; los marcados como
 estrictamente visual (colores, conectores, responsive) se realizó en el
 navegador durante el recorrido manual.
 
+Complementa al [documento técnico](documento_tecnico.md) y al
+[manual de usuario](manual_usuario.md).
+
 No se incluyen capturas de pantalla: la evidencia se basa en las respuestas de
 la API y en las referencias `archivo:línea` de cada mecanismo.
 

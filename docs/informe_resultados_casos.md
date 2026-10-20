@@ -3,6 +3,9 @@
 Documento de sustentación con las tablas de **resultados esperados** y
 **resultados obtenidos** para cada caso reproducible del proyecto.
 
+Complementa al [documento técnico](documento_tecnico.md), que describe la
+estructura, los endpoints y los algoritmos.
+
 Los valores obtenidos se generan con:
 
 ```powershell
