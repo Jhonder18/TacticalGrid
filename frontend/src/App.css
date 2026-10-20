@@ -1038,6 +1038,13 @@ input[type='number'] {
   color: #9d392d;
   background: #fff0ec;
 }
+.beam-failed-row td {
+  background: #fff8e6;
+}
+.beam-failed-row .result-path {
+  color: #9d6b1f;
+  font-weight: 600;
+}
 .results-empty {
   padding: 26px !important;
   color: var(--muted);

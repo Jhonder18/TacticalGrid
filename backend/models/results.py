@@ -22,6 +22,7 @@ class ResultadoBusqueda(BaseModel):
     estados_expandidos: int = Field(ge=0)
     maximo_frontera: int = Field(ge=0)
     tiempo: float = Field(ge=0)
+    k: int | None = Field(default=None, ge=0)
 
 
 class NodoArbolAdversarial(BaseModel):

@@ -25,6 +25,7 @@ class SearchEndpointTests(unittest.TestCase):
         "estados_expandidos",
         "maximo_frontera",
         "tiempo",
+        "k",
     }
 
     def call_endpoint(self, filename: str, algorithm: str) -> Any:

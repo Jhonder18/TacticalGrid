@@ -44,16 +44,23 @@ export function ResultsDashboard({ results }: ResultsDashboardProps) {
             </tr>
           </thead>
           <tbody>
-            {results.length ? results.map((result) => (
-              <tr key={result.algoritmo}>
+            {results.length ? results.map((result) => {
+              const beamFailed = result.algoritmo === 'BEAM_SEARCH' && !result.exito
+              return (
+              <tr
+                key={result.algoritmo}
+                className={beamFailed ? 'beam-failed-row' : undefined}
+              >
                 <td><strong>{algorithmLabels[result.algoritmo]}</strong></td>
                 <td><span className={`result-status ${result.exito ? 'success' : 'failure'}`}>
                   {result.exito ? 'Sí' : 'No'}
                 </span></td>
                 <td className="result-path">
-                  {result.camino.length
-                    ? result.camino.map((step) => `(${step.fila},${step.columna})`).join(' → ')
-                    : 'Sin camino'}
+                  {beamFailed
+                    ? `Sin solución con k=${result.k ?? 1}`
+                    : result.camino.length
+                      ? result.camino.map((step) => `(${step.fila},${step.columna})`).join(' → ')
+                      : 'Sin camino'}
                 </td>
                 <td>{result.longitud_camino}</td>
                 <td>{formatCost(result.costo)}</td>
@@ -62,7 +69,8 @@ export function ResultsDashboard({ results }: ResultsDashboardProps) {
                 <td>{result.maximo_frontera}</td>
                 <td>{(result.tiempo * 1000).toFixed(2)} ms</td>
               </tr>
-            )) : (
+              )
+            }) : (
               <tr>
                 <td className="results-empty" colSpan={9}>
                   Todavía no hay ejecuciones almacenadas en esta sesión.

@@ -123,6 +123,7 @@ def beam_search(scenario: Escenario, k: int) -> ResultadoBusqueda:
                     max_frontier,
                     perf_counter() - started_at,
                     initial_unit.posicion,
+                    k,
                 )
 
             expanded += 1
@@ -164,6 +165,7 @@ def beam_search(scenario: Escenario, k: int) -> ResultadoBusqueda:
         max_frontier,
         perf_counter() - started_at,
         initial_unit.posicion,
+        k,
     )
 
 
@@ -477,6 +479,7 @@ def _build_result(
     max_frontier: int,
     elapsed: float,
     initial_position: tuple[int, int],
+    k: int | None = None,
 ) -> ResultadoBusqueda:
     path = _reconstruct_path(node, initial_position)
     return ResultadoBusqueda(
@@ -489,6 +492,7 @@ def _build_result(
         estados_expandidos=expanded,
         maximo_frontera=max_frontier,
         tiempo=elapsed,
+        k=k,
     )
 
 

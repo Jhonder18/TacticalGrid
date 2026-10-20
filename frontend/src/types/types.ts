@@ -115,6 +115,7 @@ export interface MetricasBusqueda {
   estados_expandidos: number
   maximo_frontera: number
   tiempo: number
+  k?: number | null
 }
 
 export type AlgoritmoBusquedaDisponible =
