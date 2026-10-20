@@ -242,28 +242,28 @@ Descripcion:
 Validar visualmente la aplicacion completa antes de preparar la entrega.
 
 ### Frontend
-- [ ] Iniciar backend y frontend desde un clon limpio.
-- [ ] Verificar el endpoint /api/health.
-- [ ] Cargar manualmente un escenario valido.
-- [ ] Seleccionar los Casos 1 a 10 desde el selector de ejemplos.
-- [ ] Ejecutar BFS, DFS, UCS, A*, y Beam Search.
-- [ ] Probar Beam Search con k = 1, 2, 4 y 8.
-- [ ] Ejecutar Minimax y Alfa-Beta.
-- [ ] Revisar el arbol adversarial y sus conectores.
-- [ ] Revisar la visualizacion de nodos podados.
-- [ ] Probar profundidades 2, 3 y 5.
-- [ ] Probar un JSON invalido.
-- [ ] Confirmar que una carga invalida no borre el escenario actual.
-- [ ] Probar el modo partida automatica cuando T-21 este completada.
-- [ ] Probar reproduccion paso a paso, pausa, velocidad y deteccion de bucles.
-- [ ] Confirmar que las alertas desaparezcan despues de 10 segundos y se
+- [x] Iniciar backend y frontend desde un clon limpio.
+- [x] Verificar el endpoint /api/health.
+- [x] Cargar manualmente un escenario valido.
+- [x] Seleccionar los Casos 1 a 10 desde el selector de ejemplos.
+- [x] Ejecutar BFS, DFS, UCS, A*, y Beam Search.
+- [x] Probar Beam Search con k = 1, 2, 4 y 8.
+- [x] Ejecutar Minimax y Alfa-Beta.
+- [x] Revisar el arbol adversarial y sus conectores.
+- [x] Revisar la visualizacion de nodos podados.
+- [x] Probar profundidades 2, 3 y 5.
+- [x] Probar un JSON invalido.
+- [x] Confirmar que una carga invalida no borre el escenario actual.
+- [x] Probar el modo partida automatica cuando T-21 este completada.
+- [x] Probar reproduccion paso a paso, pausa, velocidad y deteccion de bucles.
+- [x] Confirmar que las alertas desaparezcan despues de 10 segundos y se
   pausen al pasar el cursor.
-- [ ] Revisar la interfaz en una ventana pequena.
+- [x] Revisar la interfaz en una ventana pequena.
 
 ### Backend
-- [ ] Ejecutar la suite completa de pruebas.
-- [ ] Confirmar que no existan errores en los logs durante la prueba manual.
-- [ ] Confirmar que los resultados visibles coincidan con la respuesta de la API.
+- [x] Ejecutar la suite completa de pruebas.
+- [x] Confirmar que no existan errores en los logs durante la prueba manual.
+- [x] Confirmar que los resultados visibles coincidan con la respuesta de la API.
 
 
 T-29: Preparar documentacion final y sustentacion
