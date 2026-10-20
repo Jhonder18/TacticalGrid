@@ -10,6 +10,8 @@ from backend.algorithms import alpha_beta, a_star, beam_search, bfs, dfs, minima
 from backend.core.adversarial_comparison import comparar_adversarial
 from backend.core.game import apply_action, get_game_status
 from backend.core.game_policy import choose_turn_transition
+from backend.core.game_simulation import simular_partida, turn_result
+from backend.core.informe import generar_informe
 from backend.models import (
     Accion,
     Escenario,
@@ -19,55 +21,7 @@ from backend.models import (
     ResultadoComparacionAdversarial,
     ResultadoTurno,
     ResultadoSimulacion,
-    EstadoPartidaResponse,
-    PasoTurno,
-    UnidadEstadoResponse,
 )
-
-
-def _turn_limit(scenario: Escenario) -> int:
-    return min(500, max(50, 4 * scenario.mapa.filas * scenario.mapa.columnas))
-
-
-def _turn_result(result, algoritmo: str, heuristica: str) -> ResultadoTurno:
-    def state_response(state: GameState) -> EstadoPartidaResponse:
-        return EstadoPartidaResponse(
-            unidades=[
-                UnidadEstadoResponse(
-                    id=unit.id,
-                    bando=unit.bando,
-                    posicion={"fila": unit.posicion[0], "columna": unit.posicion[1]},
-                )
-                for unit in state.unidades
-            ],
-            portador_recurso=state.portador_recurso,
-            posicion_recurso=(
-                None if state.posicion_recurso is None
-                else {
-                    "fila": state.posicion_recurso[0],
-                    "columna": state.posicion_recurso[1],
-                }
-            ),
-            turno=state.turno,
-        )
-
-    return ResultadoTurno(
-        algoritmo=algoritmo,
-        heuristica=heuristica,
-        estado=state_response(result.estado),
-        accion=result.accion,
-        costo=result.costo,
-        estado_partida=result.estado_partida,
-        turno_siguiente=result.turno_siguiente,
-        pasos=[
-            PasoTurno(
-                accion=step.action,
-                estado=state_response(step.state),
-                costo=step.cost,
-            )
-            for step in result.pasos
-        ],
-    )
 
 
 app = FastAPI(
@@ -207,6 +161,22 @@ async def compare_adversarial(
 
 
 @app.post(
+    "/api/report/full",
+    tags=["Report"],
+    summary="Generar el informe consolidado de los Casos 1 a 10",
+    description="Ejecuta todos los casos del proyecto y devuelve las tablas reproducibles para la sustentación.",
+)
+def run_full_report() -> dict:
+    try:
+        return generar_informe()
+    except (ValueError, ValidationError) as error:
+        raise HTTPException(
+            status_code=400,
+            detail=f"No se pudo generar el informe: {error}",
+        ) from error
+
+
+@app.post(
     "/api/game/turn",
     tags=["Game"],
     summary="Decidir y aplicar un turno automático",
@@ -243,7 +213,7 @@ async def run_game_turn(
             detail=f"No se pudo decidir el turno: {error}",
         ) from error
 
-    return _turn_result(result, algoritmo, heuristica)
+    return turn_result(result, algoritmo, heuristica)
 
 
 @app.post(
@@ -260,51 +230,12 @@ async def simulate_game(
 ) -> ResultadoSimulacion:
     scenario = await _load_scenario(file)
     try:
-        state = GameState.from_scenario(scenario)
-        limit = _turn_limit(scenario)
-        history = []
-        status = get_game_status(state, scenario)
-        visited_states = {state}
-        final_reason = None
-        for _ in range(limit):
-            if status != "en curso":
-                break
-            transition = choose_turn_transition(state, scenario, algoritmo, heuristica, k)
-            result = apply_action(state, scenario, transition.action)
-            history.append(_turn_result(result, algoritmo, heuristica))
-            state = result.estado
-            status = result.estado_partida
-            if status == "en curso" and state in visited_states:
-                status = "empate"
-                final_reason = (
-                    "Se detectó un bucle: el estado completo de la partida "
-                    "se repitió, por lo que la partida queda en empate."
-                )
-                break
-            visited_states.add(state)
-
+        return simular_partida(scenario, algoritmo, heuristica, k)
     except ValueError as error:
         raise HTTPException(
             status_code=400,
             detail=f"No se pudo simular la partida: {error}",
         ) from error
-
-    if status == "en curso" and len(history) >= limit:
-        status = "empate"
-        final_reason = (
-            "La partida alcanzó el límite máximo de turnos sin un ganador, "
-            "por lo que queda en empate."
-        )
-
-    return ResultadoSimulacion(
-        algoritmo=algoritmo,
-        heuristica=heuristica,
-        limite_turnos=limit,
-        turnos_ejecutados=len(history),
-        estado_final=status,
-        motivo_final=final_reason,
-        historial=history,
-    )
 
 
 async def _load_scenario(file: UploadFile) -> Escenario:

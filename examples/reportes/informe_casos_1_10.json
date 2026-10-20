@@ -1,0 +1,1351 @@
+{
+  "casos_busqueda": [
+    {
+      "caso": "Caso 1",
+      "descripcion": "BFS frente a DFS sobre el mismo escenario.",
+      "escenario": "caso_1_bfs_dfs",
+      "tipo": "busqueda",
+      "filas": [
+        {
+          "algoritmo": "BFS",
+          "parametros": "—",
+          "exito": true,
+          "costo": 55.0,
+          "longitud_camino": 34,
+          "nodos_generados": 665,
+          "nodos_expandidos": 644,
+          "maximo_frontera": 38,
+          "camino": [
+            [
+              1,
+              0
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              1,
+              2
+            ],
+            [
+              1,
+              3
+            ],
+            [
+              1,
+              4
+            ],
+            [
+              1,
+              5
+            ],
+            [
+              1,
+              6
+            ],
+            [
+              1,
+              7
+            ],
+            [
+              1,
+              8
+            ],
+            [
+              1,
+              9
+            ],
+            [
+              1,
+              10
+            ],
+            [
+              1,
+              11
+            ],
+            [
+              1,
+              12
+            ],
+            [
+              1,
+              13
+            ],
+            [
+              1,
+              14
+            ],
+            [
+              1,
+              15
+            ],
+            [
+              1,
+              16
+            ],
+            [
+              1,
+              17
+            ],
+            [
+              2,
+              17
+            ],
+            [
+              3,
+              17
+            ],
+            [
+              4,
+              17
+            ],
+            [
+              5,
+              17
+            ],
+            [
+              6,
+              17
+            ],
+            [
+              7,
+              17
+            ],
+            [
+              8,
+              17
+            ],
+            [
+              9,
+              17
+            ],
+            [
+              10,
+              17
+            ],
+            [
+              11,
+              17
+            ],
+            [
+              12,
+              17
+            ],
+            [
+              13,
+              17
+            ],
+            [
+              14,
+              17
+            ],
+            [
+              15,
+              17
+            ],
+            [
+              16,
+              17
+            ],
+            [
+              17,
+              17
+            ],
+            [
+              18,
+              17
+            ]
+          ]
+        },
+        {
+          "algoritmo": "DFS",
+          "parametros": "—",
+          "exito": true,
+          "costo": 67.0,
+          "longitud_camino": 40,
+          "nodos_generados": 76,
+          "nodos_expandidos": 41,
+          "maximo_frontera": 35,
+          "camino": [
+            [
+              1,
+              0
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              1,
+              2
+            ],
+            [
+              0,
+              2
+            ],
+            [
+              0,
+              3
+            ],
+            [
+              0,
+              4
+            ],
+            [
+              0,
+              5
+            ],
+            [
+              0,
+              6
+            ],
+            [
+              0,
+              7
+            ],
+            [
+              0,
+              8
+            ],
+            [
+              0,
+              9
+            ],
+            [
+              0,
+              10
+            ],
+            [
+              0,
+              11
+            ],
+            [
+              0,
+              12
+            ],
+            [
+              0,
+              13
+            ],
+            [
+              0,
+              14
+            ],
+            [
+              0,
+              15
+            ],
+            [
+              0,
+              16
+            ],
+            [
+              0,
+              17
+            ],
+            [
+              0,
+              18
+            ],
+            [
+              0,
+              19
+            ],
+            [
+              1,
+              19
+            ],
+            [
+              2,
+              19
+            ],
+            [
+              3,
+              19
+            ],
+            [
+              4,
+              19
+            ],
+            [
+              5,
+              19
+            ],
+            [
+              6,
+              19
+            ],
+            [
+              7,
+              19
+            ],
+            [
+              8,
+              19
+            ],
+            [
+              9,
+              19
+            ],
+            [
+              10,
+              19
+            ],
+            [
+              11,
+              19
+            ],
+            [
+              12,
+              19
+            ],
+            [
+              13,
+              19
+            ],
+            [
+              14,
+              19
+            ],
+            [
+              15,
+              19
+            ],
+            [
+              16,
+              19
+            ],
+            [
+              16,
+              18
+            ],
+            [
+              17,
+              18
+            ],
+            [
+              18,
+              18
+            ],
+            [
+              18,
+              17
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "caso": "Caso 2",
+      "descripcion": "BFS (camino más corto) frente a UCS (camino más económico).",
+      "escenario": "caso_2_bfs_ucs",
+      "tipo": "busqueda",
+      "filas": [
+        {
+          "algoritmo": "BFS",
+          "parametros": "—",
+          "exito": true,
+          "costo": 46.0,
+          "longitud_camino": 6,
+          "nodos_generados": 34,
+          "nodos_expandidos": 23,
+          "maximo_frontera": 11,
+          "camino": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              1
+            ],
+            [
+              0,
+              2
+            ],
+            [
+              0,
+              3
+            ],
+            [
+              0,
+              4
+            ],
+            [
+              0,
+              5
+            ],
+            [
+              0,
+              6
+            ]
+          ]
+        },
+        {
+          "algoritmo": "UCS",
+          "parametros": "—",
+          "exito": true,
+          "costo": 8.0,
+          "longitud_camino": 8,
+          "nodos_generados": 65,
+          "nodos_expandidos": 42,
+          "maximo_frontera": 23,
+          "camino": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              0
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              1,
+              2
+            ],
+            [
+              1,
+              3
+            ],
+            [
+              1,
+              4
+            ],
+            [
+              1,
+              5
+            ],
+            [
+              1,
+              6
+            ],
+            [
+              0,
+              6
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "caso": "Caso 3",
+      "descripcion": "A* con Manhattan desviándose por los obstáculos.",
+      "escenario": "caso_3_obstaculo_astar",
+      "tipo": "busqueda",
+      "filas": [
+        {
+          "algoritmo": "A_ESTRELLA",
+          "parametros": "h: MANHATTAN",
+          "exito": true,
+          "costo": 14.0,
+          "longitud_camino": 14,
+          "nodos_generados": 35,
+          "nodos_expandidos": 22,
+          "maximo_frontera": 13,
+          "camino": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              0
+            ],
+            [
+              2,
+              0
+            ],
+            [
+              3,
+              0
+            ],
+            [
+              4,
+              0
+            ],
+            [
+              4,
+              1
+            ],
+            [
+              4,
+              2
+            ],
+            [
+              4,
+              3
+            ],
+            [
+              5,
+              3
+            ],
+            [
+              5,
+              4
+            ],
+            [
+              5,
+              5
+            ],
+            [
+              5,
+              6
+            ],
+            [
+              6,
+              6
+            ],
+            [
+              7,
+              6
+            ],
+            [
+              7,
+              7
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "caso": "Caso 4",
+      "descripcion": "A* con Manhattan frente a A* con Euclídea (propia).",
+      "escenario": "caso_4_heuristicas",
+      "tipo": "busqueda",
+      "filas": [
+        {
+          "algoritmo": "A_ESTRELLA",
+          "parametros": "h: MANHATTAN",
+          "exito": true,
+          "costo": 55.0,
+          "longitud_camino": 34,
+          "nodos_generados": 606,
+          "nodos_expandidos": 531,
+          "maximo_frontera": 65,
+          "camino": [
+            [
+              1,
+              0
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              1,
+              2
+            ],
+            [
+              1,
+              3
+            ],
+            [
+              1,
+              4
+            ],
+            [
+              1,
+              5
+            ],
+            [
+              1,
+              6
+            ],
+            [
+              1,
+              7
+            ],
+            [
+              1,
+              8
+            ],
+            [
+              1,
+              9
+            ],
+            [
+              1,
+              10
+            ],
+            [
+              1,
+              11
+            ],
+            [
+              1,
+              12
+            ],
+            [
+              1,
+              13
+            ],
+            [
+              1,
+              14
+            ],
+            [
+              1,
+              15
+            ],
+            [
+              1,
+              16
+            ],
+            [
+              1,
+              17
+            ],
+            [
+              2,
+              17
+            ],
+            [
+              3,
+              17
+            ],
+            [
+              4,
+              17
+            ],
+            [
+              5,
+              17
+            ],
+            [
+              6,
+              17
+            ],
+            [
+              7,
+              17
+            ],
+            [
+              8,
+              17
+            ],
+            [
+              9,
+              17
+            ],
+            [
+              10,
+              17
+            ],
+            [
+              11,
+              17
+            ],
+            [
+              12,
+              17
+            ],
+            [
+              13,
+              17
+            ],
+            [
+              14,
+              17
+            ],
+            [
+              15,
+              17
+            ],
+            [
+              16,
+              17
+            ],
+            [
+              17,
+              17
+            ],
+            [
+              18,
+              17
+            ]
+          ]
+        },
+        {
+          "algoritmo": "A_ESTRELLA",
+          "parametros": "h: EUCLIDEA",
+          "exito": true,
+          "costo": 55.0,
+          "longitud_camino": 34,
+          "nodos_generados": 621,
+          "nodos_expandidos": 563,
+          "maximo_frontera": 60,
+          "camino": [
+            [
+              1,
+              0
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              1
+            ],
+            [
+              3,
+              1
+            ],
+            [
+              4,
+              1
+            ],
+            [
+              5,
+              1
+            ],
+            [
+              6,
+              1
+            ],
+            [
+              6,
+              2
+            ],
+            [
+              6,
+              3
+            ],
+            [
+              6,
+              4
+            ],
+            [
+              6,
+              5
+            ],
+            [
+              6,
+              6
+            ],
+            [
+              7,
+              6
+            ],
+            [
+              7,
+              7
+            ],
+            [
+              8,
+              7
+            ],
+            [
+              8,
+              8
+            ],
+            [
+              9,
+              8
+            ],
+            [
+              9,
+              9
+            ],
+            [
+              10,
+              9
+            ],
+            [
+              10,
+              10
+            ],
+            [
+              11,
+              10
+            ],
+            [
+              11,
+              11
+            ],
+            [
+              12,
+              11
+            ],
+            [
+              12,
+              12
+            ],
+            [
+              13,
+              12
+            ],
+            [
+              13,
+              13
+            ],
+            [
+              14,
+              13
+            ],
+            [
+              14,
+              14
+            ],
+            [
+              15,
+              14
+            ],
+            [
+              15,
+              15
+            ],
+            [
+              16,
+              15
+            ],
+            [
+              16,
+              16
+            ],
+            [
+              17,
+              16
+            ],
+            [
+              17,
+              17
+            ],
+            [
+              18,
+              17
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "caso": "Caso 5",
+      "descripcion": "Beam Search con k = 1, 2, 4 y 8.",
+      "escenario": "caso_5_beam",
+      "tipo": "busqueda",
+      "filas": [
+        {
+          "algoritmo": "BEAM_SEARCH",
+          "parametros": "k: 1",
+          "exito": false,
+          "costo": 0.0,
+          "longitud_camino": 0,
+          "nodos_generados": 7,
+          "nodos_expandidos": 6,
+          "maximo_frontera": 1,
+          "camino": []
+        },
+        {
+          "algoritmo": "BEAM_SEARCH",
+          "parametros": "k: 2",
+          "exito": true,
+          "costo": 10.0,
+          "longitud_camino": 10,
+          "nodos_generados": 30,
+          "nodos_expandidos": 19,
+          "maximo_frontera": 2,
+          "camino": [
+            [
+              1,
+              0
+            ],
+            [
+              2,
+              0
+            ],
+            [
+              2,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              2,
+              4
+            ],
+            [
+              2,
+              5
+            ],
+            [
+              2,
+              6
+            ],
+            [
+              2,
+              7
+            ],
+            [
+              2,
+              8
+            ],
+            [
+              1,
+              8
+            ]
+          ]
+        },
+        {
+          "algoritmo": "BEAM_SEARCH",
+          "parametros": "k: 4",
+          "exito": true,
+          "costo": 10.0,
+          "longitud_camino": 10,
+          "nodos_generados": 47,
+          "nodos_expandidos": 34,
+          "maximo_frontera": 4,
+          "camino": [
+            [
+              1,
+              0
+            ],
+            [
+              2,
+              0
+            ],
+            [
+              2,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              2,
+              4
+            ],
+            [
+              2,
+              5
+            ],
+            [
+              2,
+              6
+            ],
+            [
+              2,
+              7
+            ],
+            [
+              2,
+              8
+            ],
+            [
+              1,
+              8
+            ]
+          ]
+        },
+        {
+          "algoritmo": "BEAM_SEARCH",
+          "parametros": "k: 8",
+          "exito": true,
+          "costo": 10.0,
+          "longitud_camino": 10,
+          "nodos_generados": 79,
+          "nodos_expandidos": 57,
+          "maximo_frontera": 8,
+          "camino": [
+            [
+              1,
+              0
+            ],
+            [
+              2,
+              0
+            ],
+            [
+              2,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              2,
+              4
+            ],
+            [
+              2,
+              5
+            ],
+            [
+              2,
+              6
+            ],
+            [
+              2,
+              7
+            ],
+            [
+              2,
+              8
+            ],
+            [
+              1,
+              8
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "casos_adversarial": [
+    {
+      "caso": "Caso 6",
+      "descripcion": "Diferencia de portador: A1 lleva el recurso.",
+      "escenario": "caso_6_portador_a",
+      "tipo": "adversarial",
+      "filas": [
+        {
+          "escenario": "caso_6_portador_a",
+          "profundidad": 3,
+          "misma_accion": true,
+          "mismo_valor": true,
+          "reduccion_nodos_porcentaje": 77.9449,
+          "minimax": {
+            "algoritmo": "MINIMAX",
+            "profundidad": 3,
+            "nodos_generados": 399,
+            "nodos_evaluados": 346,
+            "nodos_podados": 0,
+            "accion_seleccionada": "A2: (9, 10) -> (9, 11)",
+            "valor_obtenido": 0.22000000000000003
+          },
+          "alpha_beta": {
+            "algoritmo": "ALFA_BETA",
+            "profundidad": 3,
+            "nodos_generados": 88,
+            "nodos_evaluados": 62,
+            "nodos_podados": 112,
+            "accion_seleccionada": "A2: (9, 10) -> (9, 11)",
+            "valor_obtenido": 0.22000000000000003
+          }
+        }
+      ]
+    },
+    {
+      "caso": "Caso 6",
+      "descripcion": "Diferencia de portador: B1 lleva el recurso.",
+      "escenario": "caso_6_portador_b",
+      "tipo": "adversarial",
+      "filas": [
+        {
+          "escenario": "caso_6_portador_b",
+          "profundidad": 3,
+          "misma_accion": true,
+          "mismo_valor": true,
+          "reduccion_nodos_porcentaje": 68.0312,
+          "minimax": {
+            "algoritmo": "MINIMAX",
+            "profundidad": 3,
+            "nodos_generados": 513,
+            "nodos_evaluados": 453,
+            "nodos_podados": 0,
+            "accion_seleccionada": "A2: (9, 10) -> (8, 10)",
+            "valor_obtenido": 0.2472222222222222
+          },
+          "alpha_beta": {
+            "algoritmo": "ALFA_BETA",
+            "profundidad": 3,
+            "nodos_generados": 164,
+            "nodos_evaluados": 134,
+            "nodos_podados": 87,
+            "accion_seleccionada": "A2: (9, 10) -> (8, 10)",
+            "valor_obtenido": 0.2472222222222222
+          }
+        }
+      ]
+    },
+    {
+      "caso": "Caso 7",
+      "descripcion": "Intercepción del portador rival.",
+      "escenario": "caso_7_intercepcion",
+      "tipo": "adversarial",
+      "filas": [
+        {
+          "escenario": "caso_7_intercepcion",
+          "profundidad": 3,
+          "misma_accion": true,
+          "mismo_valor": true,
+          "reduccion_nodos_porcentaje": 82.4348,
+          "minimax": {
+            "algoritmo": "MINIMAX",
+            "profundidad": 3,
+            "nodos_generados": 1150,
+            "nodos_evaluados": 1039,
+            "nodos_podados": 0,
+            "accion_seleccionada": "A1: (10, 10) -> (10, 11)",
+            "valor_obtenido": -0.22666666666666668
+          },
+          "alpha_beta": {
+            "algoritmo": "ALFA_BETA",
+            "profundidad": 3,
+            "nodos_generados": 202,
+            "nodos_evaluados": 162,
+            "nodos_podados": 184,
+            "accion_seleccionada": "A1: (10, 10) -> (10, 11)",
+            "valor_obtenido": -0.22666666666666668
+          }
+        }
+      ]
+    },
+    {
+      "caso": "Caso 8",
+      "descripcion": "Minimax frente a Alfa-Beta (poda).",
+      "escenario": "caso_8_poda",
+      "tipo": "adversarial",
+      "filas": [
+        {
+          "escenario": "caso_8_poda",
+          "profundidad": 4,
+          "misma_accion": true,
+          "mismo_valor": true,
+          "reduccion_nodos_porcentaje": 92.4624,
+          "minimax": {
+            "algoritmo": "MINIMAX",
+            "profundidad": 4,
+            "nodos_generados": 9247,
+            "nodos_evaluados": 8284,
+            "nodos_podados": 0,
+            "accion_seleccionada": "A1: (9, 9) -> (9, 10)",
+            "valor_obtenido": 0.2976190476190476
+          },
+          "alpha_beta": {
+            "algoritmo": "ALFA_BETA",
+            "profundidad": 4,
+            "nodos_generados": 697,
+            "nodos_evaluados": 489,
+            "nodos_podados": 1409,
+            "accion_seleccionada": "A1: (9, 9) -> (9, 10)",
+            "valor_obtenido": 0.2976190476190476
+          }
+        }
+      ]
+    },
+    {
+      "caso": "Caso 9",
+      "descripcion": "Efecto del orden de sucesores en la poda.",
+      "escenario": "caso_9_orden_poda",
+      "tipo": "adversarial",
+      "filas": [
+        {
+          "escenario": "caso_9_orden_poda",
+          "profundidad": 3,
+          "misma_accion": true,
+          "mismo_valor": true,
+          "reduccion_nodos_porcentaje": 81.9315,
+          "minimax": {
+            "algoritmo": "MINIMAX",
+            "profundidad": 3,
+            "nodos_generados": 963,
+            "nodos_evaluados": 872,
+            "nodos_podados": 0,
+            "accion_seleccionada": "A1: (9, 9) -> (9, 10)",
+            "valor_obtenido": 0.299047619047619
+          },
+          "alpha_beta": {
+            "algoritmo": "ALFA_BETA",
+            "profundidad": 3,
+            "nodos_generados": 174,
+            "nodos_evaluados": 143,
+            "nodos_podados": 126,
+            "accion_seleccionada": "A1: (9, 9) -> (9, 10)",
+            "valor_obtenido": 0.299047619047619
+          }
+        }
+      ]
+    },
+    {
+      "caso": "Caso 10",
+      "descripcion": "Carga de profundidad 5 (base).",
+      "escenario": "caso_10_profundidades",
+      "tipo": "adversarial",
+      "filas": [
+        {
+          "escenario": "caso_10_profundidades",
+          "profundidad": 5,
+          "misma_accion": true,
+          "mismo_valor": true,
+          "reduccion_nodos_porcentaje": 96.4031,
+          "minimax": {
+            "algoritmo": "MINIMAX",
+            "profundidad": 5,
+            "nodos_generados": 99003,
+            "nodos_evaluados": 89756,
+            "nodos_podados": 0,
+            "accion_seleccionada": "A1: (9, 9) -> (9, 10)",
+            "valor_obtenido": 0.3
+          },
+          "alpha_beta": {
+            "algoritmo": "ALFA_BETA",
+            "profundidad": 5,
+            "nodos_generados": 3561,
+            "nodos_evaluados": 2828,
+            "nodos_podados": 3967,
+            "accion_seleccionada": "A1: (9, 9) -> (9, 10)",
+            "valor_obtenido": 0.3
+          }
+        }
+      ]
+    },
+    {
+      "caso": "Caso 10",
+      "descripcion": "Carga de profundidades 2, 3 y 5.",
+      "escenario": "caso_10_profundidades",
+      "tipo": "adversarial",
+      "filas": [
+        {
+          "escenario": "caso_10_p2",
+          "profundidad": 2,
+          "misma_accion": true,
+          "mismo_valor": true,
+          "reduccion_nodos_porcentaje": 59.3407,
+          "minimax": {
+            "algoritmo": "MINIMAX",
+            "profundidad": 2,
+            "nodos_generados": 91,
+            "nodos_evaluados": 80,
+            "nodos_podados": 0,
+            "accion_seleccionada": "A1: (9, 9) -> (9, 10)",
+            "valor_obtenido": 0.26
+          },
+          "alpha_beta": {
+            "algoritmo": "ALFA_BETA",
+            "profundidad": 2,
+            "nodos_generados": 37,
+            "nodos_evaluados": 26,
+            "nodos_podados": 54,
+            "accion_seleccionada": "A1: (9, 9) -> (9, 10)",
+            "valor_obtenido": 0.26
+          }
+        },
+        {
+          "escenario": "caso_10_p3",
+          "profundidad": 3,
+          "misma_accion": true,
+          "mismo_valor": true,
+          "reduccion_nodos_porcentaje": 78.4008,
+          "minimax": {
+            "algoritmo": "MINIMAX",
+            "profundidad": 3,
+            "nodos_generados": 963,
+            "nodos_evaluados": 872,
+            "nodos_podados": 0,
+            "accion_seleccionada": "A1: (9, 9) -> (9, 10)",
+            "valor_obtenido": 0.299047619047619
+          },
+          "alpha_beta": {
+            "algoritmo": "ALFA_BETA",
+            "profundidad": 3,
+            "nodos_generados": 208,
+            "nodos_evaluados": 171,
+            "nodos_podados": 152,
+            "accion_seleccionada": "A1: (9, 9) -> (9, 10)",
+            "valor_obtenido": 0.299047619047619
+          }
+        },
+        {
+          "escenario": "caso_10_p5",
+          "profundidad": 5,
+          "misma_accion": true,
+          "mismo_valor": true,
+          "reduccion_nodos_porcentaje": 96.4031,
+          "minimax": {
+            "algoritmo": "MINIMAX",
+            "profundidad": 5,
+            "nodos_generados": 99003,
+            "nodos_evaluados": 89756,
+            "nodos_podados": 0,
+            "accion_seleccionada": "A1: (9, 9) -> (9, 10)",
+            "valor_obtenido": 0.3
+          },
+          "alpha_beta": {
+            "algoritmo": "ALFA_BETA",
+            "profundidad": 5,
+            "nodos_generados": 3561,
+            "nodos_evaluados": 2828,
+            "nodos_podados": 3967,
+            "accion_seleccionada": "A1: (9, 9) -> (9, 10)",
+            "valor_obtenido": 0.3
+          }
+        }
+      ]
+    }
+  ],
+  "partidas": [
+    {
+      "caso": "Partida",
+      "descripcion": "Partida estándar entre ambos bandos.",
+      "escenario": "escenario_partida",
+      "tipo": "partida",
+      "filas": [
+        {
+          "caso": "Partida",
+          "algoritmo": "BFS",
+          "parametros": "h: MANHATTAN",
+          "estado_final": "victoria_A",
+          "motivo_final": null,
+          "turnos_ejecutados": 53,
+          "limite_turnos": 500
+        }
+      ]
+    },
+    {
+      "caso": "Robo de bandera",
+      "descripcion": "El bando B ya carga el recurso.",
+      "escenario": "escenario_robo_bandera",
+      "tipo": "partida",
+      "filas": [
+        {
+          "caso": "Robo de bandera",
+          "algoritmo": "BFS",
+          "parametros": "h: MANHATTAN",
+          "estado_final": "victoria_A",
+          "motivo_final": null,
+          "turnos_ejecutados": 10,
+          "limite_turnos": 196
+        }
+      ]
+    },
+    {
+      "caso": "Bandera bloqueada",
+      "descripcion": "Ruta al objetivo bloqueada.",
+      "escenario": "escenario_bandera_bloqueada",
+      "tipo": "partida",
+      "filas": [
+        {
+          "caso": "Bandera bloqueada",
+          "algoritmo": "BFS",
+          "parametros": "h: MANHATTAN",
+          "estado_final": "empate",
+          "motivo_final": "Se detectó un bucle: el estado completo de la partida se repitió, por lo que la partida queda en empate.",
+          "turnos_ejecutados": 12,
+          "limite_turnos": 196
+        }
+      ]
+    }
+  ]
+}

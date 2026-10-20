@@ -100,8 +100,7 @@ export async function runAdversarial(
   return body as ResultadoAdversarial
 }
 
-export async function runAdversarialComparison(
-  file: File,
+export async function runAdversarialComparison(  file: File,
   profundidad: number,
 ): Promise<ResultadoComparacionAdversarial> {
   const formData = new FormData()
@@ -172,6 +171,23 @@ export async function simulateGame(
     throw new Error('detail' in body ? body.detail : 'No se pudo simular la partida')
   }
   return body as ResultadoSimulacion
+}
+
+export async function runFullReport(): Promise<unknown> {
+  const response = await fetch(`${API_BASE_URL}/api/report/full`, {
+    method: 'POST',
+  })
+  const body = (await response.json()) as unknown | { detail?: string }
+
+  if (!response.ok) {
+    throw new Error(
+      'detail' in (body as object)
+        ? (body as { detail?: string }).detail
+        : 'No se pudo generar el informe',
+    )
+  }
+
+  return body
 }
 
 export { API_BASE_URL }

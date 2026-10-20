@@ -1034,6 +1034,10 @@ input[type='number'] {
   color: var(--muted);
   font-family: var(--mono);
 }
+.report-button {
+  margin-top: 12px;
+  width: 100%;
+}
 .result-status.success {
   color: #196944;
   background: #e2f8ec;

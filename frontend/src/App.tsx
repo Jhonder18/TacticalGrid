@@ -5,7 +5,7 @@ import { AdversarialTree } from './components/AdversarialTree'
 import { AdversarialComparison } from './components/AdversarialComparison'
 import { ResultsDashboard } from './components/ResultsDashboard'
 import { ScenarioSummary } from './components/ScenarioSummary'
-import { runAdversarial, runAdversarialComparison, runGameTurn, runSearch, simulateGame, validateScenario } from './services/api'
+import { runAdversarial, runAdversarialComparison, runFullReport, runGameTurn, runSearch, simulateGame, validateScenario } from './services/api'
 import type {
   AlgoritmoBusquedaDisponible,
   Escenario,
@@ -398,6 +398,31 @@ function App() {
     }
   }
 
+  const handleDownloadReport = async () => {
+    setIsRunning(true)
+    setNotice(null)
+    try {
+      const report = await runFullReport()
+      const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = 'informe_casos_1_10.json'
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      URL.revokeObjectURL(url)
+      setNotice({ type: 'success', message: 'Informe de los Casos 1 a 10 descargado.' })
+    } catch (error) {
+      setNotice({
+        type: 'error',
+        message: error instanceof Error ? error.message : 'No se pudo generar el informe.',
+      })
+    } finally {
+      setIsRunning(false)
+    }
+  }
+
   const rows = scenario?.mapa.filas ?? 8
   const columns = scenario?.mapa.columnas ?? 8
 
@@ -674,6 +699,9 @@ function App() {
             <span className="status-dot" />
             {isRunning ? 'Ejecutando búsqueda...' : searchResult?.exito ? 'Ruta encontrada y resaltada en el tablero.' : 'Carga un escenario para ejecutar una búsqueda.'}
           </div>
+          <button className="secondary-button report-button" type="button" onClick={() => void handleDownloadReport()} disabled={isRunning || isValidating}>
+            Descargar informe JSON <span>↓</span>
+          </button>
           {adversarialResult && (
             <section className="decision-card">
               <div className="section-label">DECISIÓN TÁCTICA / {adversarialResult.algoritmo}</div>
