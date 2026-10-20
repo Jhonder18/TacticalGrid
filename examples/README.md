@@ -66,6 +66,27 @@ agregar campos adicionales al JSON siempre que no cambien el significado de
 los campos obligatorios. Si se omite, se conserva el orden predeterminado
 `ARRIBA`, `DERECHA`, `ABAJO`, `IZQUIERDA`.
 
+## Escenarios externos
+
+Los archivos `externo_*.json` de la raíz de `examples/` simulan escenarios
+"recién creados" que no fueron preparados previamente. Demuestran que la
+aplicación se adapta a cualquier JSON válido sin cambios en el código:
+
+- `externo_busqueda_costos.json`: mapa de 7 x 7 con un terreno adicional
+  (`pantano`, costo 7) que obliga a UCS y A* a preferir una ruta más larga
+  pero económica frente a la ruta corta de BFS.
+- `externo_busqueda_muro.json`: mapa de 10 x 10 en el que un muro separa por
+  completo el origen del objetivo; todos los algoritmos reportan fallo.
+- `externo_adversarial_3v3.json`: mapa de 20 x 20 con 3 unidades por bando
+  para ejecutar Minimax y alfa-beta.
+- `externo_partida_3v3.json`: mapa de 20 x 20 para una partida automática
+  completa, con robo, escape y retorno del recurso.
+
+Las dimensiones distintas (7 x 7, 10 x 10 y 20 x 20) comprueban que el tablero
+y la interfaz se ajustan al tamaño del JSON. La lectura de costos desde el JSON
+y la ausencia de posiciones codificadas en los algoritmos se verifican en
+`backend/tests/test_external_scenario.py`.
+
 ## Escenarios inválidos
 
 Los archivos de `bad/` deben ser rechazados con HTTP 400. El nombre indica la
@@ -78,6 +99,8 @@ regla que se está demostrando:
 - `base_sobre_obstaculo.json`
 - `recurso_sobre_obstaculo.json`
 - `portador_desincronizado.json`
+- `externo_costo_negativo.json`: escenario externo con un terreno de costo
+  negativo; demuestra que los costos se validan al leerlos del JSON.
 
 Los ejemplos originales usan un mapa de 20 x 20. Los ejemplos temáticos
 adicionales usan mapas de 10 x 10 para mostrar que la matriz y los terrenos

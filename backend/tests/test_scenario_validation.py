@@ -57,6 +57,7 @@ class ScenarioValidationTests(unittest.TestCase):
             "bases_iguales.json": "Las bases A y B deben estar en posiciones diferentes",
             "orden_direcciones_repetidas.json": "no puede contener direcciones repetidas",
             "profundidad_fuera_de_rango.json": "profundidad_maxima_minimax",
+            "externo_costo_negativo.json": "greater than 0",
         }
         for filename, message in expected_messages.items():
             with self.subTest(filename=filename):
