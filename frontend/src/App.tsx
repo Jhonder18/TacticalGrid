@@ -21,7 +21,7 @@ import type {
 } from './types/types'
 import './App.css'
 
-type Notice = { type: 'success' | 'error'; message: string } | null
+type Notice = { type: 'success' | 'error' | 'warning'; message: string } | null
 const NOTICE_DURATION_MS = 10_000
 const DEFAULT_SUCCESSOR_ORDER: DireccionSucesor[] = ['ARRIBA', 'DERECHA', 'ABAJO', 'IZQUIERDA']
 const SUCCESSOR_LABELS: Record<DireccionSucesor, string> = {
@@ -224,11 +224,22 @@ function App() {
         gameHeuristic,
         gameBeamWidth,
       )
-      setGameSimulation(simulation)
+      const visibleSimulation = {
+        ...simulation,
+        historial:
+          simulation.estado_final === 'empate' &&
+          simulation.motivo_final?.includes('Se detectó un bucle')
+            ? expandLoopHistory(simulation.historial, initialScenario)
+            : simulation.historial,
+      }
+      setGameSimulation({
+        ...visibleSimulation,
+        turnos_ejecutados: visibleSimulation.historial.length,
+      })
       setGameHistoryIndex(-1)
       setGameStepIndex(-1)
       setNotice({
-        type: simulation.estado_final === 'empate' ? 'error' : 'success',
+        type: simulation.estado_final === 'empate' ? 'warning' : 'success',
         message: simulation.motivo_final
           ? `${simulation.motivo_final} Se calcularon ${simulation.turnos_ejecutados} turnos.`
           : `Simulación calculada: ${simulation.turnos_ejecutados} turnos. Usa los controles para recorrerla.`,
@@ -801,6 +812,57 @@ function App() {
 
 function applyTurnResult(scenario: Escenario, result: ResultadoTurno): Escenario {
   return applyStateToScenario(scenario, result.estado)
+}
+
+function getScenarioStateKey(scenario: Escenario): string {
+  return JSON.stringify({
+    unidades: scenario.unidades
+      .map((unit) => ({ id: unit.id, fila: unit.fila, columna: unit.columna }))
+      .sort((first, second) => first.id.localeCompare(second.id)),
+    portador_recurso: scenario.juego.portador_recurso,
+    recurso: scenario.recurso,
+    turno: scenario.turno,
+  })
+}
+
+function getTurnStateKey(result: ResultadoTurno): string {
+  return JSON.stringify({
+    unidades: result.estado.unidades
+      .map((unit) => ({ id: unit.id, ...unit.posicion }))
+      .sort((first, second) => first.id.localeCompare(second.id)),
+    portador_recurso: result.estado.portador_recurso,
+    recurso: result.estado.posicion_recurso,
+    turno: result.estado.turno,
+  })
+}
+
+function expandLoopHistory(
+  history: ResultadoTurno[],
+  initialScenario: Escenario | null,
+): ResultadoTurno[] {
+  if (!initialScenario || history.length === 0) return history
+
+  const firstIndexByState = new Map<string, number>([
+    [getScenarioStateKey(initialScenario), -1],
+  ])
+  let cycleStart = -1
+  let cycleEnd = -1
+
+  for (let index = 0; index < history.length; index += 1) {
+    const stateKey = getTurnStateKey(history[index])
+    const previousIndex = firstIndexByState.get(stateKey)
+    if (previousIndex !== undefined) {
+      cycleStart = previousIndex + 1
+      cycleEnd = index
+      break
+    }
+    firstIndexByState.set(stateKey, index)
+  }
+
+  if (cycleStart < 0 || cycleEnd < cycleStart) return history
+
+  const cycle = history.slice(cycleStart, cycleEnd + 1)
+  return [...history, ...cycle, ...cycle]
 }
 
 function applyStateToScenario(scenario: Escenario, state: ResultadoTurno['estado']): Escenario {

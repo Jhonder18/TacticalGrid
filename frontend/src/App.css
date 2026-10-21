@@ -1176,6 +1176,11 @@ input[type='number'] {
   color: #9d392d;
   background: #fff0ec;
 }
+.toast-warning {
+  border-color: #e6c66d;
+  color: #806117;
+  background: #fff9df;
+}
 .toast-icon {
   display: grid;
   width: 21px;
@@ -1191,6 +1196,9 @@ input[type='number'] {
 }
 .toast-error .toast-icon {
   color: #dc654f;
+}
+.toast-warning .toast-icon {
+  color: #c49a2c;
 }
 .toast button {
   margin-left: 8px;
