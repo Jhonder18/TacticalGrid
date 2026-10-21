@@ -47,6 +47,11 @@ Casos 1 a 10 desde `frontend/public/casos/` sin usar el selector de archivos.
 También se pueden cargar escenarios externos (`examples/externo_*.json`)
 manualmente con el botón de carga.
 
+El selector incluye las dos variantes del Caso 6:
+
+- `Caso 6 · Portador A`
+- `Caso 6 · Portador B`
+
 > **[IMAGEN 4 — Desplegable "Casos demostrativos"]**
 > Adjuntar una captura del desplegable abierto mostrando la lista de casos.
 
@@ -64,7 +69,9 @@ Cuando el escenario es de modo `busqueda`:
   tablero y muestra las métricas en el dashboard.
 
 El dashboard (`frontend/src/components/ResultsDashboard.tsx`) lista cada
-ejecución con su algoritmo, parámetros y métricas comparables.
+ejecución con su algoritmo, parámetros y métricas comparables. Las dos
+ejecuciones de A* se conservan como filas independientes cuando se usan
+Manhattan y Euclídea.
 
 > **[IMAGEN 5 — Controles de búsqueda]**
 > Adjuntar una captura del panel con "Método de búsqueda", "Heurística", "Ancho
@@ -80,36 +87,57 @@ ejecución con su algoritmo, parámetros y métricas comparables.
 > costo, longitud, nodos generados/expandidos, frontera y camino.
 > *Pie de figura sugerido:* "Métricas de una ejecución de búsqueda."
 
-## 3. Controles adversariales
+## 3. Orden de sucesores
+
+La sección **Orden de sucesores** aparece después de cargar un escenario.
+Muestra el orden efectivo que se usará para generar movimientos:
+
+```text
+ARRIBA, DERECHA, ABAJO, IZQUIERDA
+```
+
+Si el JSON incluye `orden_sucesores`, se muestra ese orden. Si no lo incluye,
+se usa el orden predeterminado anterior. Los botones de subir y bajar permiten
+editar la lista y **Restaurar orden predeterminado** devuelve la configuración
+original.
+
+El orden editado se incorpora al escenario enviado antes de ejecutar búsquedas,
+comparaciones adversariales y simulaciones de partida. Esto permite estudiar
+cómo cambia la exploración y la poda de Alfa-Beta, especialmente en el Caso 9.
+
+> **[IMAGEN 8 — Editor de orden de sucesores]**
+> Adjuntar una captura del listado de direcciones con los botones para subir,
+> bajar y restaurar el orden predeterminado.
+> *Pie de figura sugerido:* "Configuración interactiva del orden de sucesores."
+
+## 4. Controles adversariales
 
 Cuando el escenario es de modo `adversarial`:
 
-- **Método adversarial** (`frontend/src/App.tsx:584`): Alfa-Beta o Minimax.
-- **Profundidad máxima** (`frontend/src/App.tsx:589`): 1 a 8.
-- **Evaluar turno** (`frontend/src/App.tsx:600`): calcula la acción recomendada y
-  su árbol.
-- **Comparar Minimax vs Alfa-Beta** (`frontend/src/App.tsx:603`): ejecuta ambos y
-  resume coincidencia de decisión y reducción de nodos.
+- **Profundidad máxima** (`frontend/src/App.tsx`): 1 a 8.
+- **Analizar Minimax y Alfa-Beta**: ejecuta ambos algoritmos con la misma
+  profundidad y orden de sucesores.
 
-El **árbol adversarial** (`frontend/src/components/AdversarialTree.tsx`) dibuja
-los nodos explorados con sus conectores. La leyenda distingue nodos
-**explorados**, **evaluados** y **podados**; los nodos podados se resaltan en
-rojo.
+La comparación muestra una tabla con la acción, el valor, los nodos generados,
+los nodos evaluados, los nodos podados, la profundidad y el tiempo de cada
+algoritmo. También dibuja dos árboles independientes:
 
-> **[IMAGEN 8 — Controles adversariales]**
-> Adjuntar una captura del panel con "Método adversarial", "Profundidad máxima",
-> "Evaluar turno" y "Comparar Minimax vs Alfa-Beta".
+- **Árbol Minimax**: representa la exploración completa.
+- **Árbol Alfa-Beta**: muestra además las ramas podadas.
 
-> **[IMAGEN 9 — Árbol adversarial con nodos podados]**
-> Adjuntar una captura del árbol de decisión con la leyenda de colores (nodos
-> explorados/evaluados/podados) y varios nodos podados en rojo.
-> *Pie de figura sugerido:* "Árbol adversarial y poda alfa-beta."
+La leyenda distingue nodos **explorados**, **evaluados** y **podados**; los
+nodos podados se resaltan en rojo. La reducción de nodos se calcula como:
 
-> **[IMAGEN 10 — Resultado de la comparación Minimax vs Alfa-Beta]**
-> Adjuntar una captura del resumen que muestra la coincidencia de decisión y la
-> reducción de nodos entre ambos algoritmos.
+```text
+((nodos Minimax - nodos Alfa-Beta) / nodos Minimax) × 100
+```
 
-## 4. Flujo del modo partida automática
+> **[IMAGEN 9 — Controles y comparación adversarial]**
+> Adjuntar una captura con la profundidad, el botón de análisis, la tabla y los
+> dos árboles.
+> *Pie de figura sugerido:* "Comparación visual de Minimax y Alfa-Beta."
+
+## 5. Flujo del modo partida automática
 
 Cuando el escenario es de modo `partida`:
 
@@ -130,16 +158,16 @@ Durante la reproducción (`frontend/src/App.tsx:649`):
 La simulación devuelve el historial completo; la interfaz reconstruye cada
 fotograma desde el estado inicial.
 
-> **[IMAGEN 11 — Controles del modo partida]**
+> **[IMAGEN 10 — Controles del modo partida]**
 > Adjuntar una captura del panel con los botones "Siguiente turno", "Calcular
 > partida completa" y "Reiniciar partida".
 
-> **[IMAGEN 12 — Reproducción de la partida]**
+> **[IMAGEN 11 — Reproducción de la partida]**
 > Adjuntar una captura durante la reproducción, mostrando los controles
 > "Anterior", "Iniciar/Pausar", "Siguiente" y "Velocidad de juego".
 > *Pie de figura sugerido:* "Reproducción paso a paso de una partida."
 
-## 5. Robo, escape, bloqueo y empate por bucle
+## 6. Robo, escape, bloqueo y empate por bucle
 
 - **Recolección**: si una unidad pisa la casilla del recurso libre, lo recoge
   automáticamente.
@@ -155,23 +183,23 @@ fotograma desde el estado inicial.
 Escenarios de ejemplo: `escenario_robo_bandera.json` (robo y escape),
 `escenario_bandera_bloqueada.json` (bloqueo y retorno).
 
-> **[IMAGEN 13 — Recolección del recurso]**
+> **[IMAGEN 12 — Recolección del recurso]**
 > Adjuntar una captura del momento en que una unidad pisa la casilla del recurso
 > libre y lo recoge.
 
-> **[IMAGEN 14 — Robo y escape]**
+> **[IMAGEN 13 — Robo y escape]**
 > Adjuntar una captura del instante posterior a un robo, con el ladrón
 > alejándose (escenario `escenario_robo_bandera`).
 
-> **[IMAGEN 15 — Bloqueo y retorno del recurso]**
+> **[IMAGEN 14 — Bloqueo y retorno del recurso]**
 > Adjuntar una captura del mensaje/estado en que el recurso vuelve a su posición
 > original por bloqueo (escenario `escenario_bandera_bloqueada`).
 
-> **[IMAGEN 16 — Empate por bucle]**
+> **[IMAGEN 15 — Empate por bucle]**
 > Adjuntar una captura del fin de partida en `empate` indicando que se repitió el
 > estado completo.
 
-## 6. Alertas temporales
+## 7. Alertas temporales
 
 Las alertas aparecen en la parte superior de la interfaz.
 
@@ -183,12 +211,12 @@ Las alertas aparecen en la parte superior de la interfaz.
   (`frontend/src/App.tsx:445`).
 - **Cierre manual**: el botón `x` cierra la alerta de inmediato.
 
-> **[IMAGEN 17 — Alerta temporal con barra de tiempo]**
+> **[IMAGEN 16 — Alerta temporal con barra de tiempo]**
 > Adjuntar una captura de una alerta con la barra inferior mostrando el tiempo
 > restante y el botón de cierre `x`.
 > *Pie de figura sugerido:* "Alerta temporal de 10 segundos."
 
-## 7. Ventana pequeña
+## 8. Ventana pequeña
 
 La interfaz se adapta al ancho de la ventana:
 
@@ -197,7 +225,7 @@ La interfaz se adapta al ancho de la ventana:
 - Por debajo de 480 px, se oculta la barra de estado superior y se reduce el
   margen (`frontend/src/App.css:1177`).
 
-> **[IMAGEN 18 — Vista en ventana pequeña]**
+> **[IMAGEN 17 — Vista en ventana pequeña]**
 > Adjuntar una captura del diseño en una sola columna (ancho < 800 px) y, si es
 > posible, otra con la barra de estado oculta (ancho < 480 px).
 > *Pie de figura sugerido:* "Diseño adaptable a ventanas estrechas."

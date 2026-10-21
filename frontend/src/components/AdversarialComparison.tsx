@@ -77,6 +77,10 @@ export function AdversarialComparison({ comparacion }: AdversarialComparisonProp
           Reducción de nodos con Alfa-Beta:{' '}
           <strong>{comparacion.reduccion_nodos_porcentaje.toFixed(2)}%</strong>
         </span>
+        <small>
+          Fórmula: ((nodos generados por Minimax - nodos generados por Alfa-Beta)
+          {' / '}nodos generados por Minimax) × 100.
+        </small>
       </div>
     </section>
   )

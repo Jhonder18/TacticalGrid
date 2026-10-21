@@ -200,7 +200,9 @@ permite a Alfa-Beta podar más y generar menos nodos.
 
 **Resultado obtenido.** Coincide en acción y valor. `orden_sucesores` es una
 **extensión propia del JSON** (no exigida por el enunciado): permite reproducir
-la poda óptima colocando primero los mejores movimientos.
+la poda óptima colocando primero los mejores movimientos. En la interfaz, el
+orden cargado desde el JSON se muestra y puede editarse con controles para
+subir, bajar o restaurar direcciones antes de ejecutar nuevamente el análisis.
 
 ---
 

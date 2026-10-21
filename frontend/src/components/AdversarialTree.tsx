@@ -2,6 +2,7 @@ import type { NodoArbolAdversarial } from '../types/types'
 
 interface AdversarialTreeProps {
   root: NodoArbolAdversarial
+  title?: string
 }
 
 function TreeNode({ node }: { node: NodoArbolAdversarial }) {
@@ -36,13 +37,13 @@ function TreeNode({ node }: { node: NodoArbolAdversarial }) {
   )
 }
 
-export function AdversarialTree({ root }: AdversarialTreeProps) {
+export function AdversarialTree({ root, title = 'Decisiones exploradas' }: AdversarialTreeProps) {
   return (
     <section className="tree-panel">
       <div className="tree-heading">
         <div>
           <div className="section-label">03 / ÁRBOL ADVERSARIAL</div>
-          <h2>Decisiones exploradas</h2>
+          <h2>{title}</h2>
         </div>
         <span className="tree-caption">Los nodos rojos fueron podados</span>
       </div>

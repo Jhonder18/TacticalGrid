@@ -5,14 +5,15 @@ import { AdversarialTree } from './components/AdversarialTree'
 import { AdversarialComparison } from './components/AdversarialComparison'
 import { ResultsDashboard } from './components/ResultsDashboard'
 import { ScenarioSummary } from './components/ScenarioSummary'
-import { runAdversarial, runAdversarialComparison, runFullReport, runGameTurn, runSearch, simulateGame, validateScenario } from './services/api'
+import { runAdversarialComparison, runFullReport, runGameTurn, runSearch, simulateGame, validateScenario } from './services/api'
+import { getExecutionKey } from './types/types'
 import type {
   AlgoritmoBusquedaDisponible,
+  DireccionSucesor,
   Escenario,
   EjecucionBusqueda,
   HeuristicaDisponible,
   ResultadoBusqueda,
-  ResultadoAdversarial,
   ResultadoComparacionAdversarial,
   EstadoPartida,
   ResultadoTurno,
@@ -22,6 +23,27 @@ import './App.css'
 
 type Notice = { type: 'success' | 'error'; message: string } | null
 const NOTICE_DURATION_MS = 10_000
+const DEFAULT_SUCCESSOR_ORDER: DireccionSucesor[] = ['ARRIBA', 'DERECHA', 'ABAJO', 'IZQUIERDA']
+const SUCCESSOR_LABELS: Record<DireccionSucesor, string> = {
+  ARRIBA: 'Arriba',
+  DERECHA: 'Derecha',
+  ABAJO: 'Abajo',
+  IZQUIERDA: 'Izquierda',
+}
+
+function scenarioFile(
+  scenario: Escenario | null,
+  order: DireccionSucesor[],
+): File {
+  if (!scenario) {
+    throw new Error('No hay un escenario válido cargado.')
+  }
+  return new File(
+    [JSON.stringify({ ...scenario, orden_sucesores: order })],
+    'scenario-configurado.json',
+    { type: 'application/json' },
+  )
+}
 
 const algorithmLabels: Record<AlgoritmoBusquedaDisponible, string> = {
   BFS: 'BFS - amplitud',
@@ -38,6 +60,7 @@ const quickCases = [
   { id: 4, label: 'Caso 4 · Heurísticas', file: 'caso_4_heuristicas.json' },
   { id: 5, label: 'Caso 5 · Beam Search', file: 'caso_5_beam.json' },
   { id: 6, label: 'Caso 6 · Portador A', file: 'caso_6_portador_a.json' },
+  { id: 6.1, label: 'Caso 6 · Portador B', file: 'caso_6_portador_b.json' },
   { id: 7, label: 'Caso 7 · Interceptar', file: 'caso_7_intercepcion.json' },
   { id: 8, label: 'Caso 8 · Minimax vs Alfa-Beta', file: 'caso_8_poda.json' },
   { id: 9, label: 'Caso 9 · Orden de sucesores', file: 'caso_9_orden_poda.json' },
@@ -53,13 +76,12 @@ function App() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [scenario, setScenario] = useState<Escenario | null>(null)
   const [initialScenario, setInitialScenario] = useState<Escenario | null>(null)
+  const [successorOrder, setSuccessorOrder] = useState<DireccionSucesor[]>(DEFAULT_SUCCESSOR_ORDER)
   const [algorithm, setAlgorithm] = useState<AlgoritmoBusquedaDisponible>('BFS')
   const [heuristic, setHeuristic] = useState<HeuristicaDisponible>('MANHATTAN')
   const [beamWidth, setBeamWidth] = useState(1)
   const [searchResult, setSearchResult] = useState<ResultadoBusqueda | null>(null)
-  const [adversarialResult, setAdversarialResult] = useState<ResultadoAdversarial | null>(null)
   const [adversarialComparison, setAdversarialComparison] = useState<ResultadoComparacionAdversarial | null>(null)
-  const [adversarialAlgorithm, setAdversarialAlgorithm] = useState<'MINIMAX' | 'ALFA_BETA'>('ALFA_BETA')
   const [depth, setDepth] = useState(2)
   const [resultHistory, setResultHistory] = useState<EjecucionBusqueda[]>([])
   const [isValidating, setIsValidating] = useState(false)
@@ -126,11 +148,12 @@ function App() {
       const raw = await file.text()
       const result = await validateScenario(file)
       const loadedScenario = JSON.parse(raw) as Escenario
+      const loadedOrder = loadedScenario.orden_sucesores ?? DEFAULT_SUCCESSOR_ORDER
       setScenario(loadedScenario)
       setInitialScenario(loadedScenario)
+      setSuccessorOrder([...loadedOrder])
       setSelectedFile(file)
       setSearchResult(null)
-      setAdversarialResult(null)
       setAdversarialComparison(null)
       setResultHistory([])
       setGameStatus('en curso')
@@ -161,7 +184,12 @@ function App() {
     setIsRunning(true)
     setNotice(null)
     try {
-      const result = await runGameTurn(selectedFile, gameAlgorithm, gameHeuristic, gameBeamWidth)
+      const result = await runGameTurn(
+        scenarioFile(scenario, successorOrder),
+        gameAlgorithm,
+        gameHeuristic,
+        gameBeamWidth,
+      )
       const updatedScenario = applyTurnResult(scenario, result)
       setScenario(updatedScenario)
       setSelectedFile(new File([JSON.stringify(updatedScenario)], fileName, { type: 'application/json' }))
@@ -190,7 +218,12 @@ function App() {
     setIsGamePlaying(false)
     setNotice(null)
     try {
-      const simulation = await simulateGame(selectedFile, gameAlgorithm, gameHeuristic, gameBeamWidth)
+      const simulation = await simulateGame(
+        scenarioFile(scenario, successorOrder),
+        gameAlgorithm,
+        gameHeuristic,
+        gameBeamWidth,
+      )
       setGameSimulation(simulation)
       setGameHistoryIndex(-1)
       setGameStepIndex(-1)
@@ -278,7 +311,9 @@ function App() {
   const handleRestartGame = () => {
     if (!initialScenario) return
     const restored = structuredClone(initialScenario)
+    const restoredOrder = initialScenario.orden_sucesores ?? DEFAULT_SUCCESSOR_ORDER
     setScenario(restored)
+    setSuccessorOrder([...restoredOrder])
     setSelectedFile(new File([JSON.stringify(restored)], fileName, { type: 'application/json' }))
     setGameStatus('en curso')
     setLastGameAction(null)
@@ -327,11 +362,21 @@ function App() {
     setSearchResult(null)
     setNotice(null)
     try {
-      const result = await runSearch(selectedFile, algorithm, heuristic, beamWidth)
+      const result = await runSearch(
+        scenarioFile(scenario, successorOrder),
+        algorithm,
+        heuristic,
+        beamWidth,
+      )
       setSearchResult(result)
+      const execution = {
+        resultado: result,
+        heuristica: heuristic,
+        k: algorithm === 'BEAM_SEARCH' ? beamWidth : null,
+      }
       setResultHistory((previous) => [
-        { resultado: result, heuristica: heuristic, k: algorithm === 'BEAM_SEARCH' ? beamWidth : null },
-        ...previous.filter((entry) => entry.resultado.algoritmo !== result.algoritmo),
+        execution,
+        ...previous.filter((entry) => getExecutionKey(entry) !== getExecutionKey(execution)),
       ].slice(0, 8))
       setNotice({
         type: result.exito ? 'success' : 'error',
@@ -349,28 +394,6 @@ function App() {
     }
   }
 
-  const handleAdversarial = async () => {
-    if (!selectedFile) {
-      setNotice({ type: 'error', message: 'Carga un escenario válido antes de evaluar.' })
-      return
-    }
-
-    setIsRunning(true)
-    setNotice(null)
-    try {
-      const result = await runAdversarial(selectedFile, adversarialAlgorithm, depth)
-      setAdversarialResult(result)
-      setNotice({ type: 'success', message: `${adversarialAlgorithm} recomendó una acción para el turno ${scenario?.turno ?? ''}.` })
-    } catch (error) {
-      setNotice({
-        type: 'error',
-        message: error instanceof Error ? error.message : 'No se pudo evaluar el turno.',
-      })
-    } finally {
-      setIsRunning(false)
-    }
-  }
-
   const handleAdversarialComparison = async () => {
     if (!selectedFile) {
       setNotice({ type: 'error', message: 'Carga un escenario válido antes de comparar.' })
@@ -380,7 +403,10 @@ function App() {
     setIsRunning(true)
     setNotice(null)
     try {
-      const result = await runAdversarialComparison(selectedFile, depth)
+      const result = await runAdversarialComparison(
+        scenarioFile(scenario, successorOrder),
+        depth,
+      )
       setAdversarialComparison(result)
       setNotice({
         type: 'success',
@@ -425,6 +451,21 @@ function App() {
 
   const rows = scenario?.mapa.filas ?? 8
   const columns = scenario?.mapa.columnas ?? 8
+
+  const moveSuccessor = (index: number, offset: -1 | 1) => {
+    const targetIndex = index + offset
+    if (targetIndex < 0 || targetIndex >= successorOrder.length) return
+    const nextOrder = [...successorOrder]
+    ;[nextOrder[index], nextOrder[targetIndex]] = [nextOrder[targetIndex], nextOrder[index]]
+    setSuccessorOrder(nextOrder)
+    setScenario((current) => current ? { ...current, orden_sucesores: nextOrder } : current)
+  }
+
+  const resetSuccessorOrder = () => {
+    const nextOrder = [...DEFAULT_SUCCESSOR_ORDER]
+    setSuccessorOrder(nextOrder)
+    setScenario((current) => current ? { ...current, orden_sucesores: nextOrder } : current)
+  }
 
   return (
     <main className="app-shell">
@@ -495,6 +536,45 @@ function App() {
           <div className="loaded-mode">
             MODO CARGADO: <strong>{scenarioMode.toUpperCase()}</strong>
           </div>
+          {scenario && (
+            <div className="successor-order-control">
+              <div className="field-label">Orden de sucesores</div>
+              <small className="field-help">
+                {scenario.orden_sucesores
+                  ? 'Orden cargado desde el escenario; puedes modificarlo.'
+                  : 'No definido en el JSON; se usa el orden predeterminado.'}
+              </small>
+              <ol className="successor-order-list">
+                {successorOrder.map((direction, index) => (
+                  <li key={direction}>
+                    <span>{index + 1}. {SUCCESSOR_LABELS[direction]}</span>
+                    <span className="successor-order-actions">
+                      <button
+                        type="button"
+                        onClick={() => moveSuccessor(index, -1)}
+                        disabled={isRunning || index === 0}
+                        aria-label={`Subir ${SUCCESSOR_LABELS[direction]}`}
+                      >↑</button>
+                      <button
+                        type="button"
+                        onClick={() => moveSuccessor(index, 1)}
+                        disabled={isRunning || index === successorOrder.length - 1}
+                        aria-label={`Bajar ${SUCCESSOR_LABELS[direction]}`}
+                      >↓</button>
+                    </span>
+                  </li>
+                ))}
+              </ol>
+              <button
+                className="tertiary-button"
+                type="button"
+                onClick={resetSuccessorOrder}
+                disabled={isRunning || successorOrder.every((direction, index) => direction === DEFAULT_SUCCESSOR_ORDER[index])}
+              >
+                Restaurar orden predeterminado
+              </button>
+            </div>
+          )}
           {!isAdversarialMode ? (
             <>
           <label className="field-label" htmlFor="algorithm">Método de búsqueda</label>
@@ -581,11 +661,6 @@ function App() {
             </>
           ) : (
             <>
-              <label className="field-label" htmlFor="adversarial-algorithm">Método adversarial</label>
-              <select id="adversarial-algorithm" value={adversarialAlgorithm} onChange={(event) => setAdversarialAlgorithm(event.target.value as 'MINIMAX' | 'ALFA_BETA')}>
-                <option value="ALFA_BETA">Alfa-Beta - poda optimizada</option>
-                <option value="MINIMAX">Minimax - árbol completo</option>
-              </select>
               <label className="field-label" htmlFor="depth">Profundidad máxima</label>
               <select
                 id="depth"
@@ -597,11 +672,8 @@ function App() {
                 ))}
               </select>
               <small className="field-help">Límite permitido por el proyecto: 1 a 8 niveles.</small>
-              <button className="secondary-button" type="button" onClick={() => void handleAdversarial()} disabled={!selectedFile || isRunning || isValidating}>
-                {isRunning ? 'Evaluando...' : 'Evaluar turno'} <span>→</span>
-              </button>
               <button className="secondary-button" type="button" onClick={() => void handleAdversarialComparison()} disabled={!selectedFile || isRunning || isValidating}>
-                Comparar Minimax vs Alfa-Beta <span>⇄</span>
+                {isRunning ? 'Analizando...' : 'Analizar Minimax y Alfa-Beta'} <span>⇄</span>
               </button>
             </>
           )}
@@ -702,44 +774,27 @@ function App() {
           <button className="secondary-button report-button" type="button" onClick={() => void handleDownloadReport()} disabled={isRunning || isValidating}>
             Descargar informe JSON <span>↓</span>
           </button>
-          {adversarialResult && (
-            <section className="decision-card">
-              <div className="section-label">DECISIÓN TÁCTICA / {adversarialResult.algoritmo}</div>
-              <h3>Recomendación para el bando {scenario?.turno}</h3>
-              <p className="decision-action">
-                {adversarialResult.accion_seleccionada
-                  ? `${adversarialResult.accion_seleccionada.unidad_id}: (${adversarialResult.accion_seleccionada.origen?.fila}, ${adversarialResult.accion_seleccionada.origen?.columna}) → (${adversarialResult.accion_seleccionada.destino?.fila}, ${adversarialResult.accion_seleccionada.destino?.columna})`
-                  : 'No hay una acción legal disponible.'}
-              </p>
-              <div className="decision-metrics">
-                <span>Valor <strong>{adversarialResult.valor_obtenido.toFixed(4)}</strong></span>
-                <span>Nodos <strong>{adversarialResult.nodos_generados}</strong></span>
-                <span>Evaluados <strong>{adversarialResult.nodos_evaluados}</strong></span>
-                <span>Podados <strong>{adversarialResult.nodos_podados}</strong></span>
-                <span>Profundidad <strong>{adversarialResult.profundidad_alcanzada}</strong></span>
-                <span>Tiempo <strong>{(adversarialResult.tiempo * 1000).toFixed(2)} ms</strong></span>
-              </div>
-            </section>
-          )}
         </div>
       </section>
 
       {scenario && <ScenarioSummary escenario={scenario} />}
 
       {isAdversarialMode && !isPartidaMode ? (
-        adversarialResult
-          ? <AdversarialTree root={adversarialResult.arbol} />
-          : (
-            <section className="tree-panel tree-empty">
-              <div className="section-label">03 / ÁRBOL ADVERSARIAL</div>
-              <p>Evalúa el turno para visualizar el árbol de decisiones.</p>
-            </section>
-          )
+        adversarialComparison ? (
+          <>
+            <AdversarialComparison comparacion={adversarialComparison} />
+            <div className="adversarial-trees-grid">
+              <AdversarialTree title="Árbol Minimax" root={adversarialComparison.minimax.arbol} />
+              <AdversarialTree title="Árbol Alfa-Beta" root={adversarialComparison.alpha_beta.arbol} />
+            </div>
+          </>
+        ) : (
+          <section className="tree-panel tree-empty">
+            <div className="section-label">03 / ÁRBOLES ADVERSARIALES</div>
+            <p>Analiza Minimax y Alfa-Beta para visualizar ambos árboles de decisiones.</p>
+          </section>
+        )
       ) : <ResultsDashboard results={resultHistory} />}
-
-      {isAdversarialMode && !isPartidaMode && adversarialComparison && (
-        <AdversarialComparison comparacion={adversarialComparison} />
-      )}
     </main>
   )
 }

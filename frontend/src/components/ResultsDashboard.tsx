@@ -1,3 +1,4 @@
+import { getExecutionKey } from '../types/types'
 import type { EjecucionBusqueda, ResultadoBusqueda } from '../types/types'
 
 interface ResultsDashboardProps {
@@ -66,7 +67,7 @@ export function ResultsDashboard({ results }: ResultsDashboardProps) {
               const beamFailed = result.algoritmo === 'BEAM_SEARCH' && !result.exito
               return (
               <tr
-                key={result.algoritmo}
+                key={getExecutionKey(entry)}
                 className={beamFailed ? 'beam-failed-row' : undefined}
               >
                 <td><strong>{algorithmLabels[result.algoritmo]}</strong></td>

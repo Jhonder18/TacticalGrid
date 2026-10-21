@@ -259,10 +259,10 @@ configuración (profundidad, utilidad y orden), Minimax y Alfa-Beta eligen la
 El orden de sucesores es configurable vía `orden_sucesores` (extensión propia del
 JSON). Cambiarlo puede aumentar la poda sin cambiar la decisión (Caso 9).
 
-> **[IMAGEN — Árbol adversarial y poda alfa-beta]**
-> Adjuntar una captura del árbol de decisión con la leyenda de colores y nodos
-> podados en rojo (Casos 7 u 8).
-> *Pie de figura sugerido:* "Árbol explorado con poda alfa-beta."
+> **[IMAGEN — Árboles adversariales y poda alfa-beta]**
+> Adjuntar una captura de los árboles Minimax y Alfa-Beta con la leyenda de
+> colores y nodos podados en rojo (Casos 7 u 8).
+> *Pie de figura sugerido:* "Árboles explorados por Minimax y Alfa-Beta."
 
 > **[IMAGEN — Comparación Minimax vs Alfa-Beta]**
 > Adjuntar una captura del resumen de comparación (misma decisión/valor y
@@ -274,11 +274,11 @@ JSON). Cambiarlo puede aumentar la poda sin cambiar la decisión (Caso 9).
 
 La interfaz (React + TypeScript + Vite) muestra la cuadrícula con tipos de
 terreno, obstáculos, bases, recurso, unidades, bando, portador y turno. Al
-ejecutar una búsqueda se resalta el camino hallado. El panel adversarial dibuja el
-**árbol explorado** con conectores y distingue nodos **explorados**, **evaluados**
-y **podados** (en rojo). El modo partida reproduce el historial paso a paso, con
-pausa, velocidad y detección de bucles. Los detalles de uso están en el manual de
-usuario.
+ejecutar una búsqueda se resalta el camino hallado. El panel adversarial dibuja
+los árboles independientes de **Minimax** y **Alfa-Beta** con conectores y
+distingue nodos **explorados**, **evaluados** y **podados** (en rojo). El modo
+partida reproduce el historial paso a paso, con pausa, velocidad y detección de
+bucles. Los detalles de uso están en el manual de usuario.
 
 > **[IMAGEN — Elementos del tablero]**
 > Adjuntar una captura anotada del tablero señalando terreno, obstáculo, base,
@@ -525,8 +525,11 @@ y `E` transiciones. La poda de Alfa-Beta reduce el factor efectivo del árbol.
 - No existen capturas ni eliminación de unidades: solo bloqueo de posiciones.
 - El campo `tipo` de la unidad es **descriptivo**; no altera reglas, costos ni
   utilidad.
-- El orden de sucesores no se edita desde la interfaz en vivo; se configura en el
-  JSON (`orden_sucesores`) o en una constante del código para estudiar la poda.
+- El orden de sucesores puede editarse desde la interfaz antes de ejecutar. Si el
+  JSON no incluye `orden_sucesores`, se usa `ARRIBA, DERECHA, ABAJO, IZQUIERDA`;
+  si lo incluye, ese orden se carga como configuración inicial. Los controles de
+  subir, bajar y restaurar actualizan el escenario enviado al backend y permiten
+  estudiar directamente su efecto sobre la exploración y la poda.
 - La profundidad adversarial está limitada a 8 para acotar el tiempo de cómputo.
 - El campo `tiempo` no es determinista y se omite de los informes reproducibles.
 - Las partidas usan un límite de turnos proporcional al mapa

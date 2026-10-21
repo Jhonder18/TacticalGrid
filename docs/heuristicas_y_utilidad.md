@@ -259,6 +259,9 @@ del escenario pero **no exigido** por el enunciado original. Es opcional
 - Si se omite, se usa el orden fijo por defecto **arriba, derecha, abajo,
   izquierda**, que hace reproducibles las búsquedas
   (`backend/core/successors.py:50` y `backend/core/successors.py:122`).
+- En el frontend, el orden cargado se puede editar antes de ejecutar mediante
+  los controles para subir, bajar y restaurar direcciones; el escenario
+  configurado se envía al backend.
 - El orden solo cambia en qué secuencia se generan los sucesores. Con Alfa-Beta,
   un buen orden (el mejor movimiento primero) aumenta la poda sin alterar la
   decisión final (`backend/core/successors.py:122`,

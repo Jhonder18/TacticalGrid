@@ -36,6 +36,7 @@ export interface Juego {
 }
 
 export type ModoPrueba = 'busqueda' | 'partida' | 'adversarial'
+export type DireccionSucesor = 'ARRIBA' | 'DERECHA' | 'ABAJO' | 'IZQUIERDA'
 
 export interface Prueba {
   modo: ModoPrueba
@@ -54,6 +55,7 @@ export interface Escenario {
   turno: Bando
   juego: Juego
   prueba?: Prueba
+  orden_sucesores?: DireccionSucesor[]
 }
 
 export type EstadoPartida =
@@ -133,6 +135,13 @@ export interface EjecucionBusqueda {
   resultado: ResultadoBusqueda
   heuristica: HeuristicaDisponible
   k: number | null
+}
+
+export function getExecutionKey(entry: EjecucionBusqueda): string {
+  if (entry.resultado.algoritmo === 'A_ESTRELLA') {
+    return `${entry.resultado.algoritmo}:${entry.heuristica}`
+  }
+  return entry.resultado.algoritmo
 }
 
 export type AlgoritmoAdversarial = 'MINIMAX' | 'ALFA_BETA'

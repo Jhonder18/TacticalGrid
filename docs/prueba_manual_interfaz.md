@@ -85,28 +85,37 @@ ejecutan con éxito sobre el Caso 1 (`POST /api/search/run`, algoritmo
 
 ## 7. Modo adversarial: Minimax y Alfa-Beta
 
-Ejecutados sobre `caso_8_poda.json` vía `POST /api/adversarial/run`:
+Ejecutados sobre `caso_8_poda.json` vía `POST /api/adversarial/compare`,
+que ejecuta ambos algoritmos con la misma profundidad:
 
 | Algoritmo | Nodos generados | Nodos podados |
 | --- | --- | --- |
 | MINIMAX | 9247 | 0 |
 | ALFA_BETA | 697 | 1409 |
 
-Comparación (`POST /api/adversarial/compare`,
-`frontend/src/components/AdversarialComparison.tsx`): misma acción y mismo
-valor, con una reducción de nodos del **92.46 %**.
+La interfaz muestra la misma acción y el mismo valor, con una reducción de
+nodos del **92.46 %**.
 
-## 8. Árbol adversarial, conectores y nodos podados
+## 8. Árboles adversariales, conectores y nodos podados
 
-- El árbol se dibuja en `frontend/src/components/AdversarialTree.tsx`, con
-  conectores CSS `.tree-connector-vertical` y `.tree-connector-to-child`
-  (`frontend/src/App.css`).
+- Los dos árboles se dibujan en `frontend/src/components/AdversarialTree.tsx`:
+  uno para Minimax y otro para Alfa-Beta, con conectores CSS
+  `.tree-connector-vertical` y `.tree-connector-to-child` (`frontend/src/App.css`).
 - Cada nodo lleva su estado (`explorado`, `evaluado`, `podado`, `terminal`) en
   la clase `tree-node-<estado>`.
-- La leyenda y el texto "Los nodos rojos fueron podados"
-  (`AdversarialTree.tsx:47-53`) explican la visualización de la poda.
+- La leyenda explica la visualización de la poda; los nodos rojos aparecen
+  principalmente en el árbol Alfa-Beta.
 
-## 9. Profundidades 2, 3 y 5 (Caso 10)
+## 9. Orden de sucesores editable
+
+El Caso 9 permite observar y editar el orden de sucesores desde la interfaz.
+Si el escenario no trae `orden_sucesores`, se usa `ARRIBA, DERECHA, ABAJO,
+IZQUIERDA`. Los botones de subir, bajar y restaurar permiten modificarlo antes
+de ejecutar la búsqueda o la comparación adversarial. El orden configurado se
+envía en el JSON de la ejecución y puede cambiar la cantidad de nodos podados
+sin cambiar necesariamente la acción final.
+
+## 10. Profundidades 2, 3 y 5 (Caso 10)
 
 Selector de profundidad en el panel adversarial. Ejecutado sobre
 `caso_10_profundidades.json` con `MINIMAX`:
@@ -119,7 +128,7 @@ Selector de profundidad en el panel adversarial. Ejecutado sobre
 
 La carga del árbol crece con la profundidad, como se espera.
 
-## 10. Modo partida automática (T-21 completada)
+## 11. Modo partida automática (T-21 completada)
 
 Ejecutado vía `POST /api/game/simulate`:
 
@@ -133,7 +142,7 @@ implementan en `frontend/src/App.tsx:187-275` (`handlePlayGame`,
 `showGameStep`, `advanceGameHistory`) y en
 `backend/core/game_simulation.py` (detección de bucle con `visited_states`).
 
-## 11. Alertas temporales (10 s y pausa al cursor)
+## 12. Alertas temporales (10 s y pausa al cursor)
 
 - Duración fija de 10 s: `NOTICE_DURATION_MS = 10_000`
   (`frontend/src/App.tsx:24`).
@@ -141,7 +150,7 @@ implementan en `frontend/src/App.tsx:187-275` (`handlePlayGame`,
   `onMouseLeave` (`frontend/src/App.tsx:435-440`).
 - Barra de progreso: `.toast-progress` (`frontend/src/App.tsx:445`).
 
-## 12. Interfaz en ventana pequeña
+## 13. Interfaz en ventana pequeña
 
 Media queries en `frontend/src/App.css`:
 
@@ -172,8 +181,9 @@ Media queries en `frontend/src/App.css`:
 - [x] Ejecutar BFS, DFS, UCS, A* y Beam Search.
 - [x] Probar Beam Search con k = 1, 2, 4 y 8.
 - [x] Ejecutar Minimax y Alfa-Beta.
-- [x] Revisar el árbol adversarial y sus conectores.
+- [x] Revisar ambos árboles adversariales y sus conectores.
 - [x] Revisar la visualización de nodos podados.
+- [x] Editar el orden de sucesores y observar su efecto en el Caso 9.
 - [x] Probar profundidades 2, 3 y 5.
 - [x] Probar un JSON inválido.
 - [x] Confirmar que una carga inválida no borre el escenario actual.
