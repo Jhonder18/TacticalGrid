@@ -24,35 +24,87 @@ todo se lee del JSON del escenario.
 - **Documentación** (`docs/`): documento técnico, manual de usuario, heurísticas
   y utilidad, informe de resultados y prueba manual de la interfaz.
 
+## Requisitos previos
+
+Se requiere una instalación nueva de:
+
+- Git.
+- Python 3.10 o superior, con `python` disponible en PowerShell.
+- Node.js 20 o superior, que incluye `npm`.
+
+La aplicación se probó en Windows 10/11 con PowerShell. Los comandos de esta
+sección deben ejecutarse desde la raíz del repositorio.
+
+## Instalación desde cero
+
+Clonar la rama estable y entrar al proyecto:
+
+```powershell
+git clone --branch main https://github.com/Jhonder18/TacticalGrid.git
+Set-Location TacticalGrid
+```
+
+Crear el entorno virtual e instalar las dependencias del backend:
+
+```powershell
+python -m venv .venv
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -r backend\requirements.txt
+```
+
+Instalar las dependencias exactas del frontend usando el lockfile:
+
+```powershell
+Set-Location frontend
+npm ci
+Set-Location ..
+```
+
 ## Cómo ejecutar
+
+Se necesitan dos terminales de PowerShell. En ambas se debe estar ubicado en
+la raíz del proyecto y activar el entorno virtual en la terminal del backend.
 
 ### Backend
 
 ```powershell
-python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-python -m pip install -r backend\requirements.txt
 python -m uvicorn backend.main:app --reload --port 8000
 ```
 
 ### Frontend
 
 ```powershell
-cd frontend
-npm install
+Set-Location frontend
 npm run dev
 ```
 
+Abrir `http://localhost:5173`. El frontend se conecta al backend en
+`http://localhost:8000`; por eso el backend debe iniciarse antes de ejecutar
+operaciones desde la interfaz.
+
 ### Pruebas
+
+Desde la raíz del proyecto, con `.venv` activado:
 
 ```powershell
 python -m unittest discover -s backend/tests
 ```
 
+Desde `frontend`:
+
 ```powershell
-cd frontend
+Set-Location frontend
 npm run lint
 npm run build
+```
+
+Para volver a la raíz después de las pruebas del frontend:
+
+```powershell
+Set-Location ..
 ```
 
 ## Documentación
@@ -83,6 +135,8 @@ npm run build
 - Suite backend: **107 pruebas, todas OK** (también desde un clon limpio).
 - Frontend: `npm run lint` y `npm run build` sin errores (incluye `tsc -b`).
 - `git diff --check` limpio.
+- `frontend\package-lock.json` conserva las versiones exactas del frontend.
+- `backend\requirements.txt` fija las versiones directas del backend.
 - Sin `venv`, `node_modules`, `__pycache__` ni `dist` versionados.
 - Sin secretos en el repositorio.
 - Escenarios públicos incluidos en `frontend/public/casos/`.

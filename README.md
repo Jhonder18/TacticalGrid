@@ -12,16 +12,41 @@ adversariales (Minimax y Alfa-Beta) y simular partidas automáticas.
 
 ## Requisitos
 
-- Node.js 18+
+- Git
+- Node.js 20+ (incluye `npm`)
 - Python 3.10+
 
+La guía completa de instalación, ejecución y validación desde una máquina nueva
+está en [ENTREGA.md](ENTREGA.md).
+
+## Instalación desde cero
+
+En PowerShell, desde la carpeta donde se guardará el proyecto:
+
+```powershell
+git clone --branch main https://github.com/Jhonder18/TacticalGrid.git
+Set-Location TacticalGrid
+
+python -m venv .venv
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -r backend\requirements.txt
+
+Set-Location frontend
+npm ci
+Set-Location ..
+```
+
 ## Puesta en marcha
+
+Ejecutar el backend y el frontend en dos terminales de PowerShell separadas.
+La terminal del backend debe conservar el entorno virtual activado.
 
 ### Frontend
 
 ```powershell
-cd frontend
-npm install
+Set-Location frontend
 npm run dev
 ```
 
@@ -32,9 +57,7 @@ Vite estará disponible en `http://localhost:5173`.
 En PowerShell, desde la raíz del proyecto:
 
 ```powershell
-python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-python -m pip install -r backend\requirements.txt
 python -m uvicorn backend.main:app --reload --port 8000
 ```
 
@@ -86,11 +109,9 @@ python -m unittest discover -s backend/tests
 Frontend:
 
 ```powershell
-cd frontend
-npx tsc --noEmit
-npx eslint --max-warnings=0 .
-npx oxlint .
-npx vite build
+Set-Location frontend
+npm run lint
+npm run build
 ```
 
 ## Documentación
