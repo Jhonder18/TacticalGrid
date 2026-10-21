@@ -95,6 +95,9 @@ npx vite build
 
 ## Documentación
 
+- [Informe técnico](docs/informe_tecnico.md): documento consolidado de entrega
+  (modelado, estados, reglas, costos, heurísticas, utilidad, metodología
+  experimental, resultados, complejidad, limitaciones y uso de IA).
 - [Documento técnico](docs/documento_tecnico.md): estructura, endpoints, contrato
   JSON, reglas, algoritmos, métricas y pruebas.
 - [Manual de usuario](docs/manual_usuario.md): uso de la interfaz.

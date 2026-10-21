@@ -7,6 +7,9 @@ real.
 
 Documentos relacionados:
 
+- `docs/informe_tecnico.md`: documento consolidado de entrega (reúne modelado,
+  estados, reglas, costos, heurísticas, utilidad, metodología experimental,
+  resultados, complejidad, limitaciones y uso de IA).
 - `docs/heuristicas_y_utilidad.md`: heurísticas de A* y función de utilidad.
 - `docs/informe_resultados_casos.md`: resultados esperados y obtenidos (Casos 1 a 10).
 - `docs/manual_usuario.md`: guía de uso de la interfaz.
